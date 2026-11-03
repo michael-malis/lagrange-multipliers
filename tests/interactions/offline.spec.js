@@ -31,8 +31,9 @@ test("offline: zero external requests, loaded fonts and complete three-scene art
   for (let i = 0; i < 3; i++)
     await page.locator('#scene-two [data-action="next-stage"]').click();
   await page.locator("#scene-two [data-action=optimum]").click();
-  await expect(page.locator("#scene-two .proof-status")).toContainText("8/3");
+  await expect(page.locator("#scene-two .proof-status")).toContainText("λ");
   await page.locator("#scene-three [data-action=global]").click();
+  await expect(page.locator("#scene-two .proof-status .katex")).toHaveCount(2);
   await expect(page.locator("#scene-three [data-value=height]")).toHaveText(
     "2",
   );
