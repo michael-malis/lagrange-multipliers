@@ -38,8 +38,8 @@ export function GradientScene(root) {
         </dl>
         <p class="proof-status" aria-live="polite"></p>
       </div>
-      <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div></div>
     </div>
+    <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div></div>
   </div>
  
   `;
