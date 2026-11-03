@@ -1138,3 +1138,30 @@ th {
   #scene-one .world { height: 20rem; }
   .plot-key, .vector-key { gap: 0.35rem 0.75rem; }
 }
+
+/* The proof reads as one compact row beneath two synchronized views.
+   This avoids a very tall right sidebar and empty space under the SVG. */
+#scene-two .proof-copy {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 0.25rem 1.5rem;
+  padding: 0.75rem 1.1rem;
+}
+#scene-two .proof-copy h3 { grid-column: 1 / -1; margin-bottom: 0.2rem; }
+#scene-two .proof-copy [data-copy] {
+  grid-column: 1;
+  margin: 0;
+  align-self: start;
+}
+#scene-two .proof-copy [data-formula] {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  min-width: 0;
+}
+@media (max-width: 56rem) {
+  #scene-two .proof-copy { grid-template-columns: 1fr; }
+  #scene-two .proof-copy [data-copy],
+  #scene-two .proof-copy [data-formula] { grid-column: 1; grid-row: auto; }
+}
