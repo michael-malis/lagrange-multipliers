@@ -1,9 +1,9 @@
 import { number } from '../../ui/format.js';
 const NS = 'http://www.w3.org/2000/svg';
 export function svgElement(name, attrs = {}) { const el = document.createElementNS(NS, name); for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, v); return el; }
-export function createProfile(host, model, onChange, { yRange = [-7, 3], showDerivative = true } = {}) {
+export function createProfile(host, model, onChange, { yRange = [-7, 3], showDerivative = true, height = 235 } = {}) {
   let activeModel = model;
-  const w=360,h=235,left=38,right=344,top=22,bottom=198;
+  const w=360,h=height,left=38,right=344,top=22,bottom=h-37;
   const svg=svgElement('svg',{viewBox:`0 0 ${w} ${h}`,class:'profile',role:'img','aria-label':'Профиль высоты вдоль допустимой кривой. Для изменения точки используйте ползунок или перетаскивание.'});
   const x=t=>left+(t-activeModel.domain[0])/(activeModel.domain[1]-activeModel.domain[0])*(right-left);
   const y=z=>bottom-(z-yRange[0])/(yRange[1]-yRange[0])*(bottom-top);
