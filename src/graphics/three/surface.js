@@ -496,9 +496,9 @@ export function createSurface(host, model) {
         world(s.math.position),
       ]);
       heightLine.computeLineDistances();
-      constraint.visible = cylinder || s.step >= 1;
-      pathGroup.visible = cylinder || s.step >= 1;
-      marker.visible = cylinder || s.step >= 1;
+      constraint.visible = cylinder || s.plane;
+      pathGroup.visible = cylinder || s.plane;
+      marker.visible = cylinder || s.plane;
       baseMarker.visible = marker.visible;
       heightLine.visible = marker.visible;
       candidates.visible = s.candidates;
@@ -556,7 +556,7 @@ function createFallback(host, initial, verticalScale) {
             }),
           );
         }
-      if (m.periodic || s.step >= 1) {
+      if (m.periodic || s.plane) {
         const floor=m.periodic?-2.8:-7.5,ceil=m.periodic?3.2:5.6;
         const wire=(points)=>svg.append(svgElement('path',{d:path(points),stroke:'#e3a15c',opacity:.35}));
         if(m.periodic){
