@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 for (const [width, height] of [
+  [1920, 1080],
   [1440, 900],
   [1280, 800],
   [390, 844],
@@ -58,6 +59,12 @@ for (const [width, height] of [
     if (width >= 1280) {
       const plane = await page.locator("#scene-two .plane").boundingBox();
       expect(plane.width).toBeGreaterThan(475);
+      const scale = await page.locator("#scene-two .plane").evaluate((svg) => ({
+        x: +svg.dataset.scaleX,
+        y: +svg.dataset.scaleY,
+      }));
+      expect(scale.x).toBeCloseTo(scale.y, 8);
+      await expect(page.locator("#scene-two [data-step]")).toHaveCount(4);
       const world = await page.locator("#scene-three .world").boundingBox();
       const row = await page.locator("#scene-three .scene-layout").boundingBox();
       expect(Math.abs(world.y + world.height - (row.y + row.height))).toBeLessThan(3);
