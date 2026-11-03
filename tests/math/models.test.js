@@ -76,8 +76,11 @@ describe("independent exact reference values", () => {
   });
   test("stationary counterexample crosses zero on both sides", () => {
     const s = evaluate(counterexample, 0);
-    vectorClose(s.gradient, [0, 0]);
-    expect(s.lambda).toBe(0);
+    vectorClose(s.gradient, [2, 0]);
+    vectorClose(s.normal, [2, 0]);
+    expect(s.lambda).toBe(1);
+    expect(norm(s.gradient)).toBeGreaterThan(0);
+    expect(s.derivative).toBeCloseTo(0, 12);
     for (const e of [0.1, 0.001, 0.00001]) {
       expect(counterexample.h(e)).toBeGreaterThan(0);
       expect(counterexample.h(-e)).toBeLessThan(0);
