@@ -87,33 +87,11 @@ export function createGradientPlot(host, onChange) {
         class: k === 0 ? "axis" : "grid",
       }),
     );
-    if (k !== 0) {
-      const lx = svgElement("text", {
-        x: gx,
-        y: xy([0, 0])[1] + 21,
-        "text-anchor": "middle",
-      });
-      lx.textContent = k;
-      const ly = svgElement("text", {
-        x: xy([0, 0])[0] - 14,
-        y: gy + 4,
-        "text-anchor": "end",
-      });
-      ly.textContent = k;
-      svg.append(lx);
-      svg.append(ly);
-    }
   }
-  const [originX, originY] = xy([0, 0]);
-  for (const [text, x, y] of [
-    ["x", width - pad + 18, originY + 4],
-    ["y", originX - 4, pad - 16],
-    ["0", originX - 17, originY + 21],
-  ]) {
-    const axisLabel = svgElement("text", { x, y });
-    axisLabel.textContent = text;
-    svg.append(axisLabel);
-  }
+  // Tick labels belong to the camera, not to a fixed initial screen layout.
+  // Refresh them after pan/zoom, keeping the same mathematical spacing on x/y.
+  const tickLabels = svgElement("g", { class: "axis-tick-labels", "aria-hidden": "true" });
+  svg.append(tickLabels);
 
   const contourLayer = svgElement("g");
   plot.append(contourLayer);
@@ -236,6 +214,50 @@ export function createGradientPlot(host, onChange) {
   let pointerPrevious = null;
   const toWorld = (clientX, clientY) =>
     new DOMPoint(clientX, clientY).matrixTransform(svg.getScreenCTM().inverse());
+  function refreshAxisLabels() {
+    const unitX = camera.width / width;
+    const unitY = camera.height / height;
+    const left = camera.x + pad * unitX;
+    const right = camera.x + (width - pad) * unitX;
+    const top = camera.y + pad * unitY;
+    const bottom = camera.y + (plotBottom) * unitY;
+    const [axisX, axisY] = xy([0, 0]);
+    const xTicksY = axisY >= top && axisY <= bottom
+      ? Math.min(bottom - 8 * unitY, axisY + 21 * unitY)
+      : bottom - 9 * unitY;
+    const yTicksX = axisX >= left && axisX <= right
+      ? Math.max(left + 9 * unitX, axisX - 14 * unitX)
+      : left + 9 * unitX;
+    const yAnchor = axisX >= left + 23 * unitX && axisX <= right ? "end" : "start";
+    const addLabel = (value, x, y, anchor = "middle", kind = "tick") => {
+      const label = svgElement("text", {
+        x, y, "text-anchor": anchor, class: kind,
+      });
+      label.textContent = String(value);
+      tickLabels.append(label);
+    };
+    tickLabels.replaceChildren();
+    const minX = min + (left - pad) / axisScale;
+    const maxX = min + (right - pad) / axisScale;
+    const minY = yMax - (bottom - pad) / axisScale;
+    const maxY = yMax - (top - pad) / axisScale;
+    // Integer grid is sufficient for default zoom; at high zoom add halves.
+    const step = camera.width < width / 1.75 ? 0.5 : 1;
+    for (let x = Math.ceil(minX / step) * step; x <= maxX + 1e-8; x += step) {
+      if (Math.abs(x) < 1e-8) continue;
+      addLabel(Number(x.toFixed(2)), xy([x, 0])[0], xTicksY);
+    }
+    for (let y = Math.ceil(minY / step) * step; y <= maxY + 1e-8; y += step) {
+      if (Math.abs(y) < 1e-8) continue;
+      addLabel(Number(y.toFixed(2)), yTicksX, xy([0, y])[1] + 4 * unitY, yAnchor);
+    }
+    if (axisX >= left && axisX <= right && axisY >= top && axisY <= bottom) {
+      addLabel("0", axisX - 13 * unitX, axisY + 21 * unitY, "end", "origin-label");
+    }
+    addLabel("x", right + 16 * unitX, xTicksY - 5 * unitY, "middle", "axis-name");
+    addLabel("y", left - 6 * unitX, top - 13 * unitY, "middle", "axis-name");
+  }
+
   function refreshCamera() {
     svg.setAttribute(
       "viewBox",
@@ -251,6 +273,7 @@ export function createGradientPlot(host, onChange) {
     svg.dataset.zoom = String(Number(zoom.toFixed(3)));
     svg.dataset.scaleX = String(axisScale * zoom);
     svg.dataset.scaleY = String(axisScale * zoom);
+    refreshAxisLabels();
   }
   function zoomAt(factor, clientX, clientY) {
     const oldZoom = width / camera.width,
