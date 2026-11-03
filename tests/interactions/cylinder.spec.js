@@ -20,7 +20,7 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await s.screenshot({ path: "test-results/cylinder-local.png" });
   await s.getByRole("button", { name: "Глобальный максимум · 2" }).click();
   await expect(s).toHaveAttribute("data-height", "2");
-  await s.getByRole("button", { name: "Все кандидаты" }).click();
+  await s.getByRole("button", { name: "Показать стационарные точки" }).click();
   await expect(s.locator(".profile .candidate")).toHaveCount(4);
   const position = JSON.parse(
     await s.locator(".world").getAttribute("data-position"),
@@ -35,8 +35,10 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   expect(gf[0] * gg[0] + gf[1] * gg[1]).toBeLessThan(0);
   expect(+(await s.getAttribute("data-height"))).toBeCloseTo(-9 / 8, 12);
   await s.screenshot({ path: "test-results/cylinder-minimum.png" });
-  await s.getByRole("button", { name: "Стационарность без экстремума" }).click();
+  await s.getByRole("button", { name: "Другая функция: y³" }).click();
   await expect(s).toHaveAttribute("data-model", "counterexample");
+  await expect(s.locator("[data-model-context]")).toContainText("Дополнительный пример");
+  await expect(s.locator("[data-model=counterexample]")).toHaveAttribute("aria-pressed", "true");
   await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Стационарная точка · t = 0");
   await expect(s.locator("[data-action=minimum-minus]")).toHaveText("Максимум · y = 1");
   await s.locator("[data-action=minimum-minus]").click();
