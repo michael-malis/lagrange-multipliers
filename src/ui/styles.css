@@ -1581,3 +1581,38 @@ html { overflow-x: clip; }
     align-items: start;
   }
 }
+
+/* v2 demonstration: the article's proof text is rehomed into the right-hand
+   explanation panel, leaving the geometry and synchronized profile on screen. */
+body[data-mode="demo"] .masthead { display: none; }
+body[data-mode="demo"] .demo-toolbar { z-index: 60; }
+body[data-mode="demo"] .demo-toolbar .demo-toggle { flex: 0 0 auto; }
+@media (min-width: 900px) {
+  body[data-mode="demo"] #scene-two .proof-side > .proof-copy {
+    display: block;
+    border-top: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: .45rem .75rem;
+    background: var(--surface-raised);
+  }
+  body[data-mode="demo"] #scene-two .proof-side > .proof-copy h3 {
+    margin: 0 0 .25rem;
+  }
+  body[data-mode="demo"] #scene-two .proof-side > .proof-copy [data-copy],
+  body[data-mode="demo"] #scene-two .proof-side > .proof-copy [data-formula] {
+    display: block;
+    width: 100%;
+    margin: 0;
+  }
+  body[data-mode="demo"] #scene-two .proof-side > .proof-copy .equation { margin-block: .3rem; }
+}
+@media (min-width: 1100px) and (min-height: 780px) {
+  body[data-mode="demo"] #scene-one .world {
+    height: clamp(22rem, 48vh, 32rem);
+    min-height: 0;
+  }
+  body[data-mode="demo"] #scene-three .world {
+    height: clamp(20rem, 43vh, 29rem);
+    min-height: 0;
+  }
+}
