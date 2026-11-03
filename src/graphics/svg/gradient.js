@@ -10,18 +10,22 @@ const VECTOR_COLORS = {
 };
 
 export function createGradientPlot(host, onChange) {
-  const size = 620,
+  // Crop unused space above the level sets without distorting x/y geometry.
+  const width = 620,
+    height = 552,
     pad = 54,
     min = -1,
     max = 6,
-    axisScale = (size - 2 * pad) / (max - min),
+    yMax = 5.15,
+    axisScale = (width - 2 * pad) / (max - min),
+    plotBottom = pad + (yMax - min) * axisScale,
     vectorScale = 0.58;
   const xy = ([x, y]) => [
     pad + (x - min) * axisScale,
-    size - pad - (y - min) * axisScale,
+    pad + (yMax - y) * axisScale,
   ];
   const svg = svgElement("svg", {
-    viewBox: `0 0 ${size} ${size}`,
+    viewBox: `0 0 ${width} ${height}`,
     class: "plane",
     role: "img",
     "aria-label":
@@ -36,8 +40,8 @@ export function createGradientPlot(host, onChange) {
     svgElement("rect", {
       x: pad,
       y: pad,
-      width: size - 2 * pad,
-      height: size - 2 * pad,
+      width: width - 2 * pad,
+      height: plotBottom - pad,
     }),
   );
   defs.append(clip);
@@ -67,13 +71,15 @@ export function createGradientPlot(host, onChange) {
         x1: gx,
         y1: pad,
         x2: gx,
-        y2: size - pad,
+        y2: plotBottom,
         class: k === 0 ? "axis" : "grid",
       }),
+    );
+    if (k <= 5) plot.append(
       svgElement("line", {
         x1: pad,
         y1: gy,
-        x2: size - pad,
+        x2: width - pad,
         y2: gy,
         class: k === 0 ? "axis" : "grid",
       }),
@@ -91,12 +97,13 @@ export function createGradientPlot(host, onChange) {
         "text-anchor": "end",
       });
       ly.textContent = k;
-      svg.append(lx, ly);
+      svg.append(lx);
+      if (k <= 5) svg.append(ly);
     }
   }
   const [originX, originY] = xy([0, 0]);
   for (const [text, x, y] of [
-    ["x", size - pad + 18, originY + 4],
+    ["x", width - pad + 18, originY + 4],
     ["y", originX - 4, pad - 16],
     ["0", originX - 17, originY + 21],
   ]) {
@@ -121,9 +128,7 @@ export function createGradientPlot(host, onChange) {
   };
   const fixedLevels = [
     { value: -6, angle: 2.42, anchor: "end" },
-    { value: -3, angle: 0, anchor: "start" },
     { value: 0, angle: -Math.PI / 2, anchor: "middle" },
-    { value: 2, angle: Math.PI, anchor: "end" },
     { value: 3, angle: Math.PI / 2, anchor: "middle" },
     { value: 4, angle: 0, anchor: "start" },
   ];
@@ -146,12 +151,8 @@ export function createGradientPlot(host, onChange) {
   }
 
   const activeLayer = svgElement("g", { class: "active-level" }),
-    activeContour = ellipseFor(1, "active-contour"),
-    activeLabel = svgElement("text", {
-      class: "active-contour-label",
-      "text-anchor": "middle",
-    });
-  activeLayer.append(activeContour, activeLabel);
+    activeContour = ellipseFor(1, "active-contour");
+  activeLayer.append(activeContour);
   plot.append(activeLayer);
 
   const [x1, y1] = xy([-1, 4]),
@@ -196,18 +197,8 @@ export function createGradientPlot(host, onChange) {
       });
     if (key === "tangent") line.setAttribute("stroke-dasharray", "7 5");
     dynamic.append(line);
-    label(
-      {
-        gradient: "∇f",
-        normal: "∇g",
-        tangent: "T",
-        projection: "proj_T ∇f",
-      }[key],
-      end,
-      VECTOR_COLORS[key],
-      dx,
-      dy,
-    );
+    // The synchronized legend identifies vectors; SVG labels would collide
+    // with the curve, angle and other vectors as the parameter changes.
   }
   function drawAngle(p, tangent, gradient, radians) {
     if (radians === null) return;
@@ -230,17 +221,7 @@ export function createGradientPlot(host, onChange) {
         "data-angle": radians,
       });
     dynamic.append(arc);
-    const middle = start + delta / 2,
-      labelRadius = 62,
-      angleText = svgElement("text", {
-        x: cx + labelRadius * Math.cos(middle),
-        y: cy + labelRadius * Math.sin(middle) + 4,
-        "text-anchor": "middle",
-        class: "angle-label",
-        "data-angle-label": "true",
-      });
-    angleText.textContent = `θ = ${number((radians * 180) / Math.PI, 1)}°`;
-    dynamic.append(angleText);
+    // The measured angle is displayed in the adjacent numeric panel.
   }
 
   let dragging = false;
@@ -274,15 +255,7 @@ export function createGradientPlot(host, onChange) {
         contour = state.model.levelSet(math.height);
       activeContour.setAttribute("rx", contour.radii[0] * axisScale);
       activeContour.setAttribute("ry", contour.radii[1] * axisScale);
-      const activeAngle = -0.68,
-        labelPoint = [
-          contour.center[0] + contour.radii[0] * Math.cos(activeAngle),
-          contour.center[1] + contour.radii[1] * Math.sin(activeAngle),
-        ],
-        [labelX, labelY] = xy(labelPoint);
-      activeLabel.setAttribute("x", labelX);
-      activeLabel.setAttribute("y", labelY - 10);
-      activeLabel.textContent = `f(P) = h(t) = ${number(math.height)}`;
+      // Dynamic level value is displayed beside the diagram, not over it.
 
       if (state.step >= 1) {
         arrow("tangent", point, math.tangent, { dx: 13, dy: 25 });
@@ -317,7 +290,7 @@ export function createGradientPlot(host, onChange) {
               "data-zero-projection": "true",
             }),
           );
-          label("proj_T ∇f = 0", point, VECTOR_COLORS.projection, -116, -25);
+
         }
       }
       if (state.step >= 3)
@@ -346,7 +319,7 @@ export function createGradientPlot(host, onChange) {
         );
       }
       dynamic.append(svgElement("circle", { cx, cy, r: 6.5, class: "point" }));
-      label("P", point, "#ffad63", -22, 19);
+      label("P", point, "#ffad63", -18, 20);
       svg.dataset.scaleX = axisScale;
       svg.dataset.scaleY = axisScale;
       svg.dataset.projection = JSON.stringify(math.projection);
