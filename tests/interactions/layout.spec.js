@@ -64,7 +64,8 @@ for (const [width, height] of [
         y: +svg.dataset.scaleY,
       }));
       expect(scale.x).toBeCloseTo(scale.y, 8);
-      await expect(page.locator("#scene-two [data-step-indicator]")).toHaveCount(4);
+      await expect(page.locator("#scene-two .stage-meter")).toHaveCount(1);
+      await expect(page.locator("#scene-two [data-step-indicator]")).toHaveCount(0);
       await expect(page.locator('#scene-two [data-action="next-stage"]')).toBeVisible();
       const world = await page.locator("#scene-three .world").boundingBox();
       const row = await page.locator("#scene-three .scene-layout").boundingBox();
