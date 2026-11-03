@@ -78,3 +78,14 @@
 - Matched the third scene’s WebGL canvas height to the adjacent teaching panel, avoiding the blank band, and slightly improved the initial zoom.
 - Split the third-scene model selector and the two context-specific point presets into clear groups, with labels and actions updated on model changes.
 - Added browser regression assertions for scene sizing and context-dependent controls. Run results are tracked by the deployment workflow; do not infer success from edits alone.
+
+
+### 2026-11-03 — Mathematically grounded text, chart and viewport review
+
+- Rewrote the third scene's candidate classification with the explicit circle model, the definition of stationarity, derivative factorization, all four points, second derivative and separate global minimality proof.
+- Reduced the diagram's vertical coordinate range to show the relevant level sets without distorting x/y units, and moved vector labels, live contour height and angle information out of the geometry.
+- Kept the four genuine geometric interactions, with the Lagrange condition derived in the fourth step and visible as the conclusion immediately after the scene.
+- Repositioned the derivative readout at a fixed, non-overlapping plot-header location; increased the two spatial arrowhead sizes.
+- Raised the small-text typography floor and tightened introductory spacing, chart whitespace and synchronized proof layout.
+- Updated geometry, offline and responsive browser tests; added Full HD (1920×1080).
+- Verification status: pending workflow results and public browser inspection; no PASS claims without results.
