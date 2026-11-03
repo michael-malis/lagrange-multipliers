@@ -676,13 +676,14 @@ input[type="range"] {
 }
 
 .proof-layout {
-  grid-template-columns: minmax(0, 1.52fr) minmax(21rem, 1fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(21rem, 1fr);
 }
 
 .plane-wrap {
   min-width: 0;
+  width: 100%;
   padding: 0.5rem;
-  max-width: 33rem;
+  max-width: 42rem;
   margin-inline: auto;
   align-self: start;
 }
@@ -887,6 +888,33 @@ th {
   color: var(--accent);
 }
 
+.cylinder-study .study-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+}
+.cylinder-study .study-mode-group {
+  padding-right: 1.5rem;
+  border-right: 1px solid var(--rule-strong);
+}
+.cylinder-study .study-label {
+  display: block;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  font-weight: 650;
+}
+.cylinder-study .study-toolbar .control-buttons {
+  margin-top: 0.35rem;
+}
+@media (max-width: 56rem) {
+  .cylinder-study .study-mode-group {
+    border-right: 0;
+    padding-right: 0;
+  }
+}
+
+
 .cylinder-study [data-analysis] {
   max-width: 58rem;
   margin-top: 1.2rem;
@@ -923,7 +951,8 @@ th {
 }
 
 #scene-three .world {
-  height: 26rem;
+  height: auto;
+  min-height: 29rem;
 }
 
 @media (max-width: 56rem) {
@@ -955,6 +984,7 @@ th {
 
   #scene-three .world {
     height: 25rem;
+    min-height: 0;
   }
 }
 
@@ -1008,6 +1038,7 @@ th {
 
   #scene-three .world {
     height: 22rem;
+    min-height: 0;
   }
 
   .profile-panel,

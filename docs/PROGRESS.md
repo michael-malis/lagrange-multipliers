@@ -69,3 +69,12 @@
 - Fixed raw JavaScript-template KaTeX escapes, shortened wide equations, disabled SVG text selection on drag.
 - Kept only five proof tabs, removed redundant Next button and repeated conclusion section; updated browser interaction test.
 - Verification: Awaiting GitHub Actions checks and published URL inspection; neither should be reported as PASS without evidence.
+
+
+### 2026-11-03 — Focused post-review UI corrections
+
+- Removed perimeter strokes from all translucent vertical planes, retaining the planes and mathematical section curves.
+- Expanded the second scene’s SVG plot area and adjusted its column ratio for better legibility.
+- Matched the third scene’s WebGL canvas height to the adjacent teaching panel, avoiding the blank band, and slightly improved the initial zoom.
+- Split the third-scene model selector and the two context-specific point presets into clear groups, with labels and actions updated on model changes.
+- Added browser regression assertions for scene sizing and context-dependent controls. Run results are tracked by the deployment workflow; do not infer success from edits alone.

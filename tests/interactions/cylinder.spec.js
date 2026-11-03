@@ -14,6 +14,9 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   expect(+(await s.getAttribute("data-height"))).toBeCloseTo(0, 12);
   await expect(s.locator("[data-value=height]")).toHaveText("0");
   await expect(s.locator(".world")).toHaveAttribute("data-webgl", "ready");
+  await expect(s.locator(".study-mode-group button")).toHaveCount(2);
+  await expect(s.locator(".study-point-group button")).toHaveCount(2);
+  await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Минимум · y > 0");
   await s.screenshot({ path: "test-results/cylinder-local.png" });
   await s.getByRole("button", { name: "Глобальный максимум · 2" }).click();
   await expect(s).toHaveAttribute("data-height", "2");
@@ -34,6 +37,11 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await s.screenshot({ path: "test-results/cylinder-minimum.png" });
   await s.getByRole("button", { name: "Стационарность без экстремума" }).click();
   await expect(s).toHaveAttribute("data-model", "counterexample");
+  await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Стационарная точка · t = 0");
+  await expect(s.locator("[data-action=minimum-minus]")).toHaveText("Максимум · y = 1");
+  await s.locator("[data-action=minimum-minus]").click();
+  await expect(s.locator("[data-value=height]")).toHaveText("1");
+  await s.locator("[data-action=minimum-plus]").click();
   await expect(s.locator("[data-value=lambda]")).toHaveText("0");
   await expect(circle.locator("[data-vector=gf]")).toHaveCount(0);
   await expect(s.locator(".proof-status")).toContainText("без экстремума");
@@ -50,6 +58,8 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   expect(+(await s.getAttribute("data-height"))).toBeGreaterThan(0);
   await s.locator("[data-action=reset]").click();
   await expect(s).toHaveAttribute("data-model", "cylinder");
+  await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Минимум · y > 0");
+  await expect(s.locator("[data-action=minimum-minus]")).toHaveText("Минимум · y < 0");
   await expect(s).toHaveAttribute("data-t", String(Math.PI));
   await expect(s.locator("details")).toHaveCount(0);
   await expect(s.locator(".cylinder-study")).toBeVisible();

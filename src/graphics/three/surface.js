@@ -301,7 +301,6 @@ export function createSurface(host, model) {
         }),
       ),
     );
-    line([...points, points[0]], color, group === sections ? 3 : 1, group, 0.65);
   }
   if (cylinder) {
     for (let i = 0; i < 32; i++) {
@@ -363,7 +362,7 @@ export function createSurface(host, model) {
   function resetCamera() {
     camera.position.set(...(cylinder ? [5, 4.4, 6] : [9, 7.2, -10]));
     controls.target.copy(world(cylinder ? [0, 0, 0.1] : [2, 1.6, -0.4]));
-    camera.zoom = 1;
+    camera.zoom = cylinder ? 1.12 : 1;
     camera.lookAt(controls.target);
     controls.update();
     render();

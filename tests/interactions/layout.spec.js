@@ -55,6 +55,13 @@ for (const [width, height] of [
       }
     }
     await expect(page.locator(".katex-error")).toHaveCount(0);
+    if (width >= 1280) {
+      const plane = await page.locator("#scene-two .plane").boundingBox();
+      expect(plane.width).toBeGreaterThan(475);
+      const world = await page.locator("#scene-three .world").boundingBox();
+      const row = await page.locator("#scene-three .scene-layout").boundingBox();
+      expect(Math.abs(world.y + world.height - (row.y + row.height))).toBeLessThan(3);
+    }
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(width);

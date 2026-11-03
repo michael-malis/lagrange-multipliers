@@ -13,7 +13,7 @@ export function CylinderScene(root) {
   <div class="scene-layout"><div class="world"><div class="world-labels"><span class="blue" data-surface-label>z = x + x² − y²</span><span class="orange">x² + y² = 1</span></div><div class="world-note">Мышь — поворот · колесо — масштаб<br>Оси x, y, z показаны в одном масштабе</div></div><div class="profile-panel"><div class="plot-title" data-profile-title></div><div data-profile></div><div class="circle-readouts"><div data-circle></div><dl class="readouts math-readouts"><div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div><div><dt data-tex="h(t)"></dt><dd data-value="height"></dd></div><div><dt data-tex="h'(t)"></dt><dd data-value="derivative"></dd></div><div class="wide"><dt data-tex="\\lambda\\ \\text{в стационарной точке}"></dt><dd data-value="lambda"></dd></div></dl></div><p class="proof-status" aria-live="polite"></p></div></div>
   <div class="legend"><span class="blue">Поверхность <span data-tex="f"></span></span><span class="orange">Цилиндр, пересечение и окружность</span><span class="teal" data-vector-legend hidden>Градиент <span data-tex="\\nabla f"></span></span><span class="violet" data-vector-legend hidden>Градиент <span data-tex="\\nabla g"></span></span></div>
   
-  <div class="cylinder-study"><h3>Классификация и проверка границ метода</h3><div class="control-buttons"><button data-model="cylinder" aria-pressed="true">Основная функция</button><button data-model="counterexample" aria-pressed="false">Стационарность без экстремума</button><button data-action="minimum-plus">Минимум · y &gt; 0</button><button data-action="minimum-minus">Минимум · y &lt; 0</button><button data-action="stationary">Точка t = 0</button></div><p class="instruction">Для стрелок <span data-tex="\\nabla f"></span> и <span data-tex="\\nabla g"></span> используется один масштаб: 0,38 единицы оси на единицу вектора. Нулевой градиент стрелкой не изображается.</p><div data-analysis></div></div>`;
+  <div class="cylinder-study"><h3>Классификация и проверка границ метода</h3><div class="study-toolbar"><div class="study-mode-group"><span class="study-label">Выбор функции</span><div class="control-buttons" role="group" aria-label="Выбор функции"><button data-model="cylinder" aria-pressed="true">Основная функция</button><button data-model="counterexample" aria-pressed="false">Стационарность без экстремума</button></div></div><div class="study-point-group"><span class="study-label">Точки выбранной функции</span><div class="control-buttons" role="group" aria-label="Точки выбранной функции"><button data-action="minimum-plus">Минимум · y &gt; 0</button><button data-action="minimum-minus">Минимум · y &lt; 0</button></div></div></div><p class="instruction">Для стрелок <span data-tex="\\nabla f"></span> и <span data-tex="\\nabla g"></span> используется один масштаб: 0,38 единицы оси на единицу вектора. Нулевой градиент стрелкой не изображается.</p><div data-analysis></div></div>`;
   renderMath(root);
 
   const world = createSurface(root.querySelector(".world"), cylinder),
@@ -51,7 +51,7 @@ export function CylinderScene(root) {
       store.useModel(model);
   root.querySelector("[data-action=minimum-plus]").onclick = () =>
     store.set({
-      t: store.get().model === cylinder ? Math.acos(-0.25) : Math.PI / 2,
+      t: store.get().model === cylinder ? Math.acos(-0.25) : 0,
       candidates: true,
       vectors: true,
     });
@@ -60,12 +60,10 @@ export function CylinderScene(root) {
       t:
         store.get().model === cylinder
           ? 2 * Math.PI - Math.acos(-0.25)
-          : (3 * Math.PI) / 2,
+          : Math.PI / 2,
       candidates: true,
       vectors: true,
     });
-  root.querySelector("[data-action=stationary]").onclick = () =>
-    store.set({ t: 0, vectors: true });
 
   let renderedModel;
   store.subscribe((state) => {
@@ -113,7 +111,12 @@ export function CylinderScene(root) {
             element.dataset.model === state.model.id,
           ),
         );
-      root.querySelector("[data-action=minimum-plus]").hidden = !isMain;
+      root.querySelector("[data-action=minimum-plus]").textContent = isMain
+        ? "Минимум · y > 0"
+        : "Стационарная точка · t = 0";
+      root.querySelector("[data-action=minimum-minus]").textContent = isMain
+        ? "Минимум · y < 0"
+        : "Максимум · y = 1";
       root.querySelector("[data-analysis]").innerHTML = isMain
         ? `${math("h'(t)=-\\sin t(1+4\\cos t)=0", true)}<p>Условие распадается на <span class="math-inline">${math("\\sin t=0")}</span> и <span class="math-inline">${math("\\cos t=-1/4")}</span>. Полный список кандидатов:</p><div class="table-scroll"><table><thead><tr><th>Точка</th><th>f</th><th>λ</th><th>Классификация</th></tr></thead><tbody><tr><td>(1; 0)</td><td>2</td><td>3/2</td><td>Глобальный максимум</td></tr><tr><td>(−1; 0)</td><td>0</td><td>1/2</td><td>Локальный, не глобальный максимум</td></tr><tr><td>(−1/4; √15/4)</td><td>−9/8</td><td>−1</td><td>Глобальный минимум</td></tr><tr><td>(−1/4; −√15/4)</td><td>−9/8</td><td>−1</td><td>Глобальный минимум</td></tr></tbody></table></div><p>В минимумах <span class="math-inline">${math("\\nabla f=-\\nabla g")}</span>: множитель отрицателен, поэтому градиенты противоположны.</p>`
         : `${math("h(t)=\\sin^3t,\\qquad h'(0)=0,\\qquad \\nabla f(1,0)=0,\\qquad \\lambda=0", true)}<p>Проведите точку через правый край окружности. Значения перед <span class="math-inline">${math("2\\pi")}</span> отрицательны, а сразу после нуля положительны. Стационарность выполнена, но локального экстремума нет.</p>`;
