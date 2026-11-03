@@ -9,11 +9,11 @@ import { math, number, pair, renderMath } from "../ui/format.js";
 export function CylinderScene(root) {
   const store = createStore(cylinder, { vectors: false });
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 3 · Экстремумы на окружности</span><button data-action="reset">Сбросить</button></div>
-  <div class="controls"><div class="slider-row"><label for="cylinder-t">Угол <span data-tex="t"></span></label><input id="cylinder-t" type="range" min="0" max="6.283185307179586" step="0.005" value="3.141592653589793"><output for="cylinder-t"></output></div><div class="control-buttons"><button data-action="local">Локальный максимум · 0</button><button class="primary" data-action="global">Глобальный максимум · 2</button><button data-action="candidates" aria-pressed="false">Показать стационарные точки</button><button data-action="vectors" aria-pressed="false">Показать градиенты</button><button data-action="camera">Исходный ракурс</button></div><p class="instruction">Точка движется по окружности. Её положение на поверхности, на окружности и на графике высоты изменяется одновременно.</p><div class="scene-function-picker"><div class="study-mode-group"><span class="study-label">Целевая функция на рисунке 3</span><div class="control-buttons" role="group" aria-label="Выбор функции"><button data-model="cylinder" aria-pressed="true">Исходная функция</button><button data-model="counterexample" aria-pressed="false">Другая функция: y³</button></div></div><p class="instruction">При выборе другой функции поверхность и график высоты изменяются; ограничение остаётся тем же.</p></div><p class="model-context" data-model-context>Основная функция: <span data-tex="f(x,y)=x+x^2-y^2"></span> при <span data-tex="x^2+y^2=1"></span>.</p></div>
+  <div class="controls"><div class="slider-row"><label for="cylinder-t">Угол <span data-tex="t"></span></label><input id="cylinder-t" type="range" min="0" max="6.283185307179586" step="0.005" value="3.141592653589793"><output for="cylinder-t"></output></div><div class="cylinder-actions"><div class="cylinder-presets"><span class="controls-label">Положение точки</span><div class="control-buttons" role="group" aria-label="Характерные точки на окружности"><button data-action="local">Локальный максимум · 0</button><button data-action="global">Глобальный максимум · 2</button></div></div><div class="cylinder-view-options"><span class="controls-label">Что показать на графике</span><div class="control-buttons"><button data-action="candidates" aria-pressed="false">Стационарные точки</button><button data-action="vectors" aria-pressed="false">Градиенты</button><button data-action="camera">Вернуть ракурс</button></div></div></div><p class="instruction">Точка движется по окружности. Её положение на поверхности, на окружности и на графике высоты изменяется одновременно.</p><div class="scene-function-picker"><div class="study-mode-group"><span class="study-label">Дополнительный опыт: достаточно ли условия <span data-tex="h\'(t)=0"></span> для экстремума?</span><button data-action="switch-model" aria-pressed="false">Проверить контрпример: <span data-tex="f(x,y)=y^3"></span></button></div><p class="instruction">Сравните две функции на одной и той же окружности. Изменится поверхность и график высоты, но не ограничение.</p></div><p class="model-context" data-model-context>Исходная функция: <span data-tex="f(x,y)=x+x^2-y^2"></span> при <span data-tex="x^2+y^2=1"></span>.</p></div>
   <div class="scene-layout"><div class="world"><div class="world-labels"><span class="blue" data-surface-label>z = x + x² − y²</span><span class="orange">x² + y² = 1</span></div><div class="world-note">Мышь — поворот · колесо — масштаб<br>Оси x, y, z показаны в одном масштабе</div></div><div class="profile-panel"><div class="plot-title" data-profile-title></div><div data-profile></div><div class="circle-readouts"><div data-circle></div><dl class="readouts math-readouts"><div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div><div><dt data-tex="h(t)"></dt><dd data-value="height"></dd></div><div><dt data-tex="h'(t)"></dt><dd data-value="derivative"></dd></div><div class="wide"><dt data-tex="\\lambda\\ \\text{в стационарной точке}"></dt><dd data-value="lambda"></dd></div></dl></div><p class="proof-status" aria-live="polite"></p></div></div>
   <div class="legend"><span class="blue">Поверхность <span data-tex="f"></span></span><span class="orange">Цилиндр, пересечение и окружность</span><span class="teal" data-vector-legend hidden>Градиент <span data-tex="\\nabla f"></span></span><span class="violet" data-vector-legend hidden>Градиент <span data-tex="\\nabla g"></span></span></div>
   
-  <div class="cylinder-study"><h3>Сравним стационарные точки двух функций</h3><p class="study-context">Здесь можно заменить <em>целевую функцию</em>, сохранив ограничение <span data-tex="x^2+y^2=1"></span>. Это позволяет увидеть, почему равенство <span data-tex="h'(t)=0"></span> ещё не доказывает наличие экстремума. При переключении изменятся поверхность, график высоты и вычисления.</p><div class="study-toolbar"><div class="study-point-group"><span class="study-label">Выберите точку на окружности</span><div class="control-buttons" role="group" aria-label="Точки выбранной функции"><button data-action="minimum-plus">Минимум · y &gt; 0</button><button data-action="minimum-minus">Минимум · y &lt; 0</button></div></div></div><p class="instruction">Для стрелок <span data-tex="\\nabla f"></span> и <span data-tex="\\nabla g"></span> используется один масштаб: 0,38 единицы оси на единицу вектора. Нулевой градиент стрелкой не изображается.</p><div data-analysis></div></div>`;
+  <div class="cylinder-study"><h3>Зачем нужен дополнительный пример?</h3><p class="study-context">Здесь можно заменить <em>целевую функцию</em>, сохранив ограничение <span data-tex="x^2+y^2=1"></span>. Это позволяет увидеть, почему равенство <span data-tex="h'(t)=0"></span> ещё не доказывает наличие экстремума. При переключении изменятся поверхность, график высоты и вычисления.</p><div class="study-toolbar"><div class="study-point-group"><span class="study-label">Выберите точку на окружности</span><div class="control-buttons" role="group" aria-label="Точки выбранной функции"><button data-action="minimum-plus">Минимум · y &gt; 0</button><button data-action="minimum-minus">Минимум · y &lt; 0</button></div></div></div><p class="instruction">Для стрелок <span data-tex="\\nabla f"></span> и <span data-tex="\\nabla g"></span> используется один масштаб: 0,38 единицы оси на единицу вектора. Нулевой градиент стрелкой не изображается.</p><div data-analysis></div></div>`;
   renderMath(root);
 
   const world = createSurface(root.querySelector(".world"), cylinder),
@@ -46,9 +46,11 @@ export function CylinderScene(root) {
     store.reset();
     world.resetCamera();
   };
-  for (const [id, model] of Object.entries({ cylinder, counterexample }))
-    root.querySelector(`[data-model=${id}]`).onclick = () =>
-      store.useModel(model);
+  root.querySelector('[data-action="switch-model"]').onclick = () => {
+    const alternate = store.get().model !== counterexample;
+    store.useModel(alternate ? counterexample : cylinder);
+    store.set({ candidates: alternate, vectors: alternate, t: alternate ? 0 : Math.PI });
+  };
   root.querySelector("[data-action=minimum-plus]").onclick = () =>
     store.set({
       t: store.get().model === cylinder ? Math.acos(-0.25) : 0,
@@ -106,14 +108,11 @@ export function CylinderScene(root) {
       root.querySelector("[data-profile-title]").innerHTML = isMain
         ? `Профиль ${math("h(t)=\\cos t+\\cos2t")}`
         : `Высота для другой функции ${math("h(t)=\\sin^3t")}`;
-      root
-        .querySelectorAll("[data-model]")
-        .forEach((element) =>
-          element.setAttribute(
-            "aria-pressed",
-            element.dataset.model === state.model.id,
-          ),
-        );
+      const modelSwitch = root.querySelector('[data-action="switch-model"]');
+      modelSwitch.setAttribute("aria-pressed", String(!isMain));
+      modelSwitch.innerHTML = isMain
+        ? `Проверить контрпример: ${math("f(x,y)=y^3")}`
+        : "Вернуться к исходной функции";
       root.querySelector("[data-action=minimum-plus]").textContent = isMain
         ? "Минимум · y > 0"
         : "Стационарная точка · t = 0";
