@@ -90,3 +90,25 @@ test("v2: mobile and 200 percent zoom reflow keeps control buttons within viewpo
     expect(overflowing).toEqual([]);
   }
 });
+
+test("v2: laptop demonstration shows geometry and profile without vertical jumps", async ({ page, context }) => {
+  await context.setOffline(true);
+  for (const [width, height] of [[1440, 900], [1280, 800]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto(pageUrl);
+    await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
+    for (let i = 0; i < 3; i++) {
+      const active = page.locator('[data-demo-active="true"] .scene');
+      await expect(active.locator(".scene-layout")).toBeVisible();
+      await expect(active.locator("[data-profile] svg")).toBeVisible();
+      const metrics = await active.locator(".scene-layout").evaluate(node => {
+        const rect = node.getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom, height: innerHeight, width: document.documentElement.scrollWidth };
+      });
+      expect(metrics.bottom, JSON.stringify(metrics)).toBeLessThanOrEqual(height + 1);
+      expect(metrics.width, JSON.stringify(metrics)).toBeLessThanOrEqual(width);
+      await page.screenshot({ path: `test-results/v2-demo-${width}x${height}-chapter-${i+1}.png` });
+      if (i < 2) await page.locator("[data-demo-next]").click();
+    }
+  }
+});
