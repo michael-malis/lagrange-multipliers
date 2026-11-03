@@ -146,7 +146,7 @@ export function createGradientPlot(host, onChange) {
         "text-anchor": config.anchor,
         class: "contour-label",
       });
-    label.textContent = `c = ${number(config.value)}`;
+    label.textContent = `ℓ = ${number(config.value)}`;
     contourLayer.append(label);
   }
 
