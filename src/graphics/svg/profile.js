@@ -131,6 +131,7 @@ export function createProfile(
     );
   };
   svg.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
     dragging = true;
     svg.setPointerCapture(e.pointerId);
     move(e);
@@ -156,7 +157,7 @@ export function createProfile(
       guide.setAttribute("x2", x(s.t));
       guide.setAttribute("y1", y(m.height));
       guide.setAttribute("y2", bottom);
-      const dt = (activeModel.domain[1] - activeModel.domain[0]) * 0.07;
+      const dt = (activeModel.domain[1] - activeModel.domain[0]) * 0.09;
       tangent.setAttribute("x1", x(s.t - dt));
       tangent.setAttribute("y1", y(m.height - dt * m.derivative));
       tangent.setAttribute("x2", x(s.t + dt));
