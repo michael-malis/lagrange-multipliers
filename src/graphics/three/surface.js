@@ -397,7 +397,7 @@ export function createSurface(host, model) {
     const [x, y] = s.math.point,
       z = s.math.height,
       [fx, fy] = s.math.gradient;
-    plane(
+    if (s.sectionMode !== "y") plane(
       [
         [xmin, y, floor],
         [xmax, y, floor],
@@ -408,7 +408,7 @@ export function createSurface(host, model) {
       colors.x,
       0.095,
     );
-    plane(
+    if (s.sectionMode !== "x") plane(
       [
         [x, ymin, floor],
         [x, ymax, floor],
@@ -419,7 +419,7 @@ export function createSurface(host, model) {
       colors.y,
       0.095,
     );
-    for (const axis of [0, 1]) {
+    for (const axis of [0, 1].filter(a => s.sectionMode === "both" || (a === 0 ? s.sectionMode === "x" : s.sectionMode === "y"))) {
       let points = [];
       for (let i = 0; i <= 100; i++) {
         const a = axis ? x : xmin + ((xmax - xmin) * i) / 100,
@@ -449,8 +449,8 @@ export function createSurface(host, model) {
       sections,
     );
     for (const [vector, color] of [
-      [[1, 0, fx], colors.x],
-      [[0, 1, fy], colors.y],
+      ...(s.sectionMode !== "y" ? [[[1, 0, fx], colors.x]] : []),
+      ...(s.sectionMode !== "x" ? [[[0, 1, fy], colors.y]] : []),
     ]) {
       const direction = world(vector).normalize();
       const arrow = new THREE.ArrowHelper(
@@ -579,11 +579,11 @@ function createFallback(host, initial, verticalScale) {
       }
       if(s.sections){
         const [x,y]=s.math.point,z=s.math.height,[fx,fy]=s.math.gradient;
-        for(const [axis,color]of[[0,'#47e1c2'],[1,'#c29aff']]){
+        for(const [axis,color]of[[0,'#47e1c2'],[1,'#c29aff']].filter(([axis]) => s.sectionMode === 'both' || (axis === 0 ? s.sectionMode === 'x' : s.sectionMode === 'y'))){
           const points=Array.from({length:61},(_,i)=>{const a=i/15;const p=axis?[x,a]:[a,y];return [...p,m.f(...p)];}).filter(p=>p[2]>=-7.5);
           svg.append(svgElement('path',{d:path(points),stroke:color}));
         }
-        for(const [points,color]of[[[[x-.5,y,z-fx*.5],[x+.5,y,z+fx*.5]],'#47e1c2'],[[[x,y-.5,z-fy*.5],[x,y+.5,z+fy*.5]],'#c29aff']])svg.append(svgElement('path',{d:path(points),stroke:color}));
+        for(const [points,color]of[[[[x-.5,y,z-fx*.5],[x+.5,y,z+fx*.5]],'#47e1c2'],[[[x,y-.5,z-fy*.5],[x,y+.5,z+fy*.5]],'#c29aff']].filter((_,axis) => s.sectionMode === 'both' || (axis === 0 ? s.sectionMode === 'x' : s.sectionMode === 'y')))svg.append(svgElement('path',{d:path(points),stroke:color}));
       }
       host.dataset.position = JSON.stringify(s.math.position);
       host.dataset.rendered = "true";
