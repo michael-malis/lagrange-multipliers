@@ -64,7 +64,10 @@ export function createCircle(host, onChange) {
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(
       svg.getScreenCTM().inverse(),
     );
-    onChange(Math.atan2(center - p.y, p.x - center));
+    const angle = Math.atan2(center - p.y, p.x - center);
+    // atan2 returns (-π, π]; the model and slider use [0, 2π).
+    // Without wrapping, dragging below the right-hand point clamps to 0.
+    onChange((angle + 2 * Math.PI) % (2 * Math.PI));
   };
   svg.addEventListener("pointerdown", (e) => {
     e.preventDefault();
