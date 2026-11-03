@@ -57,7 +57,7 @@ try {
   );
   await page.locator("#scene-one [data-action=sections]").click();
   await expect(page.locator("#scene-one [data-value=fx]")).toHaveText("2,667");
-  await page.locator('#scene-two [data-step="4"]').click();
+  await page.locator('#scene-two [data-step="3"]').click();
   await page.locator("#scene-two [data-action=optimum]").click();
   await expect(page.locator("#scene-two .proof-status")).toContainText(
     "λ = 8/3",
