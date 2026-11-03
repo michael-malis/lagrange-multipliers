@@ -10,15 +10,18 @@ const VECTOR_COLORS = {
 };
 
 export function createGradientPlot(host, onChange) {
-  // Crop unused space above the level sets without distorting x/y geometry.
+  // Center the largest displayed contour (level -6), not the origin.
+  // Its x-extrema are 3 +/- sqrt(11), so the old [-1, 6] viewport
+  // clipped the right-hand arc. Keep the same unit scale on both axes.
   const width = 620,
     height = 552,
     pad = 54,
     min = -1,
-    max = 6,
-    yMax = 5.15,
+    max = 7,
+    yMin = -1.5,
+    yMax = 5.5,
     axisScale = (width - 2 * pad) / (max - min),
-    plotBottom = pad + (yMax - min) * axisScale,
+    plotBottom = pad + (yMax - yMin) * axisScale,
     vectorScale = 0.58;
   const xy = ([x, y]) => [
     pad + (x - min) * axisScale,
