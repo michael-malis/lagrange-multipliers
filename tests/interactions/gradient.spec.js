@@ -104,7 +104,7 @@ test("second figure: zoom, pan and drag its mathematical point independently", a
       const p = new DOMPoint(x, y).matrixTransform(matrix);
       return { x: p.x, y: p.y };
     };
-    return { background: screen(400, 170), point: screen(200.3, 284.4) };
+    return { background: screen(400, 170) };
   });
   await page.mouse.move(position.background.x, position.background.y);
   await page.mouse.down();
