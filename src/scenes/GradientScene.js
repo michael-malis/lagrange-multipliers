@@ -20,6 +20,7 @@ export function GradientScene(root) {
         `<button data-step="${i}" aria-pressed="${i === 0}">${name}</button>`,
     )
     .join("")}</div>
+  <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До максимума: <span data-tex="t=1"></span></button><button class="primary" data-action="optimum">Точно в максимум: <span data-tex="t=5/3"></span></button><button data-action="after">После максимума: <span data-tex="t=2"></span></button></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>
   <div class="scene-layout proof-layout">
     <div class="plane-wrap" data-plane></div>
     <div class="proof-side">
@@ -29,20 +30,20 @@ export function GradientScene(root) {
         <dl class="readouts math-readouts">
           <div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div>
           <div><dt data-tex="c=f(P)=h(t)"></dt><dd data-value="height"></dd></div>
-          <div><dt data-tex="h'(t)=\nabla f\cdot T"></dt><dd data-value="derivative"></dd></div>
-          <div data-unit hidden><dt data-tex="D_{\widehat T}f"></dt><dd data-value="unit"></dd></div>
-          <div data-angle hidden><dt data-tex="\angle(\nabla f,T)"></dt><dd data-value="angle"></dd></div>
-          <div class="wide" data-projection hidden><dt data-tex="\operatorname{proj}_{T}\nabla f"></dt><dd data-value="projection-vector"></dd></div>
-          <div data-projection hidden><dt data-tex="\|\operatorname{proj}_{T}\nabla f\|"></dt><dd data-value="projection-norm"></dd></div>
+          <div><dt data-tex="h'(t)=\\nabla f\\cdot T"></dt><dd data-value="derivative"></dd></div>
+          <div data-unit hidden><dt data-tex="D_{\\widehat T}f"></dt><dd data-value="unit"></dd></div>
+          <div data-angle hidden><dt data-tex="\\angle(\\nabla f,T)"></dt><dd data-value="angle"></dd></div>
+          <div class="wide" data-projection hidden><dt data-tex="\\operatorname{proj}_{T}\\nabla f"></dt><dd data-value="projection-vector"></dd></div>
+          <div data-projection hidden><dt data-tex="\\|\\operatorname{proj}_{T}\\nabla f\\|"></dt><dd data-value="projection-norm"></dd></div>
           <div data-projection hidden><dt>Знаковый коэффициент при <span data-tex="T"></span></dt><dd data-value="projection-coefficient"></dd></div>
         </dl>
         <p class="proof-status" aria-live="polite"></p>
       </div>
-      <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div><div class="proof-next"><span class="muted" data-step-counter></span><button class="primary" data-action="next">Следующий шаг →</button></div></div>
+      <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div></div>
     </div>
   </div>
-  <div class="legend"><span class="level">Линии <span data-tex="f(x,y)=c"></span></span><span class="orange">Ограничение и точка</span><span class="teal" data-legend="1">Градиент <span data-tex="\nabla f"></span></span><span data-legend="1">Касательная <span data-tex="T"></span></span><span class="projection" data-legend="2">Знаковая проекция</span><span class="violet" data-legend="3">Градиент <span data-tex="\nabla g"></span></span></div>
-  <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До максимума: <span data-tex="t=1"></span></button><button class="primary" data-action="optimum">Точно в максимум: <span data-tex="t=5/3"></span></button><button data-action="after">После максимума: <span data-tex="t=2"></span></button></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>`;
+  <div class="legend"><span class="level">Линии <span data-tex="f(x,y)=c"></span></span><span class="orange">Ограничение и точка</span><span class="teal" data-legend="1">Градиент <span data-tex="\\nabla f"></span></span><span data-legend="1">Касательная <span data-tex="T"></span></span><span class="projection" data-legend="2">Знаковая проекция</span><span class="violet" data-legend="3">Градиент <span data-tex="\\nabla g"></span></span></div>
+  `;
   renderMath(root);
 
   const plot = createGradientPlot(root.querySelector("[data-plane]"), (t) =>
@@ -69,8 +70,6 @@ export function GradientScene(root) {
   }))
     root.querySelector(`[data-action=${key}]`).onclick = () => store.set({ t });
   root.querySelector("[data-action=reset]").onclick = () => store.reset();
-  root.querySelector("[data-action=next]").onclick = () =>
-    store.set({ step: Math.min(4, store.get().step + 1) });
 
   let renderedStep = -1;
   store.subscribe((state) => {
@@ -134,9 +133,6 @@ export function GradientScene(root) {
             +element.dataset.step === state.step,
           ),
         );
-      root.querySelector("[data-step-counter]").textContent =
-        `Шаг ${state.step + 1} из 5`;
-      root.querySelector("[data-action=next]").disabled = state.step === 4;
       renderedStep = state.step;
     }
     root.dataset.t = state.t;
