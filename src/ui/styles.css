@@ -1635,3 +1635,38 @@ body[data-mode="demo"] .demo-toolbar .demo-toggle { flex: 0 0 auto; }
   body[data-mode="demo"] #scene-three .profile-panel { padding: .3rem .6rem; }
   body[data-mode="demo"] #scene-three .proof-status { margin-top: .2rem; }
 }
+
+/* Mobile keeps each mathematical view legible instead of squeezing both into
+   one very tall panel. Switching does not modify t, cameras or proof stages. */
+.mobile-view-toggle { display: none; }
+@media (max-width: 760px) {
+  .mobile-view-toggle {
+    display: flex;
+    padding: .55rem .75rem;
+    gap: .4rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface-raised);
+  }
+  .mobile-view-toggle button {
+    flex: 1;
+    min-width: 0;
+    min-height: 2.65rem;
+    font-size: var(--fs-small);
+    white-space: normal;
+  }
+  .mobile-view-toggle button[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: var(--surface-active);
+    color: var(--accent);
+  }
+  #scene-one[data-mobile-view="geometry"] > .scene-layout .profile-panel,
+  #scene-three[data-mobile-view="geometry"] > .scene-layout .profile-panel,
+  #scene-two[data-mobile-view="geometry"] .proof-layout .proof-side {
+    display: none;
+  }
+  #scene-one[data-mobile-view="profile"] > .scene-layout .world,
+  #scene-three[data-mobile-view="profile"] > .scene-layout .world,
+  #scene-two[data-mobile-view="profile"] .proof-layout .plane-column {
+    display: none;
+  }
+}
