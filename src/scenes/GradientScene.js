@@ -61,10 +61,18 @@ export function GradientScene(root) {
   root.querySelector('[data-action="zoom-out"]').onclick = () => plot.zoomOut();
   root.querySelector('[data-action="reset-view"]').onclick = () => plot.resetView();
   slider.oninput = (event) => store.set({ t: +event.target.value });
+  const selectStep = (step) => {
+    store.set({ step });
+    // Keep the freshly updated mathematical explanation in the viewport.
+    root.querySelector(".proof-navigation").scrollIntoView({
+      block: "start",
+      behavior: "auto",
+    });
+  };
   root.querySelector('[data-action="previous-stage"]').onclick = () =>
-    store.set({ step: Math.max(0, store.get().step - 1) });
+    selectStep(Math.max(0, store.get().step - 1));
   root.querySelector('[data-action="next-stage"]').onclick = () =>
-    store.set({ step: Math.min(stageNames.length - 1, store.get().step + 1) });
+    selectStep(Math.min(stageNames.length - 1, store.get().step + 1));
   for (const [key, t] of Object.entries({
     before: 1,
     optimum: 5 / 3,
