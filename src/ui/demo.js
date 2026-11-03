@@ -40,18 +40,17 @@ export function initDemo() {
   const proofCopy = document.querySelector("#scene-two .proof-copy");
   const proofControls = document.querySelector("#scene-two .controls");
   const proofSide = document.querySelector("#scene-two .proof-side");
+  const syncProofPosition = () => {
+    if (mode === "demo" && window.innerWidth >= 900) proofSide.prepend(proofCopy);
+    else proofControls.before(proofCopy);
+  };
   const setMode = (next) => {
     mode = next;
     document.body.dataset.mode = next;
-    // Presentation uses the same proof nodes, moved beside the mathematical diagram.
-    // Reading restores their position in the full mathematical article.
-    if (next === "demo") {
-      toolbar.append(toggle);
-      proofSide.prepend(proofCopy);
-    } else {
-      header.append(toggle);
-      proofControls.before(proofCopy);
-    }
+    if (next === "demo") toolbar.append(toggle);
+    else header.append(toggle);
+    // Reuse the same proof DOM and move it beside the plot only when there is room.
+    syncProofPosition();
     toggle.setAttribute("aria-pressed", String(next === "demo"));
     toggle.textContent = next === "demo" ? "Вернуться к чтению" : "Демонстрация";
     toolbar.hidden = next !== "demo";
@@ -62,6 +61,7 @@ export function initDemo() {
     }
   };
   toggle.onclick = () => setMode(mode === "demo" ? "read" : "demo");
+  window.addEventListener("resize", syncProofPosition);
   document.querySelectorAll("a[data-view]").forEach((link) => link.addEventListener("click", (event) => {
     if (mode !== "demo") return;
     event.preventDefault();
