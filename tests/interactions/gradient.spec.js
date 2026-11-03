@@ -74,3 +74,87 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s).toHaveAttribute("data-step", "0");
   await expect(first).toHaveAttribute("data-t", String(5 / 3));
 });
+
+test("second figure: zoom, pan and drag its mathematical point independently", async ({
+  page,
+  context,
+}) => {
+  await context.setOffline(true);
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const scene = page.locator("#scene-two"),
+    svg = scene.locator("svg.plane");
+  await svg.scrollIntoViewIfNeeded();
+  await expect(svg).toHaveAttribute("data-zoom", "1");
+  const initialT = await scene.getAttribute("data-t");
+  const initialBox = await svg.getAttribute("viewBox");
+  await scene.locator('[data-action="zoom-in"]').click();
+  expect(+(await svg.getAttribute("data-zoom"))).toBeGreaterThan(1);
+  await expect(scene).toHaveAttribute("data-t", initialT);
+  await scene.locator('[data-action="zoom-out"]').click();
+  expect(+(await svg.getAttribute("data-zoom"))).toBeCloseTo(1, 2);
+  await scene.locator('[data-action="zoom-in"]').click();
+  await scene.locator('[data-action="reset-view"]').click();
+  await expect(svg).toHaveAttribute("viewBox", initialBox);
+
+  // Drag on background => pan camera, not the mathematical point.
+  const position = await svg.evaluate((node) => {
+    const matrix = node.getScreenCTM();
+    const screen = (x, y) => {
+      const p = new DOMPoint(x, y).matrixTransform(matrix);
+      return { x: p.x, y: p.y };
+    };
+    return { background: screen(400, 170), point: screen(200.3, 284.4) };
+  });
+  await page.mouse.move(position.background.x, position.background.y);
+  await page.mouse.down();
+  await page.mouse.move(position.background.x + 65, position.background.y + 24, {
+    steps: 6,
+  });
+  await page.mouse.up();
+  expect(await svg.getAttribute("viewBox")).not.toBe(initialBox);
+  await expect(scene).toHaveAttribute("data-t", initialT);
+  await scene.locator('[data-action="reset-view"]').click();
+
+  // Drag the orange point => update mathematical state, not camera.
+  const currentPoint = await svg.evaluate((node) => {
+    const matrix = node.getScreenCTM();
+    const p = new DOMPoint(200.3, 284.4).matrixTransform(matrix);
+    const target = new DOMPoint(273.4, 357.6).matrixTransform(matrix);
+    return { start: { x: p.x, y: p.y }, end: { x: target.x, y: target.y } };
+  });
+  await page.mouse.move(currentPoint.start.x, currentPoint.start.y);
+  await page.mouse.down();
+  await page.mouse.move(currentPoint.end.x, currentPoint.end.y, { steps: 6 });
+  await page.mouse.up();
+  expect(+(await scene.getAttribute("data-t"))).toBeGreaterThan(1.8);
+  await expect(svg).toHaveAttribute("viewBox", initialBox);
+  expect(+(await svg.getAttribute("data-scale-x"))).toBeCloseTo(
+    +(await svg.getAttribute("data-scale-y")), 8,
+  );
+});
+
+test("second figure: changing proof step reveals the explanation near navigation", async ({
+  page,
+  context,
+}) => {
+  await context.setOffline(true);
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const scene = page.locator("#scene-two"),
+    next = scene.locator('[data-action="next-stage"]'),
+    explanation = scene.locator(".proof-copy");
+  await next.click();
+  await expect(scene.locator(".proof-copy h3")).toHaveText("2. Правило цепочки");
+  const nav = await scene.locator(".proof-navigation").boundingBox();
+  const explanationBox = await explanation.boundingBox();
+  const controls = await scene.locator(".controls").boundingBox();
+  expect(explanationBox.y).toBeGreaterThanOrEqual(nav.y);
+  expect(explanationBox.y + explanationBox.height).toBeLessThanOrEqual(controls.y + 1);
+  // The user must see the newly updated text immediately after clicking.
+  const visible = await explanation.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return rect.top >= -1 && rect.top + Math.min(rect.height, 80) <= innerHeight + 1;
+  });
+  expect(visible).toBe(true);
+});
