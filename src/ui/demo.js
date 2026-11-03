@@ -37,9 +37,21 @@ export function initDemo() {
     toolbar.querySelector("[data-demo-next]").disabled = chapter === chapters.length - 1;
     if (mode === "demo") window.scrollTo({ top: 0, behavior: "instant" });
   };
+  const proofCopy = document.querySelector("#scene-two .proof-copy");
+  const proofControls = document.querySelector("#scene-two .controls");
+  const proofSide = document.querySelector("#scene-two .proof-side");
   const setMode = (next) => {
     mode = next;
     document.body.dataset.mode = next;
+    // Presentation uses the same proof nodes, moved beside the mathematical diagram.
+    // Reading restores their position in the full mathematical article.
+    if (next === "demo") {
+      toolbar.append(toggle);
+      proofSide.prepend(proofCopy);
+    } else {
+      header.append(toggle);
+      proofControls.before(proofCopy);
+    }
     toggle.setAttribute("aria-pressed", String(next === "demo"));
     toggle.textContent = next === "demo" ? "Вернуться к чтению" : "Демонстрация";
     toolbar.hidden = next !== "demo";
