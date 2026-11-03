@@ -81,3 +81,28 @@ for (const [width, height] of [
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(width);
   });
+
+test("200% text reflow keeps mathematical graph controls reachable on narrow screens", async ({page, context}) => {
+  await context.setOffline(true);
+  for (const width of [320, 360, 390]) {
+    await page.setViewportSize({width, height: 900});
+    await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+    await page.addStyleTag({content: "html {font-size: 200% !important}"});
+    const controls = page.locator("#scene-two .plot-view-buttons button");
+    await expect(controls).toHaveCount(3);
+    const geometry = await controls.evaluateAll(buttons => ({
+      buttons: buttons.map(button => {
+        const b = button.getBoundingClientRect();
+        return {left: b.left, right: b.right, width: b.width};
+      }),
+      viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth,
+    }));
+    expect(geometry.overflow).toBeLessThanOrEqual(0);
+    for (const rect of geometry.buttons) {
+      expect(rect.left).toBeGreaterThanOrEqual(-1);
+      expect(rect.right).toBeLessThanOrEqual(width + 1);
+      expect(rect.width).toBeGreaterThan(30);
+    }
+    await page.screenshot({path: `test-results/text-200-percent-${width}.png`});
+  }
+});
