@@ -20,7 +20,7 @@ export const counterexample = {
       t: Math.PI / 2,
       point: [0, 1],
       height: 1,
-      lambda: 1.5,
+      lambda: 2.5,
       kind: "Глобальный максимум",
     },
     {
@@ -34,7 +34,7 @@ export const counterexample = {
       t: (3 * Math.PI) / 2,
       point: [0, -1],
       height: -1,
-      lambda: -1.5,
+      lambda: -0.5,
       kind: "Глобальный минимум",
     },
   ],
