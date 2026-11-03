@@ -1139,6 +1139,119 @@ th {
   .plot-key, .vector-key { gap: 0.35rem 0.75rem; }
 }
 
+
+/* One primary navigation action, a secondary back button, and a non-interactive
+   progress indicator. The indicator does not pretend to be a second set of tabs. */
+#scene-two .proof-navigation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem 1rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-raised);
+}
+#scene-two .proof-progress {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.45rem;
+}
+#scene-two [data-step-indicator] {
+  padding: 0.38rem 0.55rem;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+#scene-two [data-step-indicator][data-completed="true"] {
+  color: var(--text);
+}
+#scene-two [data-step-indicator][aria-current="step"] {
+  color: var(--accent);
+  background: var(--surface-active);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+#scene-two .proof-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+#scene-two .proof-counter {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+  margin-right: 0.3rem;
+}
+#scene-two .proof-advance {
+  min-width: 12rem;
+}
+#scene-two .proof-navigation-hint {
+  padding: 0.3rem 1.05rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+#scene-two .math-readouts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem 0.75rem;
+}
+#scene-two .math-readouts .wide {
+  grid-column: auto;
+}
+#scene-two .math-readouts > div {
+  min-width: 0;
+}
+#scene-two .math-readouts dt {
+  overflow-wrap: anywhere;
+}
+#scene-two .math-readouts dt .katex {
+  white-space: normal;
+}
+#scene-two .math-readouts dd {
+  line-height: 1.25;
+}
+#scene-three .study-context {
+  color: var(--text);
+  margin: 0.45rem 0 0.65rem;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+#scene-three .model-context {
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  border-left: 2px solid var(--accent);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+#scene-three [data-model][aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+#scene-three .study-mode-group {
+  max-width: 100%;
+}
+@media (max-width: 70rem) {
+  #scene-two .proof-navigation { grid-template-columns: 1fr; }
+  #scene-two .proof-actions { justify-content: flex-start; }
+}
+@media (max-width: 34rem) {
+  #scene-two .proof-navigation { padding: 0.55rem 0.8rem; }
+  #scene-two .proof-progress { gap: 0.2rem; }
+  #scene-two [data-step-indicator] { white-space: normal; }
+  #scene-two .proof-advance { min-width: 0; }
+  #scene-two .proof-actions { gap: 0.35rem; }
+}
+
 /* The proof reads as one compact row beneath two synchronized views.
    This avoids a very tall right sidebar and empty space under the SVG. */
 #scene-two .proof-copy {
