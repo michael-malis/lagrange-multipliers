@@ -1454,3 +1454,9 @@ th {
     padding-inline: 0.55rem;
   }
 }
+
+/* Local profile enlargement for the non-extremum experiment. */
+.counterexample-inset { margin: 1rem 0 0; padding: .75rem; border: 1px solid var(--border, #334252); border-radius: 12px; background: rgba(7, 16, 27, .42); }
+.counterexample-inset svg { display: block; width: 100%; height: auto; max-height: 240px; }
+.counterexample-inset figcaption { margin-top: .4rem; font-size: max(.9rem, 14px); line-height: 1.5; color: var(--text, #d9e5ed); }
+@media (prefers-reduced-motion: reduce) { .scene *, .scene *::before, .scene *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
