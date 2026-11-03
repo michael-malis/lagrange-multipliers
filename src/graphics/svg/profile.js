@@ -49,7 +49,7 @@ export function createProfile(
     }),
     slopeLabel = svgElement("text", {
       class: "slope-label",
-      "text-anchor": "middle",
+      "text-anchor": "end",
     }),
     point = svgElement("circle", { r: 5.5, class: "point" });
   dynamic.append(guide, tangent, slopeLabel, point);
@@ -164,15 +164,10 @@ export function createProfile(
       tangent.setAttribute("y2", y(m.height + dt * m.derivative));
       tangent.style.display = derivative ? "" : "none";
       tangent.dataset.slope = String(m.derivative);
-      slopeLabel.setAttribute(
-        "x",
-        Math.max(left + 58, Math.min(right - 58, x(s.t))),
-      );
-      slopeLabel.setAttribute(
-        "y",
-        Math.max(top + 12, Math.min(bottom - 10, y(m.height) - 15)),
-      );
-      slopeLabel.textContent = `наклон h′ = ${number(m.derivative)}`;
+      // A fixed top-right readout cannot collide with the moving curve or tangent.
+      slopeLabel.setAttribute("x", right);
+      slopeLabel.setAttribute("y", 13);
+      slopeLabel.textContent = `h′ = ${number(m.derivative)}`;
       slopeLabel.style.display = derivative && tangentLabel ? "" : "none";
       svg.querySelectorAll(".candidate").forEach((el) => el.remove());
       if (candidates)
