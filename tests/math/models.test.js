@@ -86,6 +86,14 @@ describe("independent exact reference values", () => {
       expect(counterexample.h(-e)).toBeLessThan(0);
     }
   });
+  test("alternate model multipliers include the shifted normal gradient", () => {
+    for (const candidate of counterexample.critical) {
+      const actual = evaluate(counterexample, candidate.t);
+      expect(actual.lambda).toBeCloseTo(candidate.lambda, 12);
+      expect(actual.height).toBeCloseTo(candidate.height, 12);
+      vectorClose(actual.gradient, actual.normal.map(v => candidate.lambda * v));
+    }
+  });
   test("distance optimum and irregular constraint", () => {
     expect(distance.g(16 / 5, 17 / 5)).toBe(10);
     expect(distance.f(16 / 5, 17 / 5)).toBeCloseTo(1 / 5, 12);
