@@ -50,6 +50,11 @@ export function initDemo() {
     }
   };
   toggle.onclick = () => setMode(mode === "demo" ? "read" : "demo");
+  document.querySelectorAll("a[data-view]").forEach((link) => link.addEventListener("click", (event) => {
+    if (mode !== "demo") return;
+    event.preventDefault();
+    setChapter(chapters.findIndex((c) => c.id === link.dataset.view));
+  }));
   toolbar.querySelector("[data-demo-prev]").onclick = () => setChapter(chapter - 1);
   toolbar.querySelector("[data-demo-next]").onclick = () => setChapter(chapter + 1);
 
