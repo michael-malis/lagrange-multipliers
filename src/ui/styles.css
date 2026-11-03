@@ -1460,3 +1460,29 @@ th {
 .counterexample-inset svg { display: block; width: 100%; height: auto; max-height: 240px; }
 .counterexample-inset figcaption { margin-top: .4rem; font-size: max(.9rem, 14px); line-height: 1.5; color: var(--text, #d9e5ed); }
 @media (prefers-reduced-motion: reduce) { .scene *, .scene *::before, .scene *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Focused demonstration. Same scene instances and mathematical stores as reading. */
+.demo-toggle { white-space: nowrap; letter-spacing: 0; text-transform: none; }
+.demo-toolbar[hidden] { display: none; }
+.demo-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem 1.1rem; position: sticky; top: 0; z-index: 40; padding: .6rem max(1rem, calc((100vw - 86rem)/2)); border-bottom: 1px solid var(--rule-strong); background: var(--bg); }
+.demo-chapter { flex: 1 1 14rem; color: var(--ink); font-weight: 700; }
+.demo-key-hint { flex-basis: 100%; color: var(--muted); font-size: var(--fs-small); line-height: 1.3; }
+body[data-mode="demo"] .hero,
+body[data-mode="demo"] #problem,
+body[data-mode="demo"] #calculation,
+body[data-mode="demo"] .section:not([data-demo-active="true"]),
+body[data-mode="demo"] .section[data-demo-active="true"] > .reading { display: none; }
+body[data-mode="demo"] .masthead { max-width: none; padding-block: .5rem; }
+body[data-mode="demo"] .section[data-demo-active="true"] { padding-top: .65rem; }
+body[data-mode="demo"] .scene { max-width: min(100% - 1.4rem, 96rem); margin: 0 auto; }
+body[data-mode="demo"] .scene-layout { min-width: 0; }
+body[data-mode="demo"] #scene-two > .proof-copy { display: grid; }
+body[data-mode="demo"] #scene-two .proof-navigation-hint { display: none; }
+body[data-mode="demo"] #scene-two .proof-copy { padding-block: .35rem; }
+body[data-mode="demo"] .scene .world { min-height: 0; }
+@media (max-width: 48rem) {
+  .demo-toolbar { position: relative; }
+  .demo-key-hint { display: none; }
+  body[data-mode="demo"] .scene { max-width: calc(100% - .5rem); }
+  body[data-mode="demo"] .masthead { flex-wrap: wrap; }
+}
