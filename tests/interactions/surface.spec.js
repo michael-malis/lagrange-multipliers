@@ -16,7 +16,7 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
   await expect(scene).toHaveAttribute("data-t", "1");
   await scene.screenshot({ path: "test-results/surface-initial.png" });
   await scene.getByRole("button", { name: "Показать ограничение" }).click();
-  await expect(scene).toHaveAttribute("data-step", "1");
+  await expect(scene).toHaveAttribute("data-plane", "true");
   await scene.screenshot({ path: "test-results/surface-constraint.png" });
   await scene.getByRole("button", { name: "Точно в максимум" }).click();
   await expect(scene.locator("[data-value=height]")).toHaveText("2,333");
@@ -45,7 +45,7 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
   expect(+(await scene.getAttribute("data-t"))).toBeCloseTo(5 / 3, 12);
   await scene.getByRole("button", { name: "Сбросить" }).click();
   await expect(scene).toHaveAttribute("data-t", "1");
-  await expect(scene).toHaveAttribute("data-step", "0");
+  await expect(scene).toHaveAttribute("data-plane", "false");
   await expect(scene.locator("[data-value=fx]")).toBeHidden();
   const slider = scene.locator("input");
   await slider.focus();
