@@ -1357,6 +1357,26 @@ th {
   font-size: var(--fs-small);
   font-weight: 650;
 }
+.surface-control-groups {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.6rem;
+  margin-top: 0.55rem;
+}
+.surface-control-group {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.surface-control-group .control-buttons {
+  margin-top: 0;
+}
+@media (max-width: 34rem) {
+  .surface-control-groups { gap: 0.7rem; }
+  .surface-control-group { flex: 1 1 100%; }
+}
+
 #scene-two .point-presets button[aria-pressed="true"] {
   color: var(--accent);
   border-color: var(--accent);
