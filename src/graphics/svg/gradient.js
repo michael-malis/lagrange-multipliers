@@ -31,8 +31,10 @@ export function createGradientPlot(host, onChange) {
     viewBox: `0 0 ${width} ${height}`,
     class: "plane",
     role: "img",
+    tabindex: "0",
+    "aria-keyshortcuts": "ArrowLeft ArrowRight ArrowUp ArrowDown + - Home",
     "aria-label":
-      "Линии уровня, допустимая прямая и векторы. Колесо мыши приближает график, перетаскивание фона перемещает область просмотра, перетаскивание точки изменяет параметр. Масштабы осей x и y равны.",
+      "Линии уровня и допустимая прямая. Стрелки двигают область графика, плюс и минус меняют масштаб, Home восстанавливает исходный вид. Колесо мыши приближает, перетаскивание фона перемещает область, перетаскивание точки изменяет параметр. Масштабы осей равны.",
   });
   host.append(svg);
 
@@ -348,6 +350,26 @@ export function createGradientPlot(host, onChange) {
     event.preventDefault();
     resetView();
   });
+  svg.addEventListener("keydown", (event) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const delta = camera.width * 0.085;
+    let handled = true;
+    switch (event.key) {
+      case "ArrowLeft": camera.x -= delta; break;
+      case "ArrowRight": camera.x += delta; break;
+      case "ArrowUp": camera.y -= delta; break;
+      case "ArrowDown": camera.y += delta; break;
+      case "+": case "=": zoomAt(1.3); break;
+      case "-": case "_": zoomAt(1 / 1.3); break;
+      case "Home": resetView(); break;
+      default: handled = false;
+    }
+    if (!handled) return;
+    event.preventDefault();
+    event.stopPropagation();
+    refreshCamera();
+  });
+
   svg.dataset.dragMode = "idle";
   refreshCamera();
 
