@@ -1,10 +1,11 @@
-# Repository guidance
+# Repository guidance (v2.0)
 
-- Read `docs/SPEC.md` for product/math requirements and `CODEX_MASTER_PROMPT.md` for execution gates.
-- Keep exactly three main scenes and the 18-minute Russian lesson. Do not change the approved examples.
-- Keep mathematics pure in `src/math/`; views consume the same computed state.
-- After each phase run relevant tests, fix failures, update `docs/PROGRESS.md`, then continue automatically.
-- Build one self-contained `dist/index.html`, including fonts. Verify directly via offline `file://`.
-- Deploy from existing `main` with GitHub Actions. Never force-push or discard unrelated changes.
-- Distinguish build success, deployment success, and actual public browser verification.
-- Human timing/comprehension cannot be certified by automated tests.
+- Read `docs/UPGRADE_SPEC.md` first. It supersedes conflicting pedagogical and design instructions in the historical `docs/SPEC.md`, which must remain unchanged.
+- Use `TASKS.md` for the six-phase implementation plan and validation ledger; only check an item after implementing **and** verifying it. Add regression tasks if bugs appear.
+- Preserve the existing three interactive scenes, Russian mathematical terminology, self-contained `file://` production HTML, and GitHub Pages URL.
+- The learning sequence begins with the constrained problem and a direct substitution, proceeds through parameterization and its limitations, then derives the Lagrange condition. Do not introduce the formula in the hero.
+- Keep objectives and restrictions distinct: `f=ℓ` is an objective level, `g=c` is the constraint. Display rational math with KaTeX vertical fractions.
+- The paraboloid views share one parameter and mathematical state; cameras, projection stages, and display preferences are distinct. The circle example uses the strengthened nonzero-gradient counterexample.
+- After each verified change update `TASKS.md` and commit. After each phase run math/interaction/offline tests, save screenshots, and document findings in `docs/QA.md`.
+- Required verification: `npm test`, `npm run build`, `npm run test:browser`, offline WebGL fallback, responsive layout, accessibility, actual deployment action, and a direct published-site check.
+- Never interpret a successful commit or build as proof of correct published behavior; never mark an unexecuted test or unavailable skill as passed. Do not force-push unrelated work.
