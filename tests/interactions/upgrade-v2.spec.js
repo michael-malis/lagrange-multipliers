@@ -57,3 +57,38 @@ test("v2: optional checks, enlarged non-extremum and vertical fractions", async 
   await expect(page.locator(".katex-error")).toHaveCount(0);
   await expect(page.locator("#calculation .katex mfrac").first()).toBeAttached();
 });
+
+test("v2: demonstration geometry, formula and controls fit a Full HD viewport", async ({ page, context }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
+  const measure = async () => page.evaluate(() => {
+    const toolbar = document.querySelector(".demo-toolbar").getBoundingClientRect();
+    const scene = document.querySelector('[data-demo-active="true"] .scene').getBoundingClientRect();
+    const view = document.querySelector('[data-demo-active="true"] .scene-layout').getBoundingClientRect();
+    return { sceneTop: scene.top, sceneBottom: scene.bottom, toolbarBottom: toolbar.bottom, viewBottom: view.bottom, viewport: innerHeight };
+  });
+  for (let i = 0; i < 3; i++) {
+    await page.screenshot({ path: `test-results/v2-demo-fullhd-${i + 1}.png` });
+    const bounds = await measure();
+    expect(bounds.sceneTop, JSON.stringify(bounds)).toBeGreaterThanOrEqual(-1);
+    expect(bounds.viewBottom, JSON.stringify(bounds)).toBeLessThanOrEqual(1080);
+    if (i < 2) await page.locator("[data-demo-next]").click();
+  }
+});
+
+test("v2: mobile and 200 percent zoom reflow keeps control buttons within viewport", async ({ page, context }) => {
+  await context.setOffline(true);
+  for (const width of [390, 640]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(pageUrl);
+    await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
+    await page.screenshot({ path: `test-results/v2-demo-reflow-${width}.png` });
+    const overflowing = await page.evaluate(() => [...document.querySelectorAll('body[data-mode="demo"] button')].filter(el => {
+      const box = el.getBoundingClientRect();
+      return getComputedStyle(el).display !== "none" && box.width && (box.left < -1 || box.right > innerWidth + 1);
+    }).map(el => el.textContent.trim()));
+    expect(overflowing).toEqual([]);
+  }
+});
