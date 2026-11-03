@@ -19,8 +19,8 @@ export const proofSteps = [
   {
     title: "4. Нормали и условие Лагранжа",
     text: "На допустимой прямой g(r(t))=3 постоянно, поэтому ∇g·T=0. В условном максимуме одновременно h′=∇f·T=0. Значит, оба градиента перпендикулярны одному ненулевому касательному вектору T. В плоскости нормальное пространство к этой прямой одномерно; поскольку ∇g(P)≠0, вектор ∇f(P) обязан быть его скалярным кратным. Это и есть происхождение условия Лагранжа.",
-    formula: String.raw\`\begin{aligned}\nabla f(P)\cdot T&=0,\\ \nabla g(P)\cdot T&=0.\end{aligned}\`,
-    extra: String.raw\`\boxed{\nabla f(P)=\lambda\nabla g(P)},\quad g(P)=c,\quad \nabla g(P)\ne0.\`,
+    formula: String.raw`\begin{aligned}\nabla f(P)\cdot T&=0,\\ \nabla g(P)\cdot T&=0.\end{aligned}`,
+    extra: String.raw`\boxed{\nabla f(P)=\lambda\nabla g(P)},\quad g(P)=c,\quad \nabla g(P)\ne0.`,
   },
 ];
 
