@@ -1,4 +1,5 @@
 import "katex/dist/katex.min.css";
+import { initDemo } from "./ui/demo.js";
 import "./ui/styles.css";
 import { opening, ending } from "./content/lesson.js";
 import { renderMath } from "./ui/format.js";
@@ -13,5 +14,6 @@ renderMath();
 SurfaceScene(document.querySelector("#scene-one"));
 GradientScene(document.querySelector("#scene-two"));
 CylinderScene(document.querySelector("#scene-three"));
+initDemo();
 document.documentElement.dataset.build = __BUILD_ID__;
 document.querySelector("#build-id").textContent = __BUILD_ID__.slice(0, 7);
