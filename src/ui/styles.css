@@ -1240,6 +1240,34 @@ th {
 #scene-three .study-mode-group {
   max-width: 100%;
 }
+#scene-three .scene-function-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 1rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--rule);
+}
+#scene-three .scene-function-picker .study-mode-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+}
+#scene-three .scene-function-picker .study-label {
+  color: var(--ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+#scene-three .scene-function-picker .control-buttons {
+  margin: 0;
+}
+#scene-three .scene-function-picker > .instruction {
+  margin: 0;
+  flex-basis: 100%;
+}
+
 @media (max-width: 70rem) {
   #scene-two .proof-navigation { grid-template-columns: 1fr; }
   #scene-two .proof-actions { justify-content: flex-start; }
