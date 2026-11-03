@@ -1,5 +1,10 @@
-import katex from 'katex';
 import 'katex/dist/katex.min.css';
-document.querySelector('#app').innerHTML = '<main><h1>Множители Лагранжа</h1><p>Геометрия допустимого движения</p><div id="formula"></div></main>';
-katex.render('h(t)=f(r(t))', document.querySelector('#formula'), { throwOnError: true });
+import './ui/styles.css';
+import { opening, ending } from './content/lesson.js';
+import { renderMath } from './ui/format.js';
+import { SurfaceScene } from './scenes/SurfaceScene.js';
+document.querySelector('#app').innerHTML=opening+ending;
+renderMath();
+SurfaceScene(document.querySelector('#scene-one'));
 document.documentElement.dataset.build = __BUILD_ID__;
+document.querySelector('#build-id').textContent=__BUILD_ID__.slice(0,7);
