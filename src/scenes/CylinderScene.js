@@ -28,14 +28,10 @@ export function CylinderScene(root) {
     ),
     slider = root.querySelector("input");
   slider.oninput = () => store.set({ t: +slider.value });
-  root.querySelector("[data-action=local]").onclick = () => {
-    if (store.get().model !== cylinder) store.useModel(cylinder);
-    store.set({ t: Math.PI });
-  };
-  root.querySelector("[data-action=global]").onclick = () => {
-    if (store.get().model !== cylinder) store.useModel(cylinder);
-    store.set({ t: 0 });
-  };
+  root.querySelector("[data-action=local]").onclick = () =>
+    store.set({ t: store.get().model === cylinder ? Math.PI : 0 });
+  root.querySelector("[data-action=global]").onclick = () =>
+    store.set({ t: store.get().model === cylinder ? 0 : Math.PI / 2 });
   root.querySelector("[data-action=candidates]").onclick = () =>
     store.set({ candidates: !store.get().candidates });
   root.querySelector("[data-action=vectors]").onclick = () =>
@@ -113,6 +109,13 @@ export function CylinderScene(root) {
       modelSwitch.innerHTML = isMain
         ? `Проверить контрпример: ${math("f(x,y)=y^3")}`
         : "Вернуться к исходной функции";
+      root.querySelector("[data-action=local]").textContent = isMain
+        ? "Локальный максимум · 0"
+        : "Стационарная точка без экстремума";
+      root.querySelector("[data-action=global]").textContent = isMain
+        ? "Глобальный максимум · 2"
+        : "Глобальный максимум · 1";
+      root.querySelector(".study-point-group").hidden = !isMain;
       root.querySelector("[data-action=minimum-plus]").textContent = isMain
         ? "Минимум · y > 0"
         : "Стационарная точка · t = 0";
