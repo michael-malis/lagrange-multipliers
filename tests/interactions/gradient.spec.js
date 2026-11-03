@@ -195,3 +195,36 @@ test("default contour viewport is centered and fully contains the outer ellipse"
   expect(geometry.y + geometry.ry).toBeLessThan(geometry.bottom - 10);
   await svg.screenshot({ path: "test-results/level-contours-default-centered.png" });
 });
+
+test("axis labels follow the visible coordinate window after zoom and pan", async ({ page, context }) => {
+  await context.setOffline(true);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const scene = page.locator("#scene-two");
+  const plane = scene.locator("svg.plane");
+  const ticks = plane.locator(".axis-tick-labels text.tick");
+  await expect(ticks.first()).toBeVisible();
+  const initial = await ticks.allTextContents();
+  const initialT = await scene.getAttribute("data-t");
+  await scene.locator('[data-action="zoom-in"]').click();
+  await scene.locator('[data-action="zoom-in"]').click();
+  const zoomed = await ticks.allTextContents();
+  expect(zoomed).not.toEqual(initial);
+  expect(zoomed.some(value => value.includes(".5"))).toBe(true);
+  await expect(scene).toHaveAttribute("data-t", initialT);
+  const beforePan = await plane.getAttribute("viewBox");
+  const target = await plane.evaluate(node => {
+    const point = new DOMPoint(410, 120).matrixTransform(node.getScreenCTM());
+    return {x: point.x, y: point.y};
+  });
+  await page.mouse.move(target.x, target.y);
+  await page.mouse.down();
+  await page.mouse.move(target.x - 180, target.y + 90, {steps: 5});
+  await page.mouse.up();
+  expect(await plane.getAttribute("viewBox")).not.toBe(beforePan);
+  expect(await ticks.allTextContents()).not.toEqual(zoomed);
+  await expect(scene).toHaveAttribute("data-t", initialT);
+  await scene.locator('[data-action="reset-view"]').click();
+  expect(await ticks.allTextContents()).toEqual(initial);
+  await plane.screenshot({ path: "test-results/axis-labels-after-reset.png" });
+});
