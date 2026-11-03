@@ -1394,3 +1394,63 @@ th {
 @media (prefers-reduced-motion: reduce) {
   #scene-two .stage-meter [data-progress-fill] { transition: none; }
 }
+
+/* Figure 2: direct pan/zoom controls and explanation visible at each stage. */
+#scene-two .plane {
+  cursor: grab;
+}
+#scene-two .plane[data-drag-mode="pan"] {
+  cursor: grabbing;
+}
+#scene-two .plot-view-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 0.8rem;
+  padding: 0.35rem 0.85rem 0;
+  color: var(--muted);
+  font-size: var(--fs-small);
+}
+#scene-two .plot-view-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+#scene-two .plot-view-buttons button {
+  min-height: 2.2rem;
+  padding: 0.3rem 0.7rem;
+}
+#scene-two .plot-view-buttons button:nth-child(-n+2) {
+  min-width: 2.25rem;
+  font-size: var(--fs-body);
+}
+#scene-two .plot-pan-hint {
+  margin: 0;
+  padding: 0.15rem 0.85rem 0.25rem;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+#scene-two > .proof-copy {
+  border-top: 0;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-raised);
+}
+#scene-two > .proof-copy h3 {
+  margin-top: 0;
+}
+#scene-two > .proof-copy [data-copy] {
+  align-self: start;
+}
+#scene-two > .proof-copy [data-formula] {
+  align-self: center;
+}
+@media (max-width: 56rem) {
+  #scene-two .plot-view-controls {
+    padding-inline: 0.55rem;
+  }
+  #scene-two .plot-pan-hint {
+    padding-inline: 0.55rem;
+  }
+}
