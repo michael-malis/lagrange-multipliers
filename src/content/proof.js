@@ -26,9 +26,9 @@ export const proofSteps = [
 
 export const geometry = String.raw`
 <section id="geometry" class="section"><div class="reading"><div class="section-head"><span class="section-number">II</span><div><h2>Из допустимого движения — к условию Лагранжа</h2><p class="section-deck">Главный вывод возникает из одной производной вдоль кривой, а не из заранее угаданной параллельности стрелок.</p></div></div>
-<p>На плоскости аргументов геометрия параболоида кодируется линиями уровня. Если <span data-tex="f(x,y)=c"></span>, то</p>
-<div class="equation" data-tex="(x-3)^2+2(y-2)^2=5-c."></div>
-<p>При <span data-tex="c<5"></span> это эллипсы с общим центром <span data-tex="(3,2)"></span>. Чем выше уровень <span data-tex="c"></span>, тем меньше эллипс; в пределе <span data-tex="c=5"></span> он сжимается к вершине параболоида. Поэтому вложенные кривые — не фон, а карта высоты поверхности.</p>
+<p>На плоскости аргументов геометрия параболоида кодируется линиями уровня. Если <span data-tex="f(x,y)=\\ell"></span>, то</p>
+<div class="equation" data-tex="(x-3)^2+2(y-2)^2=5-\\ell."></div>
+<p>При <span data-tex="\\ell<5"></span> это эллипсы с общим центром <span data-tex="(3,2)"></span>. Чем выше уровень <span data-tex="\\ell"></span>, тем меньше эллипс; в пределе <span data-tex="\\ell=5"></span> он сжимается к вершине параболоида. Поэтому вложенные кривые — не фон, а карта высоты поверхности.</p>
 <p>В сцене подписаны несколько фиксированных уровней. Более яркий эллипс всегда проходит через текущую точку <span data-tex="P=r(t)"></span>; его значение одновременно равно <span data-tex="f(P)"></span> на плоскости и <span data-tex="h(t)"></span> на профиле. Проведите точку через максимум и последовательно раскройте вывод.</p></div>
 <div id="scene-two" class="scene" data-scene="2"></div>
 <div class="reading">
