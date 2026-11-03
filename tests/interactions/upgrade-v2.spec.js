@@ -168,3 +168,17 @@ test("v2: circle classification uses mathematical candidate labels and TeX fract
   }
   await expect(analysis.locator(".katex-error")).toHaveCount(0);
 });
+
+test("v2: mathematical labels on 3D surfaces and constraints use KaTeX", async ({ page, context }) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  for (const id of ["scene-one", "scene-three"]) {
+    await expect(page.locator(`#${id} .world-labels .katex`)).toHaveCount(2);
+  }
+  const circle = page.locator("#scene-three");
+  await circle.locator('[data-action="switch-model"]').click();
+  await expect(circle.locator("[data-surface-label] .katex")).toBeVisible();
+  const raw = await circle.locator("[data-surface-label] annotation").textContent();
+  expect(raw).toContain("x^2+y^2-1+y^3");
+  await expect(page.locator(".katex-error")).toHaveCount(0);
+});
