@@ -38,6 +38,8 @@ export function GradientScene(root) {
           <div class="wide" data-projection hidden><dt data-tex="\\operatorname{proj}_{T}\\nabla f"></dt><dd data-value="projection-vector"></dd></div>
           <div data-projection hidden><dt>Норма проекции <span data-tex="\\|\\operatorname{proj}_{T}\\nabla f\\|"></span></dt><dd data-value="projection-norm"></dd></div>
           <div data-projection hidden><dt>Коэффициент при <span data-tex="T"></span></dt><dd data-value="projection-coefficient"></dd></div>
+          <div data-final hidden><dt data-tex="\\nabla g(P)"></dt><dd data-value="normal"></dd></div>
+          <div data-final hidden><dt data-tex="\\lambda"></dt><dd data-value="lambda"></dd></div>
         </dl>
         <p class="proof-status" aria-live="polite"></p>
       </div>
@@ -103,11 +105,14 @@ export function GradientScene(root) {
       "projection-vector": pair(state.math.projection),
       "projection-norm": number(state.math.projectionNorm),
       "projection-coefficient": number(state.math.projectionCoefficient),
+      normal: pair(state.math.normal),
+      lambda: state.math.lambda === null ? "—" : number(state.math.lambda),
     };
     for (const [key, value] of Object.entries(values))
       root.querySelector(`[data-value=${key}]`).textContent = value;
     root.querySelector("[data-unit]").hidden = state.step < 1;
     root.querySelector("[data-angle]").hidden = state.step < 1;
+    root.querySelectorAll("[data-final]").forEach((element) => (element.hidden = state.step < 3));
     root
       .querySelectorAll("[data-projection]")
       .forEach((element) => (element.hidden = state.step < 2));
