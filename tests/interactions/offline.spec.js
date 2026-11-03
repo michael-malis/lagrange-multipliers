@@ -111,10 +111,13 @@ test("touch: profile, circle and keyboard alternatives remain operable", async (
   const page = await context.newPage();
   await page.goto(url);
   const scene = page.locator("#scene-one");
+  // Mobile starts in the geometry view; the profile is a separate tab.
+  await scene.locator(".mobile-view-toggle").getByRole("button", { name: "Профиль высоты" }).click();
   await scene.locator(".profile").scrollIntoViewIfNeeded();
   let box = await scene.locator(".profile").boundingBox();
   await page.touchscreen.tap(box.x + box.width * 0.7, box.y + box.height * 0.4);
   expect(+(await scene.getAttribute("data-t"))).toBeGreaterThan(1.5);
+  await page.locator("#scene-three .mobile-view-toggle").getByRole("button", { name: "Профиль высоты" }).click();
   const circle = page.locator("#scene-three .circle-plot");
   await circle.scrollIntoViewIfNeeded();
   box = await circle.boundingBox();
