@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 const url = pathToFileURL(resolve("dist/index.html")).href;
-test("offline: zero external requests, loaded fonts, all scenes and optional math", async ({
+test("offline: zero external requests, loaded fonts and complete three-scene article", async ({
   page,
   context,
 }) => {
@@ -35,9 +35,7 @@ test("offline: zero external requests, loaded fonts, all scenes and optional mat
   await expect(page.locator("#scene-three [data-value=height]")).toHaveText(
     "2",
   );
-  await page.locator("#scene-three summary").click();
   await page.locator("[data-model=counterexample]").click();
-  for (const d of await page.locator("#extras summary").all()) await d.click();
   await expect(page.locator(".katex-error")).toHaveCount(0);
   expect(await page.locator(".katex").count()).toBeGreaterThan(70);
   expect(requests).toEqual([]);

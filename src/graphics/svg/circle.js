@@ -16,7 +16,7 @@ export function createCircle(host, onChange) {
   const defs = svgElement("defs");
   svg.append(defs);
   for (const [key, color] of [
-    ["gf", "#77bdb5"],
+    ["gf", "#47e1c2"],
     ["gg", "#b6a4cf"],
   ]) {
     const marker = svgElement("marker", {
@@ -96,7 +96,7 @@ export function createCircle(host, onChange) {
         }
       if (gradients)
         for (const [key, v, color, offset] of [
-          ["gf", m.gradient, "#77bdb5", -11],
+          ["gf", m.gradient, "#47e1c2", -11],
           ["gg", m.normal, "#b6a4cf", 19],
         ]) {
           if (Math.hypot(...v) < 1e-9) {

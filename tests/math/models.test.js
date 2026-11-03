@@ -6,6 +6,7 @@ import {
   evaluate,
   unit,
   wrap,
+  angleBetween,
 } from "../../src/math/core.js";
 import { paraboloid as main } from "../../src/math/examples/paraboloid.js";
 import { cylinder } from "../../src/math/examples/cylinder.js";
@@ -17,10 +18,18 @@ const vectorClose = (a, b) =>
 
 describe("independent exact reference values", () => {
   test.each([
-    [1, [1, 2], [4, 0], 1, 4, [2, -2]],
-    [5 / 3, [5 / 3, 4 / 3], [8 / 3, 8 / 3], 7 / 3, 0, [0, 0]],
-    [2, [2, 1], [2, 4], 2, -2, [-1, 1]],
-  ])("main t=%s", (t, p, gf, z, derivative, projection) => {
+    [1, [1, 2], [4, 0], 1, 4, [2, -2], Math.PI / 4],
+    [
+      5 / 3,
+      [5 / 3, 4 / 3],
+      [8 / 3, 8 / 3],
+      7 / 3,
+      0,
+      [0, 0],
+      Math.PI / 2,
+    ],
+    [2, [2, 1], [2, 4], 2, -2, [-1, 1], Math.acos(-1 / Math.sqrt(10))],
+  ])("main t=%s", (t, p, gf, z, derivative, projection, angle) => {
     const s = evaluate(main, t);
     vectorClose(s.point, p);
     vectorClose(s.gradient, gf);
@@ -28,6 +37,9 @@ describe("independent exact reference values", () => {
     expect(s.height).toBeCloseTo(z, 12);
     expect(s.derivative).toBeCloseTo(derivative, 12);
     expect(s.unitDerivative).toBeCloseTo(derivative / Math.sqrt(2), 12);
+    expect(s.projectionCoefficient).toBeCloseTo(derivative / 2, 12);
+    expect(s.projectionNorm).toBeCloseTo(Math.abs(derivative) / Math.sqrt(2), 12);
+    expect(s.angle).toBeCloseTo(angle, 12);
     expect(main.ddh(t)).toBe(-6);
   });
   test("maximum gradient is nonzero, multiplier exists only at stationary points", () => {
@@ -108,6 +120,7 @@ for (const model of [main, cylinder, counterexample]) {
 test("zero vectors stay finite and periodic seam is continuous", () => {
   expect(project([0, 0], [1, -1])).toEqual([0, -0]);
   expect(unit([0, 0])).toEqual([0, 0]);
+  expect(angleBetween([0, 0], [1, 0])).toBeNull();
   expect(wrap(2 * Math.PI)).toBe(0);
   expect(wrap(-Number.EPSILON)).toBe(0);
   vectorClose(cylinder.r(wrap(-1e-6)), cylinder.r(-1e-6));

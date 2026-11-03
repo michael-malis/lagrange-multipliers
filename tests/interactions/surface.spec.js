@@ -43,7 +43,7 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
   );
   await page.mouse.up();
   expect(+(await scene.getAttribute("data-t"))).toBeCloseTo(5 / 3, 12);
-  await scene.getByRole("button", { name: "Сбросить сцену" }).click();
+  await scene.getByRole("button", { name: "Сбросить" }).click();
   await expect(scene).toHaveAttribute("data-t", "1");
   await expect(scene).toHaveAttribute("data-step", "0");
   await expect(scene.locator("[data-value=fx]")).toBeHidden();

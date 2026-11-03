@@ -66,7 +66,6 @@ try {
   await expect(page.locator("#scene-three [data-value=height]")).toHaveText(
     "2",
   );
-  await page.locator("#scene-three summary").click();
   await page.locator("#scene-three [data-action=minimum-plus]").click();
   await expect(page.locator("#scene-three [data-value=lambda]")).toHaveText(
     "-1",

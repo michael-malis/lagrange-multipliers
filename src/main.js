@@ -6,10 +6,9 @@ import { SurfaceScene } from "./scenes/SurfaceScene.js";
 import { geometry } from "./content/proof.js";
 import { GradientScene } from "./scenes/GradientScene.js";
 import { application } from "./content/application.js";
-import { extras } from "./content/extras.js";
 import { CylinderScene } from "./scenes/CylinderScene.js";
 document.querySelector("#app").innerHTML =
-  opening + geometry + application + extras + ending;
+  opening + geometry + application + ending;
 renderMath();
 SurfaceScene(document.querySelector("#scene-one"));
 GradientScene(document.querySelector("#scene-two"));

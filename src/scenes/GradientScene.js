@@ -3,25 +3,59 @@ import { createStore } from "../state/sceneStore.js";
 import { createGradientPlot } from "../graphics/svg/gradient.js";
 import { createProfile } from "../graphics/svg/profile.js";
 import { proofSteps } from "../content/proof.js";
-import { math, number, pair } from "../ui/format.js";
+import { math, number, pair, renderMath } from "../ui/format.js";
+
 export function GradientScene(root) {
   const store = createStore(paraboloid);
-  root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Допустимое изменение</span><button data-action="reset">Сбросить сцену</button></div><div class="proof-steps" role="group" aria-label="Шаги геометрического вывода">${["1. Изменение", "2. Градиент", "3. Проекция", "4. Нормаль", "5. Условие"].map((name, i) => `<button data-step="${i}" aria-pressed="${i === 0}">${name}</button>`).join("")}</div><div class="scene-layout proof-layout"><div class="plane-wrap" data-plane></div><div class="profile-panel"><div class="plot-title">Тот же профиль h(t)</div><div data-profile></div><dl class="readouts"><div class="wide"><dt>Точка P</dt><dd data-value="point"></dd></div><div><dt>h′(t) = ∇f · T</dt><dd data-value="derivative"></dd></div><div><dt>Высота h(t)</dt><dd data-value="height"></dd></div><div data-unit hidden><dt>D<sub>T̂</sub> f = h′/√2</dt><dd data-value="unit"></dd></div><div data-projection hidden><dt>‖proj<sub>T</sub> ∇f‖</dt><dd data-value="projection"></dd></div></dl><p class="proof-status" aria-live="polite"></p></div></div><div class="legend"><span class="orange">Ограничение</span><span class="teal" data-legend="1">Градиент ∇f</span><span data-legend="1">Касательная T</span><span class="teal" data-legend="2">Проекция на T · толстая линия</span><span class="violet" data-legend="3">Градиент ∇g</span></div><div class="controls"><div class="slider-row"><label for="gradient-t">Параметр t</label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До: t = 1</button><button data-action="optimum">Точно: t = 5/3</button><button data-action="after">После: t = 2</button></div><p class="instruction">Точку можно перетаскивать по прямой или профилю. Масштабы осей равны. Все векторы показаны в одном масштабе: 0,65 единицы оси на единицу вектора.</p></div><div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div><div class="proof-next"><span class="muted small sans" data-step-counter></span><button class="primary" data-action="next">Следующий шаг →</button></div></div>`;
-  root
-    .querySelector(".profile-panel")
-    .append(root.querySelector(".proof-copy"));
-  const projectionReadout = root.querySelector("[data-projection]");
+  root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Уровни, допустимое направление и производная</span><button data-action="reset">Сбросить</button></div>
+  <div class="proof-steps" role="group" aria-label="Шаги геометрического вывода">${[
+    "1. Знак изменения",
+    "2. Правило цепочки",
+    "3. Проекция",
+    "4. Нормаль",
+    "5. Условие",
+  ]
+    .map(
+      (name, i) =>
+        `<button data-step="${i}" aria-pressed="${i === 0}">${name}</button>`,
+    )
+    .join("")}</div>
+  <div class="scene-layout proof-layout">
+    <div class="plane-wrap" data-plane></div>
+    <div class="proof-side">
+      <div class="profile-panel">
+        <div class="plot-title">Один уровень в трёх записях: <span data-tex="c=f(P)=h(t)"></span></div>
+        <div data-profile></div>
+        <dl class="readouts math-readouts">
+          <div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div>
+          <div><dt data-tex="c=f(P)=h(t)"></dt><dd data-value="height"></dd></div>
+          <div><dt data-tex="h'(t)=\nabla f\cdot T"></dt><dd data-value="derivative"></dd></div>
+          <div data-unit hidden><dt data-tex="D_{\widehat T}f"></dt><dd data-value="unit"></dd></div>
+          <div data-angle hidden><dt data-tex="\angle(\nabla f,T)"></dt><dd data-value="angle"></dd></div>
+          <div class="wide" data-projection hidden><dt data-tex="\operatorname{proj}_{T}\nabla f"></dt><dd data-value="projection-vector"></dd></div>
+          <div data-projection hidden><dt data-tex="\|\operatorname{proj}_{T}\nabla f\|"></dt><dd data-value="projection-norm"></dd></div>
+          <div data-projection hidden><dt>Знаковый коэффициент при <span data-tex="T"></span></dt><dd data-value="projection-coefficient"></dd></div>
+        </dl>
+        <p class="proof-status" aria-live="polite"></p>
+      </div>
+      <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div><div class="proof-next"><span class="muted" data-step-counter></span><button class="primary" data-action="next">Следующий шаг →</button></div></div>
+    </div>
+  </div>
+  <div class="legend"><span class="level">Линии <span data-tex="f(x,y)=c"></span></span><span class="orange">Ограничение и точка</span><span class="teal" data-legend="1">Градиент <span data-tex="\nabla f"></span></span><span data-legend="1">Касательная <span data-tex="T"></span></span><span class="projection" data-legend="2">Знаковая проекция</span><span class="violet" data-legend="3">Градиент <span data-tex="\nabla g"></span></span></div>
+  <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До максимума: <span data-tex="t=1"></span></button><button class="primary" data-action="optimum">Точно в максимум: <span data-tex="t=5/3"></span></button><button data-action="after">После максимума: <span data-tex="t=2"></span></button></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>`;
+  renderMath(root);
+
   const plot = createGradientPlot(root.querySelector("[data-plane]"), (t) =>
-    store.set({ t }),
-  );
-  const profile = createProfile(
-    root.querySelector("[data-profile]"),
-    paraboloid,
-    (t) => store.set({ t }),
-    { height: 170 },
-  );
-  root.querySelector("input").oninput = (e) =>
-    store.set({ t: +e.target.value });
+      store.set({ t }),
+    ),
+    profile = createProfile(
+      root.querySelector("[data-profile]"),
+      paraboloid,
+      (t) => store.set({ t }),
+      { height: 182, tangentLabel: true },
+    ),
+    slider = root.querySelector("input");
+  slider.oninput = (event) => store.set({ t: +event.target.value });
   root
     .querySelectorAll("[data-step]")
     .forEach(
@@ -37,60 +71,80 @@ export function GradientScene(root) {
   root.querySelector("[data-action=reset]").onclick = () => store.reset();
   root.querySelector("[data-action=next]").onclick = () =>
     store.set({ step: Math.min(4, store.get().step + 1) });
+
   let renderedStep = -1;
-  store.subscribe((s) => {
-    plot.update(s);
-    profile.update(s);
-    root.querySelector("input").value = s.t;
-    root.querySelector("output").textContent = number(s.t);
+  store.subscribe((state) => {
+    plot.update(state);
+    profile.update(state);
+    slider.value = state.t;
+    root.querySelector("output").textContent = number(state.t);
     const values = {
-      point: pair(s.math.point),
-      derivative: number(s.math.derivative),
-      height: number(s.math.height),
-      unit: number(s.math.unitDerivative),
-      projection: number(Math.hypot(...s.math.projection)),
+      point: pair(state.math.point),
+      height: number(state.math.height),
+      derivative: number(state.math.derivative),
+      unit: number(state.math.unitDerivative),
+      angle: `${number((state.math.angle * 180) / Math.PI, 1)}°`,
+      "projection-vector": pair(state.math.projection),
+      "projection-norm": number(state.math.projectionNorm),
+      "projection-coefficient": number(state.math.projectionCoefficient),
     };
-    for (const [k, v] of Object.entries(values))
-      root.querySelector(`[data-value=${k}]`).textContent = v;
-    root.querySelector("[data-unit]").hidden = s.step < 1;
-    projectionReadout.hidden = s.step < 2;
-    root.querySelector(
-      "[data-value=derivative]",
-    ).previousElementSibling.textContent =
-      s.step >= 1 ? "h′(t) = ∇f · T" : "Производная h′(t)";
+    for (const [key, value] of Object.entries(values))
+      root.querySelector(`[data-value=${key}]`).textContent = value;
+    root.querySelector("[data-unit]").hidden = state.step < 1;
+    root.querySelector("[data-angle]").hidden = state.step < 1;
+    root
+      .querySelectorAll("[data-projection]")
+      .forEach((element) => (element.hidden = state.step < 2));
     root
       .querySelectorAll("[data-legend]")
-      .forEach((el) => (el.hidden = s.step < +el.dataset.legend));
-    root.querySelector(".proof-status").textContent = s.math.stationary
-      ? s.step >= 4
-        ? "Здесь условие выполнено: λ = 8/3."
-        : s.step >= 2
-          ? "Проекция равна нулю. Градиент ненулевой."
-          : "Высота перестала расти: h′ = 0."
-      : s.step >= 4
-        ? "Здесь h′ ≠ 0: условие Лагранжа не выполнено."
-        : s.math.derivative > 0
-          ? "h′ > 0: движение по T увеличивает высоту."
-          : "h′ < 0: движение по T уменьшает высоту.";
-    if (renderedStep !== s.step) {
-      const step = proofSteps[s.step];
+      .forEach(
+        (element) => (element.hidden = state.step < +element.dataset.legend),
+      );
+
+    const sign = state.math.stationary
+      ? "zero"
+      : state.math.derivative > 0
+        ? "positive"
+        : "negative";
+    const status = root.querySelector(".proof-status");
+    status.dataset.sign = sign;
+    status.textContent = state.math.stationary
+      ? state.step >= 4
+        ? "Касание: h′ = 0, оба градиента нормальны к прямой, λ = 8/3."
+        : state.step >= 2
+          ? "h′ = 0: проекция исчезла, но ∇f = (8/3; 8/3) не равен нулю."
+          : "Высота перестала меняться вдоль выбранного допустимого направления."
+      : state.step >= 4
+        ? "Здесь h′ ≠ 0, поэтому точка не удовлетворяет условию стационарности."
+        : state.math.derivative > 0
+          ? "h′ > 0 и θ < 90°: движение по T увеличивает высоту."
+          : "h′ < 0 и θ > 90°: движение по T уменьшает высоту.";
+
+    if (renderedStep !== state.step) {
+      const step = proofSteps[state.step];
       root.querySelector(".proof-copy h3").textContent = step.title;
       root.querySelector("[data-copy]").textContent = step.text;
       root.querySelector("[data-formula]").innerHTML =
         math(step.formula, true) + (step.extra ? math(step.extra, true) : "");
       root
         .querySelectorAll("[data-step]")
-        .forEach((el) =>
-          el.setAttribute("aria-pressed", +el.dataset.step === s.step),
+        .forEach((element) =>
+          element.setAttribute(
+            "aria-pressed",
+            +element.dataset.step === state.step,
+          ),
         );
       root.querySelector("[data-step-counter]").textContent =
-        `Шаг ${s.step + 1} из 5`;
-      root.querySelector("[data-action=next]").disabled = s.step === 4;
-      renderedStep = s.step;
+        `Шаг ${state.step + 1} из 5`;
+      root.querySelector("[data-action=next]").disabled = state.step === 4;
+      renderedStep = state.step;
     }
-    root.dataset.t = s.t;
-    root.dataset.step = s.step;
-    root.dataset.derivative = s.math.derivative;
+    root.dataset.t = state.t;
+    root.dataset.step = state.step;
+    root.dataset.derivative = state.math.derivative;
+    root.dataset.angle = state.math.angle;
+    root.dataset.level = state.math.height;
+    root.dataset.projectionCoefficient = state.math.projectionCoefficient;
   });
   return store;
 }

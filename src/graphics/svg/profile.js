@@ -9,7 +9,12 @@ export function createProfile(
   host,
   model,
   onChange,
-  { yRange = [-7, 3], showDerivative = true, height = 235 } = {},
+  {
+    yRange = [-7, 3],
+    showDerivative = true,
+    tangentLabel = false,
+    height = 235,
+  } = {},
 ) {
   let activeModel = model;
   const w = 360,
@@ -38,9 +43,16 @@ export function createProfile(
   host.append(svg);
   const curve = svgElement("path", { class: "curve" }),
     guide = svgElement("line", { class: "guide" }),
-    tangent = svgElement("line", { class: "tangent-line" }),
+    tangent = svgElement("line", {
+      class: "tangent-line",
+      "data-profile-tangent": "true",
+    }),
+    slopeLabel = svgElement("text", {
+      class: "slope-label",
+      "text-anchor": "middle",
+    }),
     point = svgElement("circle", { r: 5.5, class: "point" });
-  dynamic.append(guide, tangent, point);
+  dynamic.append(guide, tangent, slopeLabel, point);
   function rebuild() {
     fixed.replaceChildren();
     for (let i = 0; i <= 4; i++) {
@@ -150,6 +162,17 @@ export function createProfile(
       tangent.setAttribute("x2", x(s.t + dt));
       tangent.setAttribute("y2", y(m.height + dt * m.derivative));
       tangent.style.display = derivative ? "" : "none";
+      tangent.dataset.slope = String(m.derivative);
+      slopeLabel.setAttribute(
+        "x",
+        Math.max(left + 58, Math.min(right - 58, x(s.t))),
+      );
+      slopeLabel.setAttribute(
+        "y",
+        Math.max(top + 12, Math.min(bottom - 10, y(m.height) - 15)),
+      );
+      slopeLabel.textContent = `наклон h′ = ${number(m.derivative)}`;
+      slopeLabel.style.display = derivative && tangentLabel ? "" : "none";
       svg.querySelectorAll(".candidate").forEach((el) => el.remove());
       if (candidates)
         for (const c of activeModel.critical) {

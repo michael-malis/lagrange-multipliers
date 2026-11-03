@@ -11,8 +11,31 @@ for (const [width, height] of [
     await context.setOffline(true);
     await page.goto(pathToFileURL(resolve("dist/index.html")).href);
     await expect(page.locator("[data-scene]")).toHaveCount(3);
-    await expect(page.locator("details[open]")).toHaveCount(0);
+    await expect(page.locator("details")).toHaveCount(0);
+    await expect(page.locator("#extras")).toHaveCount(0);
     await expect(page.locator(".katex-error")).toHaveCount(0);
+    expect(
+      await page.evaluate(() =>
+        /(?:18\s+минут|минутн|тайминг|0:00)/iu.test(
+          document.body.innerText,
+        ),
+      ),
+    ).toBe(false);
+    expect(
+      await page.evaluate(() => {
+        const sizes = new Set(
+          [...document.querySelectorAll("body *")]
+            .filter(
+              (node) =>
+                !node.closest(".katex") &&
+                !node.closest("svg") &&
+                getComputedStyle(node).display !== "none",
+            )
+            .map((node) => getComputedStyle(node).fontSize),
+        );
+        return [...sizes];
+      }),
+    ).toHaveLength(4);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(width);
@@ -31,8 +54,6 @@ for (const [width, height] of [
         }
       }
     }
-    await page.locator("#extras details").first().locator("summary").click();
-    await page.locator("#extras details").nth(3).locator("summary").click();
     await expect(page.locator(".katex-error")).toHaveCount(0);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),

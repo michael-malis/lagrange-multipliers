@@ -16,7 +16,7 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s.locator("[data-vector=gradient]")).toHaveCount(1);
   await expect(s.locator("[data-vector=gradient]")).toHaveAttribute(
     "stroke",
-    "#77bdb5",
+    "#47e1c2",
   );
   await expect(s.locator("[data-vector=projection]")).toHaveCount(0);
   await s.getByRole("button", { name: "Следующий шаг" }).click();
@@ -27,16 +27,20 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   expect(JSON.parse(await plane.getAttribute("data-projection"))).toEqual([
     2, -2,
   ]);
-  await expect(s.locator("[data-value=projection]")).toBeVisible();
+  await expect(plane).toHaveAttribute("data-level", "1");
+  expect(+(await plane.getAttribute("data-angle"))).toBeCloseTo(Math.PI / 4, 10);
+  await expect(s.locator(".angle-arc")).toBeVisible();
+  await expect(s.locator("[data-value=projection-coefficient]")).toBeVisible();
   await s.screenshot({ path: "test-results/proof-positive.png" });
-  await s.getByRole("button", { name: "Точно: t = 5/3" }).click();
+  await s.locator("[data-action=optimum]").click();
   await expect(s.locator("[data-zero-projection]")).toBeVisible();
-  await expect(s.locator("[data-value=projection]")).toHaveText("0");
+  await expect(s.locator("[data-tangency]")).toBeVisible();
+  await expect(s.locator("[data-value=projection-coefficient]")).toHaveText("0");
   const gf = JSON.parse(await plane.getAttribute("data-gradient"));
   expect(gf[0]).toBeCloseTo(8 / 3, 12);
   expect(gf[1]).toBeCloseTo(8 / 3, 12);
   await s.screenshot({ path: "test-results/proof-zero.png" });
-  await s.getByRole("button", { name: "После: t = 2" }).click();
+  await s.locator("[data-action=after]").click();
   expect(JSON.parse(await plane.getAttribute("data-projection"))).toEqual([
     -1, 1,
   ]);
@@ -44,14 +48,14 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await s.getByRole("button", { name: "Следующий шаг" }).click();
   await expect(s.locator("[data-vector=normal]")).toBeVisible();
   await s.getByRole("button", { name: "Следующий шаг" }).click();
-  await expect(s.locator(".proof-status")).toContainText("не выполнено");
-  await s.getByRole("button", { name: "Точно: t = 5/3" }).click();
+  await expect(s.locator(".proof-status")).toContainText("не удовлетворяет");
+  await s.locator("[data-action=optimum]").click();
   await expect(s.locator(".proof-status")).toContainText("λ = 8/3");
   await s.screenshot({ path: "test-results/proof-normal.png" });
   const first = page.locator("#scene-one");
   await first.getByRole("button", { name: "Точно в максимум" }).click();
   await expect(s).toHaveAttribute("data-t", String(5 / 3));
-  await s.getByRole("button", { name: "Сбросить сцену" }).click();
+  await s.locator("[data-action=reset]").click();
   await expect(s).toHaveAttribute("data-t", "1");
   await expect(s).toHaveAttribute("data-step", "0");
   await expect(first).toHaveAttribute("data-t", String(5 / 3));

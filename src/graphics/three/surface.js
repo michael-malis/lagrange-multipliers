@@ -9,7 +9,7 @@ const colors = {
   grid: 0x7895a8,
   curve: 0xe3a15c,
   ink: 0xd1d3d1,
-  x: 0x77bdb5,
+  x: 0x47e1c2,
   y: 0xb6a4cf,
 };
 function disposeGroup(group) {
@@ -560,11 +560,11 @@ function createFallback(host, initial, verticalScale) {
       }
       if(s.sections){
         const [x,y]=s.math.point,z=s.math.height,[fx,fy]=s.math.gradient;
-        for(const [axis,color]of[[0,'#77bdb5'],[1,'#b6a4cf']]){
+        for(const [axis,color]of[[0,'#47e1c2'],[1,'#c29aff']]){
           const points=Array.from({length:61},(_,i)=>{const a=i/15;const p=axis?[x,a]:[a,y];return [...p,m.f(...p)];}).filter(p=>p[2]>=-7.5);
           svg.append(svgElement('path',{d:path(points),stroke:color}));
         }
-        for(const [points,color]of[[[[x-.5,y,z-fx*.5],[x+.5,y,z+fx*.5]],'#77bdb5'],[[[x,y-.5,z-fy*.5],[x,y+.5,z+fy*.5]],'#b6a4cf']])svg.append(svgElement('path',{d:path(points),stroke:color}));
+        for(const [points,color]of[[[[x-.5,y,z-fx*.5],[x+.5,y,z+fx*.5]],'#47e1c2'],[[[x,y-.5,z-fy*.5],[x,y+.5,z+fy*.5]],'#c29aff']])svg.append(svgElement('path',{d:path(points),stroke:color}));
       }
       host.dataset.position = JSON.stringify(s.math.position);
       host.dataset.rendered = "true";
