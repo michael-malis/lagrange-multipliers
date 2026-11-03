@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build && node scripts/audit-build.mjs",
+    "build": "vite build && node scripts/license-notices.mjs && node scripts/audit-build.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:browser": "playwright test",

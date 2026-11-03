@@ -1,4 +1,4 @@
-export const application=String.raw`
+export const application = String.raw`
 <section id="calculation" class="section reading"><div class="section-head"><span class="section-number">§ 2</span><div><h2>От геометрии к вычислению</h2><p class="timing">11:30–16:00 · Решение и проверка</p></div></div>
 <p>Полученное равенство градиентов вместе с ограничением образует систему для трёх неизвестных <span data-tex="x,y,\lambda"></span>:</p>
 <div class="equation" data-tex="\begin{cases} f_x=\lambda g_x,\\ f_y=\lambda g_y,\\ g(x,y)=c. \end{cases}"></div>
