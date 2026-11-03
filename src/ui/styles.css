@@ -1515,3 +1515,27 @@ html { overflow-x: clip; }
   body[data-mode="demo"] .scene .readouts { margin-block: .25rem; }
   body[data-mode="demo"] .scene .scene-top { min-height: 2.4rem; padding-block: .25rem; }
 }
+
+/* The compact presentation profile uses available width as a two-column
+   mathematical comparison rather than vertically stacking 400px of SVG,
+   readouts and a second explanation below the surface. */
+@media (min-width: 1100px) and (min-height: 780px) {
+  body[data-mode="demo"] #scene-one .profile-panel,
+  body[data-mode="demo"] #scene-two .profile-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.16fr) minmax(0, .84fr);
+    gap: .2rem .55rem;
+    align-content: start;
+  }
+  body[data-mode="demo"] #scene-one .profile-panel .plot-title,
+  body[data-mode="demo"] #scene-two .profile-panel .plot-title { grid-column: 1 / -1; }
+  body[data-mode="demo"] #scene-one .profile-panel [data-profile],
+  body[data-mode="demo"] #scene-two .profile-panel [data-profile] { grid-column: 1; grid-row: 2; min-width: 0; }
+  body[data-mode="demo"] #scene-one .profile-panel .readouts,
+  body[data-mode="demo"] #scene-two .profile-panel .readouts { grid-column: 2; grid-row: 2; display: block; min-width: 0; }
+  body[data-mode="demo"] #scene-one .profile-panel .instruction,
+  body[data-mode="demo"] #scene-two .profile-panel .proof-status { grid-column: 1 / -1; }
+  body[data-mode="demo"] #scene-one .profile-panel [data-profile] svg,
+  body[data-mode="demo"] #scene-two .profile-panel [data-profile] svg { display: block; width: 100%; height: auto; }
+  body[data-mode="demo"] #scene-two svg.plane { display: block; width: auto; max-width: 100%; max-height: min(51vh, 550px); margin-inline: auto; }
+}
