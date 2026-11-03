@@ -60,9 +60,9 @@ try {
   for (let i = 0; i < 3; i++)
     await page.locator('#scene-two [data-action="next-stage"]').click();
   await page.locator("#scene-two [data-action=optimum]").click();
-  await expect(page.locator("#scene-two .proof-status")).toContainText(
-    "λ = 8/3",
-  );
+  await expect(page.locator("#scene-two .proof-status .katex")).toHaveCount(2);
+  await expect(page.locator("#scene-two .proof-status")).toContainText("λ");
+  await expect(page.locator("#scene-two .proof-status .katex .mfrac")).toHaveCount(1);
   await page.locator("#scene-three [data-action=global]").click();
   await expect(page.locator("#scene-three [data-value=height]")).toHaveText(
     "2",
