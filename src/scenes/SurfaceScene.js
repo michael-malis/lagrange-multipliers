@@ -57,15 +57,13 @@ export function SurfaceScene(root) {
     root
       .querySelectorAll("[data-partial],[data-sections-note]")
       .forEach((e) => (e.hidden = !s.sections));
-    root.querySelector("[data-observation]").textContent = !s.plane
-      ? "Начните с поверхности: её вершина (3, 2) не лежит на допустимой прямой."
+    root.querySelector("[data-observation]").innerHTML = !s.plane
+      ? "Начните с поверхности: её вершина " + math("(3,2)") + " не лежит на допустимой прямой."
       : s.math.stationary
-        ? "Допустимая высота максимальна. Градиент остаётся ненулевым: (8/3; 8/3)."
+        ? "Высота на прямой максимальна, хотя " + math("\\nabla f=(\\frac83,\\frac83)\\ne0") + "."
         : s.math.derivative > 0
-          ? "При увеличении t точка поднимается по допустимой траектории."
-          : "При увеличении t точка спускается по допустимой траектории.";
-    if (s.plane && s.math.stationary)
-      root.querySelector("[data-observation]").innerHTML = "Допустимая высота максимальна. Градиент остаётся ненулевым: " + math("\\nabla f=(\\frac83,\\frac83)") + ".";
+          ? "При увеличении " + math("t") + " высота вдоль допустимой прямой возрастает."
+          : "При увеличении " + math("t") + " высота вдоль допустимой прямой убывает.";
     root.dataset.t = s.t;
     root.dataset.height = s.math.height;
     root.dataset.plane = s.plane;
