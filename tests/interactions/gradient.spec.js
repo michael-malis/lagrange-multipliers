@@ -119,8 +119,13 @@ test("second figure: zoom, pan and drag its mathematical point independently", a
   // Drag the orange point => update mathematical state, not camera.
   const currentPoint = await svg.evaluate((node) => {
     const matrix = node.getScreenCTM();
-    const p = new DOMPoint(200.3, 284.4).matrixTransform(matrix);
-    const target = new DOMPoint(273.4, 357.6).matrixTransform(matrix);
+    const marker = node.querySelector("circle.point");
+    const px = Number(marker.getAttribute("cx"));
+    const py = Number(marker.getAttribute("cy"));
+    const scale = Number(node.dataset.scaleX);
+    // Move one mathematical unit along r(t)=(t,3-t).
+    const p = new DOMPoint(px, py).matrixTransform(matrix);
+    const target = new DOMPoint(px + scale, py + scale).matrixTransform(matrix);
     return { start: { x: p.x, y: p.y }, end: { x: target.x, y: target.y } };
   });
   await page.mouse.move(currentPoint.start.x, currentPoint.start.y);
@@ -159,4 +164,34 @@ test("second figure: changing proof step reveals the explanation near navigation
     return rect.top >= -1 && rect.top + Math.min(rect.height, 80) <= innerHeight + 1;
   });
   expect(visible).toBe(true);
+});
+
+test("default contour viewport is centered and fully contains the outer ellipse", async ({ page, context }) => {
+  await context.setOffline(true);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const svg = page.locator("#scene-two svg.plane");
+  await expect(svg).toHaveAttribute("data-zoom", "1");
+  const geometry = await svg.evaluate((node) => {
+    const outer = node.querySelector('ellipse.contour[data-level="-6"]');
+    const clip = node.querySelector("clipPath rect");
+    const x = Number(outer.getAttribute("cx"));
+    const y = Number(outer.getAttribute("cy"));
+    const rx = Number(outer.getAttribute("rx"));
+    const ry = Number(outer.getAttribute("ry"));
+    const left = Number(clip.getAttribute("x"));
+    const top = Number(clip.getAttribute("y"));
+    const right = left + Number(clip.getAttribute("width"));
+    const bottom = top + Number(clip.getAttribute("height"));
+    return {x, y, rx, ry, left, right, top, bottom,
+      scaleX: Number(node.dataset.scaleX), scaleY: Number(node.dataset.scaleY)};
+  });
+  expect(geometry.scaleX).toBeCloseTo(geometry.scaleY, 10);
+  expect(geometry.x).toBeCloseTo((geometry.left + geometry.right) / 2, 10);
+  expect(geometry.y).toBeCloseTo((geometry.top + geometry.bottom) / 2, 10);
+  expect(geometry.x - geometry.rx).toBeGreaterThan(geometry.left + 10);
+  expect(geometry.x + geometry.rx).toBeLessThan(geometry.right - 10);
+  expect(geometry.y - geometry.ry).toBeGreaterThan(geometry.top + 10);
+  expect(geometry.y + geometry.ry).toBeLessThan(geometry.bottom - 10);
+  await svg.screenshot({ path: "test-results/level-contours-default-centered.png" });
 });
