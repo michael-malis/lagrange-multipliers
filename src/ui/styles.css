@@ -1553,7 +1553,7 @@ html { overflow-x: clip; }
 }
 @media (max-width: 34rem) {
   .scene-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .4rem .6rem; }
-  .scene-top .scene-label { grid-column: 1 / -1; font-size: .94rem; letter-spacing: .035em; text-transform: none; line-height: 1.35; }
+  .scene-top .scene-label { grid-column: 1 / -1; font-size: var(--fs-body); letter-spacing: .035em; text-transform: none; line-height: 1.35; }
   .scene-top .view-switch { grid-column: 1; white-space: normal; }
   .scene-top button[data-action="reset"] { grid-column: 2; }
 }
