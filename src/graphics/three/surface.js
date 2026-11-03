@@ -58,7 +58,7 @@ export function createSurface(host, model) {
     const points=Array.from({length:241},(_,i)=>{const t=current.domain[0]+i*(current.domain[1]-current.domain[0])/240;const [x,y]=current.r(t);return world([x,y,current.h(t)]);});
     const tube=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),240,cylinder?.022:.035,6,false);
     const trajectory=new THREE.Mesh(tube,new THREE.MeshBasicMaterial({color:colors.curve,depthTest:false,transparent:true}));trajectory.renderOrder=6;pathGroup.add(trajectory);
-    for(const c of current.critical){const point=new THREE.Mesh(new THREE.SphereGeometry(cylinder?.047:.08,12,10),new THREE.MeshBasicMaterial({color:0xf3d1a6,depthTest:false}));point.position.copy(world([...c.point,c.height]));candidates.add(point);}
+    for(const c of current.critical){const point=new THREE.Mesh(new THREE.SphereGeometry(cylinder?.047:.08,12,10),new THREE.MeshBasicMaterial({color:0xf3d1a6,depthTest:false,transparent:true}));point.renderOrder=7;point.position.copy(world([...c.point,c.height]));candidates.add(point);}
   }
   function plane(points,group,color,opacity=.1){const geo=new THREE.BufferGeometry();const verts=[points[0],points[1],points[2],points[0],points[2],points[3]].flatMap(p=>world(p).toArray());geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geo.computeVertexNormals();group.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false})));line([...points,points[0]],color,1,group,.5);}
   if(cylinder){
@@ -72,7 +72,7 @@ export function createSurface(host, model) {
   let active=true,latest;
   function render(){if(active){renderer.render(scene,camera);host.dataset.rendered='true';}}
   function resetCamera(){camera.position.set(...(cylinder?[5,4.4,6]:[9,7.2,-10]));controls.target.copy(world(cylinder?[0,0,.1]:[2,1.6,-.4]));camera.zoom=1;camera.lookAt(controls.target);controls.update();render();}
-  const resize=new ResizeObserver(()=>{const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;const span=cylinder?3.35:4.65;camera.left=-span*width/height;camera.right=span*width/height;camera.top=span;camera.bottom=-span;camera.updateProjectionMatrix();renderer.setSize(width,height,false);render();});resize.observe(host);
+  const resize=new ResizeObserver(()=>{const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;const span=cylinder?3.85:4.65;camera.left=-span*width/height;camera.right=span*width/height;camera.top=span;camera.bottom=-span;camera.updateProjectionMatrix();renderer.setSize(width,height,false);render();});resize.observe(host);
   controls.addEventListener('change',render);resetCamera();
   const observer=new IntersectionObserver(entries=>{active=entries[0].isIntersecting;if(active)render();},{rootMargin:'120px'});observer.observe(host);
   function updateSections(s){
