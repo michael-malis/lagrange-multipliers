@@ -112,3 +112,32 @@ test("v2: laptop demonstration shows geometry and profile without vertical jumps
     }
   }
 });
+
+test("v2: narrow-screen geometry/profile toggle preserves shared t and circle model", async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  const surface = page.locator("#scene-one");
+  const gradient = page.locator("#scene-two");
+  await surface.locator("[data-action=optimum]").click();
+  const toggle = surface.locator(".mobile-view-toggle");
+  await expect(toggle).toBeVisible();
+  await expect(surface.locator(".profile-panel")).toBeHidden();
+  await toggle.getByRole("button", { name: "Профиль высоты" }).click();
+  await expect(surface.locator(".profile-panel")).toBeVisible();
+  await expect(surface.locator(".world")).toBeHidden();
+  await expect(surface).toHaveAttribute("data-t", String(5 / 3));
+  await expect(gradient).toHaveAttribute("data-t", String(5 / 3));
+  await gradient.locator(".mobile-view-toggle").getByRole("button", { name: "Профиль высоты" }).click();
+  await expect(gradient.locator(".proof-side")).toBeVisible();
+  await expect(gradient.locator(".plane-column")).toBeHidden();
+  await gradient.locator(".mobile-view-toggle").getByRole("button", { name: "Геометрия" }).click();
+  await expect(gradient.locator(".plane-column")).toBeVisible();
+  const circle = page.locator("#scene-three");
+  await circle.locator('[data-action="switch-model"]').click();
+  await circle.locator(".mobile-view-toggle").getByRole("button", { name: "Профиль высоты" }).click();
+  await expect(circle.locator("[data-profile] svg")).toBeVisible();
+  await expect(circle.locator("[data-value=lambda]")).toHaveText("1");
+  await expect(page.locator(".katex-error")).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
