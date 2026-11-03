@@ -46,8 +46,9 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await s.locator("[data-action=global]").click();
   await expect(s.locator("[data-value=height]")).toHaveText("1");
   await s.locator("[data-action=local]").click();
-  await expect(s.locator("[data-value=lambda]")).toHaveText("0");
-  await expect(circle.locator("[data-vector=gf]")).toHaveCount(0);
+  await expect(s.locator("[data-value=lambda]")).toHaveText("1");
+  await expect(circle.locator("[data-vector=gf]")).toHaveCount(1);
+  expect(JSON.parse(await circle.getAttribute("data-gradient"))).toEqual([2, 0]);
   await expect(s.locator(".proof-status")).toContainText("без экстремума");
   await s.screenshot({ path: "test-results/cylinder-counterexample.png" });
   // Use the SVG coordinate system, not the CSS bounding-box center:
