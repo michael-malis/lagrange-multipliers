@@ -1492,3 +1492,7 @@ body[data-mode="demo"] .scene .world { min-height: 0; }
 .understanding-check p { margin-bottom: .6rem; }
 .understanding-check button { min-width: 5rem; }
 .understanding-check .understanding-feedback { min-height: 1.4em; color: var(--accent); margin: .6rem 0 0; }
+
+.scene-top .view-switch { color: var(--accent); font-size: var(--fs-small); font-weight: 650; text-decoration: underline; white-space: nowrap; }
+.scene-top .view-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 38rem) { .scene-top .view-switch { flex-basis: 100%; white-space: normal; } }
