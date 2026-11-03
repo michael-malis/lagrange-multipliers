@@ -9,18 +9,19 @@ export function GradientScene(root) {
   const store = createStore(paraboloid);
   const stageNames = proofSteps.map((stage) => stage.title.replace(/^\d+\.\s*/, ""));
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Линии уровня, допустимое направление и производная</span><button data-action="reset">Сбросить</button></div>
-  <div class="proof-navigation" aria-label="Последовательность доказательства">
-    <div class="proof-progress" role="list" aria-label="Этапы вывода">
-      ${stageNames.map((name, i) => `<span role="listitem" data-step-indicator="${i}" ${i === 0 ? 'aria-current="step"' : ""}>${i + 1}. ${name}</span>`).join("")}
+  <div class="proof-navigation" aria-label="Пошаговый математический вывод">
+    <div class="proof-progress">
+      <span class="stage-current" aria-live="polite">Шаг <strong data-current-step>1</strong> из 4: <strong data-current-title>${stageNames[0]}</strong></span>
+      <div class="stage-meter" role="progressbar" aria-label="Прогресс математического вывода" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1"><span data-progress-fill></span></div>
     </div>
     <div class="proof-actions">
-      <span class="proof-counter" aria-live="polite">Этап <strong data-current-step>1</strong> из 4</span>
-      <button data-action="previous-stage" disabled>← Назад</button>
-      <button class="primary proof-advance" data-action="next-stage">Следующий этап →</button>
+      <button data-action="previous-stage" disabled>← Предыдущий шаг</button>
+      <button class="primary proof-advance" data-action="next-stage">Показать следующий шаг →</button>
+      <span class="proof-complete" data-complete hidden>Условие Лагранжа получено</span>
     </div>
   </div>
-  <p class="proof-navigation-hint" data-proof-hint>Нажмите «Следующий этап», чтобы увидеть новые построения на графике и соответствующее объяснение.</p>
-  <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До максимума: <span data-tex="t=1"></span></button><button class="primary" data-action="optimum">Точно в максимум: <span data-tex="t=5/3"></span></button><button data-action="after">После максимума: <span data-tex="t=2"></span></button></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>
+  <p class="proof-navigation-hint" data-proof-hint>Каждый шаг добавляет построение на графике и его математическое объяснение.</p>
+  <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="point-presets"><span class="controls-label">Проверить положение точки:</span><div class="control-buttons" role="group" aria-label="Положение точки относительно максимума"><button data-action="before" aria-pressed="false">До максимума: <span data-tex="t=1"></span></button><button data-action="optimum" aria-pressed="false">В максимуме: <span data-tex="t=5/3"></span></button><button data-action="after" aria-pressed="false">После максимума: <span data-tex="t=2"></span></button></div></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>
   <div class="scene-layout proof-layout">
     <div class="plane-column"><div class="plane-wrap" data-plane></div><div class="plot-key"><span class="level">Линии уровня <span data-tex="f(x,y)=c"></span></span><span class="orange">Прямая и <span data-tex="P"></span></span><span class="active-level-label">Сейчас <span data-tex="c=f(P)=h(t)"></span> = <strong data-value="active-level"></strong></span></div><div class="vector-key"><span class="teal" data-legend="1"><span data-tex="\\nabla f"></span> — градиент</span><span class="tangent-key" data-legend="1"><span data-tex="T"></span> — касательный вектор</span><span class="projection" data-legend="2"><span data-tex="\\operatorname{proj}_{T}\\nabla f"></span> — проекция</span><span class="violet" data-legend="3"><span data-tex="\\nabla g"></span> — градиент ограничения</span></div></div>
     <div class="proof-side">
@@ -75,6 +76,12 @@ export function GradientScene(root) {
     profile.update(state);
     slider.value = state.t;
     root.querySelector("output").textContent = number(state.t);
+    for (const [action, at] of [["before", 1], ["optimum", 5 / 3], ["after", 2]]) {
+      root.querySelector(`[data-action="${action}"]`).setAttribute(
+        "aria-pressed",
+        String(Math.abs(state.t - at) < 1e-6),
+      );
+    }
     root.querySelector('[data-value="active-level"]').textContent = number(state.math.height);
     const values = {
       point: pair(state.math.point),
@@ -129,22 +136,20 @@ export function GradientScene(root) {
       root.querySelector("[data-formula]").innerHTML =
         math(step.formula, true) + (step.extra ? math(step.extra, true) : "");
       root.querySelector("[data-current-step]").textContent = state.step + 1;
-      root.querySelector("[data-proof-hint]").textContent =
-        state.step === stageNames.length - 1
-          ? "Вывод завершён. Кнопка «Назад» возвращает к предыдущему построению."
-          : "Нажмите «Далее», чтобы увидеть следующее построение и объяснение.";
+      root.querySelector("[data-current-title]").textContent = stageNames[state.step];
+      const progress = root.querySelector(".stage-meter");
+      progress.setAttribute("aria-valuenow", String(state.step + 1));
+      root.querySelector("[data-progress-fill]").style.width =
+        `${((state.step + 1) / stageNames.length) * 100}%`;
+      const isComplete = state.step === stageNames.length - 1;
+      root.querySelector("[data-proof-hint]").textContent = isComplete
+        ? "Итог виден под графиками. Можно вернуться к предыдущим шагам и изменить положение точки."
+        : "Каждый шаг добавляет построение на графике и его математическое объяснение.";
       root.querySelector('[data-action="previous-stage"]').disabled = state.step === 0;
       const next = root.querySelector('[data-action="next-stage"]');
-      next.disabled = state.step === stageNames.length - 1;
-      next.textContent = next.disabled
-        ? "Условие выведено"
-        : `Далее: ${stageNames[state.step + 1]} →`;
-      root.querySelectorAll("[data-step-indicator]").forEach((element) => {
-        const i = +element.dataset.stepIndicator;
-        if (i === state.step) element.setAttribute("aria-current", "step");
-        else element.removeAttribute("aria-current");
-        element.dataset.completed = String(i < state.step);
-      });
+      next.hidden = isComplete;
+      next.textContent = isComplete ? "" : `Далее: ${stageNames[state.step + 1]} →`;
+      root.querySelector("[data-complete]").hidden = !isComplete;
       renderedStep = state.step;
     }
     root.dataset.t = state.t;
