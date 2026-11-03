@@ -26,7 +26,9 @@ Chromium открывал абсолютный `file:///D:/_HUJI/Projects/lagran
 
 ## Публикация
 
-Первый push `c7985cd` прошёл workflow `41669719046`; публичный HTML, KaTeX и SHA подтверждены Chromium. Полная версия проверяется финальным workflow, включая post-deploy `npm run test:public`. Актуальные идентификаторы и результаты — в `PROGRESS.md`.
+Первый push `c7985cd` прошёл workflow `41669719046`; публичный HTML, KaTeX и SHA подтверждены Chromium. Повторный push полной версии `dbf154bcccbf8a67d04afc596891cf1bcbfd3c40` прошёл workflow `41679785225`, включая 17 unit, 11 browser и post-deploy `npm run test:public`.
+
+Отдельный локальный запуск `npm run test:public` подтвердил текущий SHA dbf154b, HTTP 200, шрифты, WebGL обеих 3D-сцен, действия во всех трёх сценах, сброс, отсутствие ошибок консоли и загрузок. Локальная пересборка того же SHA прошла 11 browser checks через file://. Финальный коммит этих протоколов запускает такую же автоматическую проверку своего SHA. Workflow сохраняет `browser-evidence-<SHA>` на 14 дней. Подробные идентификаторы — в `PROGRESS.md`.
 
 ## Предел подтверждения
 
