@@ -26,8 +26,8 @@ export const proofSteps = [
 
 export const geometry = String.raw`
 <section id="geometry" class="section"><div class="reading"><div class="section-head"><span class="section-number">II</span><div><h2>Из допустимого движения — к условию Лагранжа</h2><p class="section-deck">Поймём, почему градиенты функции и ограничения становятся коллинеарными в условном максимуме.</p></div></div>
-<p>Вместо поверхности изобразим её линии уровня: точки одинаковой высоты. Для уровня <span data-tex="f(x,y)=\ell"></span>, то</p>
-<div class="equation" data-tex="(x-3)^2+2(y-2)^2=5-\ell."></div>
+<p>Линия уровня — это множество точек, в которых функция имеет одно и то же значение <span data-tex="\ell"></span>. Для нашего параболоида получаем:</p>
+<div class="equation" data-tex="f(x,y)=\ell\quad\Longleftrightarrow\quad (x-3)^2+2(y-2)^2=5-\ell"></div>
 <p>При <span data-tex="\ell<5"></span> получаем эллипсы с центром <span data-tex="(3,2)"></span>. Чем выше уровень <span data-tex="\ell"></span>, тем меньше эллипс. Уровень <span data-tex="\ell=5"></span> состоит из одной точки — вершины параболоида.</p>
 <p>Выделенный эллипс проходит через выбранную точку <span data-tex="P=r(t)"></span>. Его уровень <span data-tex="\ell=f(P)=h(t)"></span> совпадает с высотой на графике справа. Передвиньте точку и переходите от одного шага доказательства к следующему.</p></div>
 <div id="scene-two" class="scene" data-scene="2"></div>
