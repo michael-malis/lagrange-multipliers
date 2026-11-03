@@ -253,6 +253,7 @@ export function createGradientPlot(host, onChange) {
     onChange(Math.max(0, Math.min(3, (x - y + 3) / 2)));
   };
   svg.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
     dragging = true;
     svg.setPointerCapture(event.pointerId);
     move(event);
