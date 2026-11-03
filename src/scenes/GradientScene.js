@@ -21,9 +21,10 @@ export function GradientScene(root) {
     </div>
   </div>
   <p class="proof-navigation-hint" data-proof-hint>Каждый шаг добавляет построение на графике и его математическое объяснение.</p>
+  <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div></div>
   <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="point-presets"><span class="controls-label">Проверить положение точки:</span><div class="control-buttons" role="group" aria-label="Положение точки относительно максимума"><button data-action="before" aria-pressed="false">До максимума: <span data-tex="t=1"></span></button><button data-action="optimum" aria-pressed="false">В максимуме: <span data-tex="t=5/3"></span></button><button data-action="after" aria-pressed="false">После максимума: <span data-tex="t=2"></span></button></div></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>
   <div class="scene-layout proof-layout">
-    <div class="plane-column"><div class="plane-wrap" data-plane></div><div class="plot-key"><span class="level">Линии уровня <span data-tex="f(x,y)=c"></span></span><span class="orange">Прямая и <span data-tex="P"></span></span><span class="active-level-label">Сейчас <span data-tex="c=f(P)=h(t)"></span> = <strong data-value="active-level"></strong></span></div><div class="vector-key"><span class="teal" data-legend="1"><span data-tex="\\nabla f"></span> — градиент</span><span class="tangent-key" data-legend="1"><span data-tex="T"></span> — касательный вектор</span><span class="projection" data-legend="2"><span data-tex="\\operatorname{proj}_{T}\\nabla f"></span> — проекция</span><span class="violet" data-legend="3"><span data-tex="\\nabla g"></span> — градиент ограничения</span></div></div>
+    <div class="plane-column"><div class="plot-view-controls"><span>Область графика</span><div class="plot-view-buttons" role="group" aria-label="Масштаб и положение графика"><button data-action="zoom-out" aria-label="Отдалить график" title="Отдалить график">−</button><button data-action="zoom-in" aria-label="Приблизить график" title="Приблизить график">+</button><button data-action="reset-view">Исходный вид</button></div></div><div class="plane-wrap" data-plane></div><p class="plot-pan-hint">Колесо — масштаб · перетаскивайте фон для перемещения · тяните оранжевую точку или прямую для изменения <span data-tex="t"></span></p><div class="plot-key"><span class="level">Линии уровня <span data-tex="f(x,y)=c"></span></span><span class="orange">Прямая и <span data-tex="P"></span></span><span class="active-level-label">Сейчас <span data-tex="c=f(P)=h(t)"></span> = <strong data-value="active-level"></strong></span></div><div class="vector-key"><span class="teal" data-legend="1"><span data-tex="\\nabla f"></span> — градиент</span><span class="tangent-key" data-legend="1"><span data-tex="T"></span> — касательный вектор</span><span class="projection" data-legend="2"><span data-tex="\\operatorname{proj}_{T}\\nabla f"></span> — проекция</span><span class="violet" data-legend="3"><span data-tex="\\nabla g"></span> — градиент ограничения</span></div></div>
     <div class="proof-side">
       <div class="profile-panel">
         <div class="plot-title">Высота на допустимой прямой: <span data-tex="h(t)=f(r(t))"></span></div>
@@ -41,7 +42,6 @@ export function GradientScene(root) {
         <p class="proof-status" aria-live="polite"></p>
       </div>
     </div>
-    <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div></div>
   </div>
  
   `;
@@ -57,6 +57,9 @@ export function GradientScene(root) {
       { height: 182, tangentLabel: true },
     ),
     slider = root.querySelector("input");
+  root.querySelector('[data-action="zoom-in"]').onclick = () => plot.zoomIn();
+  root.querySelector('[data-action="zoom-out"]').onclick = () => plot.zoomOut();
+  root.querySelector('[data-action="reset-view"]').onclick = () => plot.resetView();
   slider.oninput = (event) => store.set({ t: +event.target.value });
   root.querySelector('[data-action="previous-stage"]').onclick = () =>
     store.set({ step: Math.max(0, store.get().step - 1) });
@@ -68,7 +71,10 @@ export function GradientScene(root) {
     after: 2,
   }))
     root.querySelector(`[data-action=${key}]`).onclick = () => store.set({ t });
-  root.querySelector("[data-action=reset]").onclick = () => store.reset();
+  root.querySelector("[data-action=reset]").onclick = () => {
+    store.reset();
+    plot.resetView();
+  };
 
   let renderedStep = -1;
   store.subscribe((state) => {
