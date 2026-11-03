@@ -2,24 +2,24 @@ export const proofSteps = [
   {
     title: "1. Рост вдоль допустимой прямой",
     text: "Параметр t выбирает не произвольную точку плоскости, а точку r(t) допустимой прямой. Поэтому знак h′(t) отвечает ровно на нужный вопрос: растёт или убывает f при разрешённом движении. До вершины профиля знак положителен, в вершине равен нулю, после неё отрицателен.",
-    formula: String.raw`h(t)=f(r(t)),\qquad h'(t_0)=0\ \text{в локальном внутреннем экстремуме}.`,
+    formula: String.raw`\begin{gathered}h(t)=f(r(t)),\\ h'(t_0)=0\quad\text{во внутреннем экстремуме}.\end{gathered}`,
   },
   {
     title: "2. Правило цепочки и угол",
     text: "При движении по r(t) обе координаты меняются одновременно. Правило цепочки складывает их вклады с коэффициентами x′(t) и y′(t). Это и есть скалярное произведение градиента с касательным вектором T=(1,−1). Угол θ показывает знак: при θ<90° произведение положительно, при θ>90° отрицательно.",
-    formula: String.raw`h'(t)=f_xx'(t)+f_yy'(t)=\nabla f(r(t))\cdot T.`,
+    formula: String.raw`\begin{aligned}h'(t)&=f_xx'(t)+f_yy'(t)\\&=\nabla f(r(t))\cdot T.\end{aligned}`,
     extra: String.raw`D_{\widehat T}f=\nabla f\cdot\widehat T=\frac{h'(t)}{\|T\|}=\frac{h'(t)}{\sqrt2}.`,
   },
   {
     title: "3. Исчезает касательная компонента",
     text: "Проекция — вектор вдоль T. Её коэффициент h′/2 сохраняет знак производной: перед максимумом проекция направлена по T, после максимума — против T. Норма проекции равна |h′|/√2 и потому знака не имеет. В максимуме проекция равна нулю, хотя полный градиент остаётся ненулевым.",
-    formula: String.raw`\operatorname{proj}_{T}\nabla f=\frac{\nabla f\cdot T}{\|T\|^2}T=\frac{h'(t)}{2}T.`,
+    formula: String.raw`\begin{aligned}\operatorname{proj}_{T}\nabla f&=\frac{\nabla f\cdot T}{\|T\|^2}T\\&=\frac{h'(t)}{2}T.\end{aligned}`,
     extra: String.raw`\operatorname{proj}_{T}\nabla f(P^*)=0,\qquad \nabla f(P^*)=\left(\frac83,\frac83\right)\ne0.`,
   },
   {
     title: "4. Ограничение даёт вторую нормаль",
     text: "Вдоль допустимой кривой значение g не меняется: g(r(t))=3. После дифференцирования получаем ∇g·T=0. Поэтому ∇g нормален к допустимой прямой во всех её точках; в условном экстремуме ∇f нормален к той же прямой.",
-    formula: String.raw`0=\frac{d}{dt}g(r(t))=\nabla g(r(t))\cdot T,\qquad \nabla g=(1,1).`,
+    formula: String.raw`\begin{aligned}0&=\frac{d}{dt}g(r(t))=\nabla g(r(t))\cdot T,\\\nabla g&=(1,1).\end{aligned}`,
   },
   {
     title: "5. Одномерное пространство нормалей",
