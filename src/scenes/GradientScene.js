@@ -140,6 +140,12 @@ export function GradientScene(root) {
           ? "h′ > 0 и θ < 90°: движение по T увеличивает высоту."
           : "h′ < 0 и θ > 90°: движение по T уменьшает высоту.";
 
+    if (state.math.stationary && state.step >= 2) {
+      status.innerHTML = state.step >= 3
+        ? "Касание: " + math("h'(t)=0") + ", оба градиента нормальны к прямой, " + math("\\lambda=\\frac83") + "."
+        : math("h'(t)=0") + ": проекция исчезла, но " + math("\\nabla f=(\\frac83,\\frac83)\\ne0") + ".";
+    }
+
     if (renderedStep !== state.step) {
       const step = proofSteps[state.step];
       root.querySelector(".proof-copy h3").textContent = step.title;
