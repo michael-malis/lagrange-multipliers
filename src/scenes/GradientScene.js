@@ -1,12 +1,12 @@
 import { paraboloid } from "../math/examples/paraboloid.js";
-import { createStore } from "../state/sceneStore.js";
+import { paraboloidStore } from "../state/paraboloidStore.js";
 import { createGradientPlot } from "../graphics/svg/gradient.js";
 import { createProfile } from "../graphics/svg/profile.js";
 import { proofSteps } from "../content/proof.js";
 import { math, number, pair, renderMath } from "../ui/format.js";
 
 export function GradientScene(root) {
-  const store = createStore(paraboloid);
+  const store = paraboloidStore;
   const stageNames = proofSteps.map((stage) => stage.title.replace(/^\d+\.\s*/, ""));
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Линии уровня, допустимое направление и производная</span><button data-action="reset">Сбросить</button></div>
   <div class="proof-navigation" aria-label="Пошаговый математический вывод">
@@ -64,10 +64,7 @@ export function GradientScene(root) {
   const selectStep = (step) => {
     store.set({ step });
     // Keep the freshly updated mathematical explanation in the viewport.
-    root.querySelector(".proof-navigation").scrollIntoView({
-      block: "start",
-      behavior: "auto",
-    });
+    // Explanation sits adjacent to the active diagram; avoid forced scrolling.
   };
   root.querySelector('[data-action="previous-stage"]').onclick = () =>
     selectStep(Math.max(0, store.get().step - 1));
@@ -80,7 +77,7 @@ export function GradientScene(root) {
   }))
     root.querySelector(`[data-action=${key}]`).onclick = () => store.set({ t });
   root.querySelector("[data-action=reset]").onclick = () => {
-    store.reset();
+    store.set({ t: paraboloid.initial, step: 0 });
     plot.resetView();
   };
 
