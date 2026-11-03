@@ -29,21 +29,20 @@ export function createGradientPlot(host, onChange) {
     class: "plane",
     role: "img",
     "aria-label":
-      "Линии уровня f(x,y)=c, допустимая прямая и вычисленные векторы. Масштабы осей x и y равны.",
+      "Линии уровня, допустимая прямая и векторы. Колесо мыши приближает график, перетаскивание фона перемещает область просмотра, перетаскивание точки изменяет параметр. Масштабы осей x и y равны.",
   });
   host.append(svg);
 
   const defs = svgElement("defs");
   svg.append(defs);
   const clip = svgElement("clipPath", { id: "plane-clip" });
-  clip.append(
-    svgElement("rect", {
-      x: pad,
-      y: pad,
-      width: width - 2 * pad,
-      height: plotBottom - pad,
-    }),
-  );
+  const clipRect = svgElement("rect", {
+    x: pad,
+    y: pad,
+    width: width - 2 * pad,
+    height: plotBottom - pad,
+  });
+  clip.append(clipRect);
   defs.append(clip);
   for (const [key, color] of Object.entries(VECTOR_COLORS)) {
     const marker = svgElement("marker", {
@@ -64,22 +63,23 @@ export function createGradientPlot(host, onChange) {
 
   const plot = svgElement("g", { "clip-path": "url(#plane-clip)" });
   svg.append(plot);
-  for (let k = min; k <= max; k++) {
+  // Draw extra grid beyond the initial viewport so panning never exposes
+  // a blank mathematical canvas. The camera-aligned clip preserves margins.
+  const gridRange = 18;
+  for (let k = -gridRange; k <= gridRange; k++) {
     const [gx, gy] = xy([k, k]);
     plot.append(
       svgElement("line", {
         x1: gx,
-        y1: pad,
+        y1: xy([0, gridRange])[1],
         x2: gx,
-        y2: plotBottom,
+        y2: xy([0, -gridRange])[1],
         class: k === 0 ? "axis" : "grid",
       }),
-    );
-    if (k <= 5) plot.append(
       svgElement("line", {
-        x1: pad,
+        x1: xy([-gridRange, 0])[0],
         y1: gy,
-        x2: width - pad,
+        x2: xy([gridRange, 0])[0],
         y2: gy,
         class: k === 0 ? "axis" : "grid",
       }),
@@ -98,7 +98,7 @@ export function createGradientPlot(host, onChange) {
       });
       ly.textContent = k;
       svg.append(lx);
-      if (k <= 5) svg.append(ly);
+      svg.append(ly);
     }
   }
   const [originX, originY] = xy([0, 0]);
@@ -155,8 +155,8 @@ export function createGradientPlot(host, onChange) {
   activeLayer.append(activeContour);
   plot.append(activeLayer);
 
-  const [x1, y1] = xy([-1, 4]),
-    [x2, y2] = xy([4, -1]);
+  const [x1, y1] = xy([-gridRange, 3 + gridRange]),
+    [x2, y2] = xy([3 + gridRange, -gridRange]);
   plot.append(svgElement("line", { x1, y1, x2, y2, class: "constraint" }));
   const constraintLabel = svgElement("text", {
     x: xy([0.1, 3.4])[0],
@@ -224,30 +224,114 @@ export function createGradientPlot(host, onChange) {
     // The measured angle is displayed in the adjacent numeric panel.
   }
 
-  let dragging = false;
-  const move = (event) => {
-    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(
-        svg.getScreenCTM().inverse(),
-      ),
+  // Camera operates only on the 2D coordinate view, never on mathematical
+  // state. The SVG viewBox changes uniformly along both axes.
+  const camera = { x: 0, y: 0, width, height };
+  const initialCamera = { ...camera };
+  let currentPoint = [1, 2];
+  let dragMode = null;
+  let pointerPrevious = null;
+  const toWorld = (clientX, clientY) =>
+    new DOMPoint(clientX, clientY).matrixTransform(svg.getScreenCTM().inverse());
+  function refreshCamera() {
+    svg.setAttribute(
+      "viewBox",
+      `${camera.x} ${camera.y} ${camera.width} ${camera.height}`,
+    );
+    const horizontalUnit = camera.width / width,
+      verticalUnit = camera.height / height;
+    clipRect.setAttribute("x", camera.x + pad * horizontalUnit);
+    clipRect.setAttribute("y", camera.y + pad * verticalUnit);
+    clipRect.setAttribute("width", (width - 2 * pad) * horizontalUnit);
+    clipRect.setAttribute("height", (plotBottom - pad) * verticalUnit);
+    const zoom = width / camera.width;
+    svg.dataset.zoom = String(Number(zoom.toFixed(3)));
+    svg.dataset.scaleX = String(axisScale * zoom);
+    svg.dataset.scaleY = String(axisScale * zoom);
+  }
+  function zoomAt(factor, clientX, clientY) {
+    const oldZoom = width / camera.width,
+      newZoom = Math.max(0.8, Math.min(4, oldZoom * factor));
+    if (Math.abs(newZoom - oldZoom) < 1e-8) return;
+    const anchor =
+      clientX === undefined || clientY === undefined
+        ? { x: camera.x + camera.width / 2, y: camera.y + camera.height / 2 }
+        : toWorld(clientX, clientY);
+    const fractionX = (anchor.x - camera.x) / camera.width,
+      fractionY = (anchor.y - camera.y) / camera.height;
+    camera.width = width / newZoom;
+    camera.height = height / newZoom;
+    camera.x = anchor.x - fractionX * camera.width;
+    camera.y = anchor.y - fractionY * camera.height;
+    refreshCamera();
+  }
+  function resetView() {
+    Object.assign(camera, initialCamera);
+    refreshCamera();
+  }
+  const movePoint = (event) => {
+    const point = toWorld(event.clientX, event.clientY),
       x = (point.x - pad) / axisScale + min,
       y = yMax - (point.y - pad) / axisScale;
     onChange(Math.max(0, Math.min(3, (x - y + 3) / 2)));
   };
+  function hitsConstraintOrPoint(event) {
+    const transform = svg.getScreenCTM(),
+      current = new DOMPoint(...xy(currentPoint)).matrixTransform(transform),
+      distanceToPoint = Math.hypot(event.clientX - current.x, event.clientY - current.y);
+    if (distanceToPoint < 22) return true;
+    const point = toWorld(event.clientX, event.clientY),
+      x = (point.x - pad) / axisScale + min,
+      y = yMax - (point.y - pad) / axisScale;
+    const distanceInSvg = Math.abs(x + y - 3) * axisScale / Math.SQRT2,
+      pixelsPerSvgUnit = svg.getBoundingClientRect().width / camera.width;
+    return distanceInSvg * pixelsPerSvgUnit < 14;
+  }
   svg.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
     event.preventDefault();
-    dragging = true;
+    dragMode = !event.shiftKey && hitsConstraintOrPoint(event) ? "point" : "pan";
+    pointerPrevious = { x: event.clientX, y: event.clientY };
+    svg.dataset.dragMode = dragMode;
     svg.setPointerCapture(event.pointerId);
-    move(event);
+    if (dragMode === "point") movePoint(event);
   });
   svg.addEventListener("pointermove", (event) => {
-    if (dragging) move(event);
+    if (!dragMode) return;
+    if (dragMode === "point") {
+      movePoint(event);
+      return;
+    }
+    const rect = svg.getBoundingClientRect();
+    camera.x -= ((event.clientX - pointerPrevious.x) * camera.width) / rect.width;
+    camera.y -= ((event.clientY - pointerPrevious.y) * camera.height) / rect.height;
+    pointerPrevious = { x: event.clientX, y: event.clientY };
+    refreshCamera();
   });
   for (const type of ["pointerup", "pointercancel", "lostpointercapture"])
-    svg.addEventListener(type, () => (dragging = false));
+    svg.addEventListener(type, () => {
+      dragMode = null;
+      pointerPrevious = null;
+      svg.dataset.dragMode = "idle";
+    });
+  svg.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    zoomAt(Math.exp(-event.deltaY * 0.0013), event.clientX, event.clientY);
+  }, { passive: false });
+  svg.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    resetView();
+  });
+  svg.dataset.dragMode = "idle";
+  refreshCamera();
 
   return {
     svg,
+    zoomIn: () => zoomAt(1.3),
+    zoomOut: () => zoomAt(1 / 1.3),
+    resetView,
     update(state) {
+      currentPoint = state.math.point;
       dynamic.replaceChildren();
       const math = state.math,
         point = math.point,
@@ -320,8 +404,8 @@ export function createGradientPlot(host, onChange) {
       }
       dynamic.append(svgElement("circle", { cx, cy, r: 6.5, class: "point" }));
       label("P", point, "#ffad63", -18, 20);
-      svg.dataset.scaleX = axisScale;
-      svg.dataset.scaleY = axisScale;
+      svg.dataset.scaleX = axisScale * width / camera.width;
+      svg.dataset.scaleY = axisScale * width / camera.width;
       svg.dataset.projection = JSON.stringify(math.projection);
       svg.dataset.gradient = JSON.stringify(math.gradient);
       svg.dataset.angle = String(math.angle);
