@@ -1306,3 +1306,91 @@ th {
   #scene-two .proof-copy [data-copy],
   #scene-two .proof-copy [data-formula] { grid-column: 1; grid-row: auto; }
 }
+
+
+/* Guided proof: one action, one back action, no false button-shaped tabs. */
+#scene-two .proof-navigation {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem 1.2rem;
+}
+#scene-two .proof-progress {
+  display: grid;
+  gap: 0.45rem;
+}
+#scene-two .stage-current {
+  font-size: var(--fs-body);
+  color: var(--ink);
+  line-height: 1.4;
+}
+#scene-two .stage-current strong:first-child { color: var(--accent); }
+#scene-two .stage-meter {
+  height: 0.3rem;
+  width: min(100%, 28rem);
+  overflow: hidden;
+  background: var(--rule-strong);
+  border-radius: 1rem;
+}
+#scene-two .stage-meter [data-progress-fill] {
+  display: block;
+  width: 25%;
+  height: 100%;
+  background: var(--accent);
+  transition: width 140ms ease-out;
+}
+#scene-two .proof-complete {
+  color: var(--accent);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+#scene-two .proof-actions button[hidden],
+#scene-two .proof-actions [hidden] { display: none; }
+#scene-two .point-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 1.2rem;
+  margin-top: 0.4rem;
+}
+#scene-two .point-presets .control-buttons { margin: 0; }
+.controls-label {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  font-weight: 650;
+}
+#scene-two .point-presets button[aria-pressed="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--surface-active);
+}
+#scene-three .cylinder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.6rem;
+  margin-top: 0.5rem;
+}
+#scene-three .cylinder-actions .control-buttons { margin-top: 0.3rem; }
+#scene-three .cylinder-presets,
+#scene-three .cylinder-view-options { min-width: 0; }
+#scene-three .scene-function-picker {
+  border-top: 1px solid var(--rule);
+  padding-top: 0.75rem;
+  gap: 0.5rem;
+}
+#scene-three .study-mode-group { padding: 0; border: 0; }
+#scene-three .scene-function-picker [data-action="switch-model"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+  margin-left: 0.3rem;
+}
+#scene-three .scene-function-picker [data-action="switch-model"]:hover,
+#scene-three .scene-function-picker [data-action="switch-model"][aria-pressed="true"] {
+  background: var(--surface-active);
+}
+#scene-three .scene-function-picker .instruction { margin: 0; }
+@media (max-width: 70rem) {
+  #scene-two .proof-navigation { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #scene-two .stage-meter [data-progress-fill] { transition: none; }
+}
