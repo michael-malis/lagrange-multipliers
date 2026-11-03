@@ -7,7 +7,7 @@ import { math, number, pair, renderMath } from "../ui/format.js";
 
 export function GradientScene(root) {
   const store = createStore(paraboloid);
-  const stageNames = ["Знак изменения", "Правило цепочки", "Проекция градиента", "Условие Лагранжа"];
+  const stageNames = proofSteps.map((stage) => stage.title.replace(/^\d+\.\s*/, ""));
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Уровни, допустимое направление и производная</span><button data-action="reset">Сбросить</button></div>
   <div class="proof-navigation" aria-label="Последовательность доказательства">
     <div class="proof-progress" role="list" aria-label="Этапы вывода">
@@ -22,7 +22,7 @@ export function GradientScene(root) {
   <p class="proof-navigation-hint">Нажмите «Следующий этап», чтобы увидеть новые построения на графике и соответствующее объяснение.</p>
   <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До максимума: <span data-tex="t=1"></span></button><button class="primary" data-action="optimum">Точно в максимум: <span data-tex="t=5/3"></span></button><button data-action="after">После максимума: <span data-tex="t=2"></span></button></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>
   <div class="scene-layout proof-layout">
-    <div class="plane-column"><div class="plane-wrap" data-plane></div><div class="plot-key"><span class="level">Уровни <span data-tex="f(x,y)=c"></span></span><span class="orange">Прямая и <span data-tex="P"></span></span><span class="active-level-label">Сейчас <span data-tex="c=f(P)=h(t)"></span> = <strong data-value="active-level"></strong></span></div><div class="vector-key"><span class="teal" data-legend="1"><span data-tex="\\nabla f"></span> — градиент</span><span class="tangent-key" data-legend="1"><span data-tex="T"></span> — касательная</span><span class="projection" data-legend="2"><span data-tex="\\operatorname{proj}_{T}\\nabla f"></span> — проекция</span><span class="violet" data-legend="3"><span data-tex="\\nabla g"></span> — нормаль</span></div></div>
+    <div class="plane-column"><div class="plane-wrap" data-plane></div><div class="plot-key"><span class="level">Уровни <span data-tex="f(x,y)=c"></span></span><span class="orange">Прямая и <span data-tex="P"></span></span><span class="active-level-label">Сейчас <span data-tex="c=f(P)=h(t)"></span> = <strong data-value="active-level"></strong></span></div><div class="vector-key"><span class="teal" data-legend="1"><span data-tex="\\nabla f"></span> — градиент</span><span class="tangent-key" data-legend="1"><span data-tex="T"></span> — касательный вектор</span><span class="projection" data-legend="2"><span data-tex="\\operatorname{proj}_{T}\\nabla f"></span> — проекция</span><span class="violet" data-legend="3"><span data-tex="\\nabla g"></span> — градиент ограничения</span></div></div>
     <div class="proof-side">
       <div class="profile-panel">
         <div class="plot-title">Высота на допустимой прямой: <span data-tex="h(t)=f(r(t))"></span></div>
@@ -31,7 +31,7 @@ export function GradientScene(root) {
           <div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div>
           <div><dt>Высота <span data-tex="h(t)"></span></dt><dd data-value="height"></dd></div>
           <div><dt>Производная <span data-tex="h'(t)"></span></dt><dd data-value="derivative"></dd></div>
-          <div data-unit hidden><dt>Производная по единичному направлению <span data-tex="D_{\\widehat T}f"></span></dt><dd data-value="unit"></dd></div>
+          <div data-unit hidden><dt>Производная по направлению <span data-tex="D_{\\widehat T}f"></span></dt><dd data-value="unit"></dd></div>
           <div data-angle hidden><dt data-tex="\\angle(\\nabla f,T)"></dt><dd data-value="angle"></dd></div>
           <div class="wide" data-projection hidden><dt data-tex="\\operatorname{proj}_{T}\\nabla f"></dt><dd data-value="projection-vector"></dd></div>
           <div data-projection hidden><dt>Норма проекции <span data-tex="\\|\\operatorname{proj}_{T}\\nabla f\\|"></span></dt><dd data-value="projection-norm"></dd></div>
