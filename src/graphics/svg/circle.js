@@ -16,16 +16,16 @@ export function createCircle(host, onChange) {
   const defs = svgElement("defs");
   svg.append(defs);
   for (const [key, color] of [
-    ["gf", "#47e1c2"],
-    ["gg", "#b6a4cf"],
+    ["gf", "#50f2d4"],
+    ["gg", "#c7a7ff"],
   ]) {
     const marker = svgElement("marker", {
       id: `circle-${key}`,
       viewBox: "0 0 10 10",
       refX: 9,
       refY: 5,
-      markerWidth: 7,
-      markerHeight: 7,
+      markerWidth: 9,
+      markerHeight: 9,
       orient: "auto",
       markerUnits: "userSpaceOnUse",
     });
@@ -67,6 +67,7 @@ export function createCircle(host, onChange) {
     onChange(Math.atan2(center - p.y, p.x - center));
   };
   svg.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
     dragging = true;
     svg.setPointerCapture(e.pointerId);
     move(e);
@@ -96,8 +97,8 @@ export function createCircle(host, onChange) {
         }
       if (gradients)
         for (const [key, v, color, offset] of [
-          ["gf", m.gradient, "#47e1c2", -11],
-          ["gg", m.normal, "#b6a4cf", 19],
+          ["gf", m.gradient, "#50f2d4", -11],
+          ["gg", m.normal, "#c7a7ff", 19],
         ]) {
           if (Math.hypot(...v) < 1e-9) {
             const label = svgElement("text", { x: cx - 34, y: cy - 15 });
@@ -114,7 +115,7 @@ export function createCircle(host, onChange) {
               x2,
               y2,
               stroke: color,
-              "stroke-width": 2.3,
+              "stroke-width": 3.6,
               "marker-end": `url(#circle-${key})`,
               "data-vector": key,
             }),
