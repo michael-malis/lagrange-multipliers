@@ -37,9 +37,15 @@ for (const [width, height] of [
         return [...sizes];
       }),
     ).toHaveLength(4);
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth),
-    ).toBeLessThanOrEqual(width);
+    const overflow = await page.evaluate(() => ({
+      width: document.documentElement.scrollWidth,
+      items: [...document.querySelectorAll("body *")].filter(el => {
+        const rect = el.getBoundingClientRect();
+        return getComputedStyle(el).display !== "none" && rect.width && (rect.right > innerWidth + .5 || rect.left < -.5);
+      }).slice(0, 12).map(el => ({tag: el.tagName, class: el.className?.baseVal || el.className, text: el.textContent?.slice(0, 32), right: el.getBoundingClientRect().right}))
+    }));
+    expect(overflow, JSON.stringify(overflow)).toMatchObject({width: expect.any(Number)});
+    expect(overflow.width, JSON.stringify(overflow.items)).toBeLessThanOrEqual(width);
     await page.screenshot({ path: `test-results/article-${width}.png` });
     for (const id of ["scene-one", "scene-two", "scene-three"]) {
       const scene = page.locator("#" + id);
