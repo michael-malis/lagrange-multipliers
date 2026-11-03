@@ -129,7 +129,7 @@ export function createGradientPlot(host, onChange) {
   const fixedLevels = [
     { value: -6, angle: 2.42, anchor: "end" },
     { value: 0, angle: -Math.PI / 2, anchor: "middle" },
-    { value: 3, angle: Math.PI / 2, anchor: "middle" },
+    { value: 3, angle: 0.7, anchor: "start" },
     { value: 4, angle: 0, anchor: "start" },
   ];
   for (const config of fixedLevels) {
