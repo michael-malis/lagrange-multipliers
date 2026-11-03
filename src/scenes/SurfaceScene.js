@@ -59,6 +59,8 @@ export function SurfaceScene(root) {
         : s.math.derivative > 0
           ? "При увеличении t точка поднимается по допустимой траектории."
           : "При увеличении t точка спускается по допустимой траектории.";
+    if (s.plane && s.math.stationary)
+      root.querySelector("[data-observation]").innerHTML = "Допустимая высота максимальна. Градиент остаётся ненулевым: " + math("\\nabla f=(\\frac83,\\frac83)") + ".";
     root.dataset.t = s.t;
     root.dataset.height = s.math.height;
     root.dataset.plane = s.plane;
