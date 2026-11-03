@@ -89,3 +89,11 @@
 - Raised the small-text typography floor and tightened introductory spacing, chart whitespace and synchronized proof layout.
 - Updated geometry, offline and responsive browser tests; added Full HD (1920×1080).
 - Verification status: pending workflow results and public browser inspection; no PASS claims without results.
+
+### 2026-11-03 — Pan/zoom and proof visibility (follow-up)
+
+- Added independent 2D camera manipulation to Figure 2: cursor-anchored wheel zoom, +/- buttons, reset view, and drag-to-pan on the background; dragging the marked point or constraint continues to update the mathematical parameter.
+- Maintained a uniform x/y visual scale and unchanged analytical coordinates while the camera transforms the SVG viewBox; no external dependency introduced.
+- Moved the current proof step’s explanatory text and formulas immediately below its navigation, before the graphs, and aligned navigation to the viewport on step change so the new explanation cannot appear unnoticed below the fold.
+- Added browser regression tests for pan/zoom, point dragging, exact scale, and the visibility of stage explanations at Full HD resolution.
+- Verification pending on GitHub Actions before reporting completion.
