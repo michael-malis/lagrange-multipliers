@@ -10,16 +10,17 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   const s = page.locator("#scene-two");
   await s.scrollIntoViewIfNeeded();
   await expect(s.locator("[data-vector]")).toHaveCount(0);
+  await expect(s.locator("[data-action=next]")).toHaveCount(0);
   await expect(s).toHaveAttribute("data-t", "1");
   await s.screenshot({ path: "test-results/proof-initial.png" });
-  await s.getByRole("button", { name: "Следующий шаг" }).click();
+  await s.locator('[data-step="1"]').click();
   await expect(s.locator("[data-vector=gradient]")).toHaveCount(1);
   await expect(s.locator("[data-vector=gradient]")).toHaveAttribute(
     "stroke",
     "#47e1c2",
   );
   await expect(s.locator("[data-vector=projection]")).toHaveCount(0);
-  await s.getByRole("button", { name: "Следующий шаг" }).click();
+  await s.locator('[data-step="2"]').click();
   const plane = s.locator(".plane");
   expect(await plane.getAttribute("data-scale-x")).toBe(
     await plane.getAttribute("data-scale-y"),
@@ -45,9 +46,9 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
     -1, 1,
   ]);
   await s.screenshot({ path: "test-results/proof-negative.png" });
-  await s.getByRole("button", { name: "Следующий шаг" }).click();
+  await s.locator('[data-step="3"]').click();
   await expect(s.locator("[data-vector=normal]")).toBeVisible();
-  await s.getByRole("button", { name: "Следующий шаг" }).click();
+  await s.locator('[data-step="4"]').click();
   await expect(s.locator(".proof-status")).toContainText("не удовлетворяет");
   await s.locator("[data-action=optimum]").click();
   await expect(s.locator(".proof-status")).toContainText("λ = 8/3");
