@@ -206,8 +206,9 @@ test("axis labels follow the visible coordinate window after zoom and pan", asyn
   await expect(ticks.first()).toBeVisible();
   const initial = await ticks.allTextContents();
   const initialT = await scene.getAttribute("data-t");
-  await scene.locator('[data-action="zoom-in"]').click();
-  await scene.locator('[data-action="zoom-in"]').click();
+  // The tick spacing changes to half-units only beyond zoom 1.75.
+  for (let i = 0; i < 3; i++)
+    await scene.locator('[data-action="zoom-in"]').click();
   const zoomed = await ticks.allTextContents();
   expect(zoomed).not.toEqual(initial);
   expect(zoomed.some(value => value.includes(".5"))).toBe(true);
