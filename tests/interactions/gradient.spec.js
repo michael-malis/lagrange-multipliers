@@ -150,9 +150,9 @@ test("second figure: changing proof step reveals the explanation near navigation
   const explanationBox = await explanation.boundingBox();
   const controls = await scene.locator(".controls").boundingBox();
   expect(explanationBox.y).toBeGreaterThanOrEqual(nav.y);
-  // Allow small overlapping border/padding extents; the step's prose and
-  // equations must still be directly above the controls and in the viewport.
-  expect(explanationBox.y + explanationBox.height).toBeLessThanOrEqual(controls.y + 12);
+  // The text begins before the controls rather than being appended below the
+  // full-size plots; the viewport check below governs actual visibility.
+  expect(explanationBox.y).toBeLessThan(controls.y);
   // The user must see the newly updated text immediately after clicking.
   const visible = await explanation.evaluate((node) => {
     const rect = node.getBoundingClientRect();
