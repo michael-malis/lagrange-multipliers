@@ -59,3 +59,13 @@
 Уточнение пользователя по браузерному комментарию: вводный тезис заменён переходом от обычного условия производных к ограничению. В начале объяснено, почему ∇f=0 слишком сильное требование, почему добавление ограничения к нему не решает задачу и что подстановка y=3−x здесь работает; мотивирована работа с неявно заданным ограничением. Сценарий первых 90 секунд обновлён без новых обязательных сцен.
 
 Человеческое пробное объяснение: passed. 2026-11-03 пользователь подтвердил успешное прохождение сценария и проверку понимания. Отдельное точное значение таймера не зафиксировано; результат принят как подтверждение критерия ≤20 минут и восстановления вывода читателем. Автотесты по-прежнему не используются как свидетельство этого критерия.
+
+
+### 2026-11-03 — Targeted UX and visual refinements
+
+- Strengthened coordinate-section plane boundaries, colored tangent curves and spatial arrows in scene I.
+- Emphasized 1D derivative tangents in red and circle gradients; softened contrast with a restrained green background gradient.
+- Compacted scene heights and moved parameter sliders/preset buttons ahead of plots for better immediate visibility.
+- Fixed raw JavaScript-template KaTeX escapes, shortened wide equations, disabled SVG text selection on drag.
+- Kept only five proof tabs, removed redundant Next button and repeated conclusion section; updated browser interaction test.
+- Verification: Awaiting GitHub Actions checks and published URL inspection; neither should be reported as PASS without evidence.
