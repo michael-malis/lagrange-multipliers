@@ -12,8 +12,7 @@ export function GradientScene(root) {
     "1. Знак изменения",
     "2. Правило цепочки",
     "3. Проекция",
-    "4. Нормаль",
-    "5. Условие",
+    "4. Нормаль и вывод",
   ]
     .map(
       (name, i) =>
@@ -22,7 +21,7 @@ export function GradientScene(root) {
     .join("")}</div>
   <div class="controls"><div class="slider-row"><label for="gradient-t">Параметр <span data-tex="t"></span></label><input id="gradient-t" type="range" min="0" max="3" step="0.005" value="1"><output for="gradient-t"></output></div><div class="control-buttons"><button data-action="before">До максимума: <span data-tex="t=1"></span></button><button class="primary" data-action="optimum">Точно в максимум: <span data-tex="t=5/3"></span></button><button data-action="after">После максимума: <span data-tex="t=2"></span></button></div><p class="instruction">Точку можно вести по прямой или по профилю. Оси <span data-tex="x,y"></span> имеют одинаковый масштаб; все стрелки используют общий коэффициент длины 0,58.</p></div>
   <div class="scene-layout proof-layout">
-    <div class="plane-wrap" data-plane></div>
+    <div class="plane-column"><div class="plane-wrap" data-plane></div><div class="plot-key"><span class="level">Линии уровня <span data-tex="f(x,y)=c"></span></span><span class="orange">Допустимая прямая и <span data-tex="P"></span></span><span class="active-level-label">Текущий уровень: <span data-tex="c=f(P)=h(t)"></span> = <strong data-value="active-level"></strong></span></div><div class="vector-key"><span class="teal" data-legend="1"><span data-tex="\nabla f"></span> — градиент</span><span class="tangent-key" data-legend="1"><span data-tex="T"></span> — касательная</span><span class="projection" data-legend="2"><span data-tex="\operatorname{proj}_{T}\nabla f"></span> — проекция</span><span class="violet" data-legend="3"><span data-tex="\nabla g"></span> — нормаль</span></div></div>
     <div class="proof-side">
       <div class="profile-panel">
         <div class="plot-title">Один уровень в трёх записях: <span data-tex="c=f(P)=h(t)"></span></div>
@@ -42,7 +41,7 @@ export function GradientScene(root) {
       <div class="proof-copy"><h3></h3><p data-copy></p><div data-formula></div></div>
     </div>
   </div>
-  <div class="legend"><span class="level">Линии <span data-tex="f(x,y)=c"></span></span><span class="orange">Ограничение и точка</span><span class="teal" data-legend="1">Градиент <span data-tex="\\nabla f"></span></span><span data-legend="1">Касательная <span data-tex="T"></span></span><span class="projection" data-legend="2">Знаковая проекция</span><span class="violet" data-legend="3">Градиент <span data-tex="\\nabla g"></span></span></div>
+ 
   `;
   renderMath(root);
 
@@ -77,6 +76,7 @@ export function GradientScene(root) {
     profile.update(state);
     slider.value = state.t;
     root.querySelector("output").textContent = number(state.t);
+    root.querySelector('[data-value="active-level"]').textContent = number(state.math.height);
     const values = {
       point: pair(state.math.point),
       height: number(state.math.height),
@@ -108,12 +108,12 @@ export function GradientScene(root) {
     const status = root.querySelector(".proof-status");
     status.dataset.sign = sign;
     status.textContent = state.math.stationary
-      ? state.step >= 4
+      ? state.step >= 3
         ? "Касание: h′ = 0, оба градиента нормальны к прямой, λ = 8/3."
         : state.step >= 2
           ? "h′ = 0: проекция исчезла, но ∇f = (8/3; 8/3) не равен нулю."
           : "Высота перестала меняться вдоль выбранного допустимого направления."
-      : state.step >= 4
+      : state.step >= 3
         ? "Здесь h′ ≠ 0, поэтому точка не удовлетворяет условию стационарности."
         : state.math.derivative > 0
           ? "h′ > 0 и θ < 90°: движение по T увеличивает высоту."
