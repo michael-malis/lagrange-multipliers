@@ -1496,3 +1496,22 @@ body[data-mode="demo"] .scene .world { min-height: 0; }
 .scene-top .view-switch { color: var(--accent); font-size: var(--fs-small); font-weight: 650; text-decoration: underline; white-space: nowrap; }
 .scene-top .view-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 @media (max-width: 38rem) { .scene-top .view-switch { flex-basis: 100%; white-space: normal; } }
+
+/* Fit the active mathematical workspace to the presentation viewport; auxiliary
+   instructions remain available in reading mode. Never shrink the text to fit. */
+html { overflow-x: clip; }
+@media (min-width: 900px) and (min-height: 780px) {
+  body[data-mode="demo"] .scene .world { height: clamp(19rem, 34vh, 24rem); min-height: 0; }
+  body[data-mode="demo"] .scene-layout { align-items: start; }
+  body[data-mode="demo"] .scene .profile-panel { padding: .35rem .65rem; }
+  body[data-mode="demo"] .scene .controls { padding: .3rem .7rem; }
+  body[data-mode="demo"] .scene .instruction:not([data-observation]) { display: none; }
+  body[data-mode="demo"] .scene .legend, 
+  body[data-mode="demo"] .scene .world-note,
+  body[data-mode="demo"] #scene-one .section-note,
+  body[data-mode="demo"] #scene-three .cylinder-study > .study-context,
+  body[data-mode="demo"] #scene-three .cylinder-study > .study-toolbar { display: none; }
+  body[data-mode="demo"] #scene-three .cylinder-study { max-height: 15rem; overflow-y: auto; padding: .35rem .7rem; }
+  body[data-mode="demo"] .scene .readouts { margin-block: .25rem; }
+  body[data-mode="demo"] .scene .scene-top { min-height: 2.4rem; padding-block: .25rem; }
+}
