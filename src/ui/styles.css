@@ -6,12 +6,12 @@
   --fs-body: clamp(1rem, 0.95rem + 0.18vw, 1.125rem);
   --fs-heading: clamp(1.5rem, 1.15rem + 1.2vw, 2.25rem);
   --fs-display: clamp(2.7rem, 1.65rem + 4.2vw, 5rem);
-  --bg: #020806;
+  --bg: #030b09;
   --surface: #04100c;
   --surface-raised: #06140f;
   --surface-active: #092019;
-  --ink: #edf4f0;
-  --text: #d6e7e0;
+  --ink: #dfe9e2;
+  --text: #c4d5cb;
   --muted: #7f938a;
   --rule: rgba(237, 244, 240, 0.14);
   --rule-strong: rgba(237, 244, 240, 0.28);
@@ -22,7 +22,7 @@
   --teal: #47e1c2;
   --projection: #a7ffe7;
   --violet: #c29aff;
-  --tangent: #eef5f1;
+  --tangent: #ff686f;
   font-synthesis: none;
 }
 
@@ -38,7 +38,10 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: radial-gradient(ellipse 85% 60% at 0% 0%, rgba(26, 100, 57, 0.13), transparent 72%),
+    radial-gradient(ellipse 80% 55% at 110% 5%, rgba(15, 110, 75, 0.10), transparent 73%),
+    linear-gradient(180deg, #030b09, #040d0a);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-text);
   font-size: var(--fs-body);
@@ -321,7 +324,7 @@ strong {
 
 .scene {
   max-width: 76rem;
-  margin: 2rem auto 2.7rem;
+  margin: 1.35rem auto 1.8rem;
   border-top: 1px solid var(--rule-strong);
   border-bottom: 1px solid var(--rule-strong);
   background: var(--surface);
@@ -354,7 +357,7 @@ strong {
 .world {
   position: relative;
   min-width: 0;
-  height: 30rem;
+  height: 24rem;
   overflow: hidden;
   background: var(--bg);
 }
@@ -391,7 +394,7 @@ strong {
 
 .profile-panel {
   min-width: 0;
-  padding: 1.25rem 1.2rem;
+  padding: 0.95rem 1.1rem;
   border-left: 1px solid var(--rule);
   background: var(--surface-raised);
 }
@@ -408,7 +411,10 @@ strong {
   width: 100%;
   height: auto;
   display: block;
-  touch-action: pan-y;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   cursor: crosshair;
 }
 
@@ -422,6 +428,9 @@ strong {
   fill: var(--muted);
   font-family: var(--font-text);
   font-size: var(--fs-small);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .profile .axis,
@@ -444,13 +453,13 @@ strong {
 }
 
 .profile .tangent-line {
-  stroke: var(--teal);
-  stroke-width: 2;
-  stroke-dasharray: 7 5;
+  stroke: var(--tangent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
 }
 
 .profile .slope-label {
-  fill: var(--teal);
+  fill: var(--tangent);
   paint-order: stroke;
   stroke: var(--surface-raised);
   stroke-width: 4px;
@@ -497,7 +506,7 @@ strong {
 }
 
 .controls {
-  padding: 1rem 1.3rem 1.15rem;
+  padding: 0.62rem 1.3rem 0.78rem;
   border-top: 1px solid var(--rule);
 }
 
@@ -523,7 +532,7 @@ input[type="range"] {
 }
 
 .control-buttons {
-  margin-top: 0.72rem;
+  margin-top: 0.5rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.52rem;
@@ -672,7 +681,9 @@ input[type="range"] {
 
 .plane-wrap {
   min-width: 0;
-  padding: 0.8rem;
+  padding: 0.5rem;
+  max-width: 33rem;
+  margin-inline: auto;
   align-self: start;
 }
 
@@ -688,7 +699,7 @@ input[type="range"] {
 }
 
 .proof-copy {
-  padding: 1.2rem;
+  padding: 0.85rem 1rem;
   border-top: 1px solid var(--rule);
 }
 
@@ -912,7 +923,7 @@ th {
 }
 
 #scene-three .world {
-  height: 33rem;
+  height: 26rem;
 }
 
 @media (max-width: 56rem) {
@@ -939,11 +950,11 @@ th {
   }
 
   .world {
-    height: 27rem;
+    height: 23rem;
   }
 
   #scene-three .world {
-    height: 29rem;
+    height: 25rem;
   }
 }
 
@@ -992,11 +1003,11 @@ th {
   }
 
   .world {
-    height: 22rem;
+    height: 20rem;
   }
 
   #scene-three .world {
-    height: 24rem;
+    height: 22rem;
   }
 
   .profile-panel,
@@ -1041,3 +1052,12 @@ th {
     scroll-behavior: auto;
   }
 }
+
+/* The SVG plots are drag controls, not selectable text. */
+.profile, .plane, .circle-plot,
+.profile *, .plane *, .circle-plot * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.proof-copy [data-formula] .katex-display { max-width: 100%; margin: 0.45rem 0; }
