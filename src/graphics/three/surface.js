@@ -359,14 +359,19 @@ export function createSurface(host, model) {
       host.dataset.rendered = "true";
     }
   }
-  function resetCamera() {
-    camera.position.set(...(cylinder ? [5, 4.4, 6] : [9, 7.2, -10]));
-    controls.target.copy(world(cylinder ? [0, 0, 0.1] : [2, 1.6, -0.4]));
-    camera.zoom = cylinder ? 1.12 : 1;
+  function setView(preset = "surface") {
+    const focus = cylinder ? [0, 0, 0.1] : [2, 1.6, -0.4];
+    const views = cylinder
+      ? { surface: [5, 4.4, 6], section: [7, 2.5, 0.5], top: [0.05, 12, 0.05] }
+      : { surface: [9, 7.2, -10], section: [11, 4.5, -1], top: [2.05, 16, -1.65] };
+    controls.target.copy(world(focus));
+    camera.position.set(...(views[preset] || views.surface));
+    camera.zoom = cylinder ? 1.12 : preset === "section" ? 1.06 : 1;
     camera.lookAt(controls.target);
     controls.update();
     render();
   }
+  function resetCamera() { setView("surface"); }
   const resize = new ResizeObserver(() => {
     const width = host.clientWidth,
       height = host.clientHeight;
@@ -479,6 +484,7 @@ export function createSurface(host, model) {
   host.dataset.webgl = "ready";
   return {
     resetCamera,
+    setView,
     update(s) {
       latest = s;
       if (degradedView) {
@@ -533,6 +539,7 @@ function createFallback(host, initial, verticalScale) {
     points.map((p, i) => `${i ? "L" : "M"}${project(p).join(",")}`).join(" ");
   return {
     resetCamera() {},
+    setView() {},
     update(s) {
       svg.replaceChildren();
       const m = s.model,
