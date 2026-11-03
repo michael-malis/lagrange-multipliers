@@ -6,6 +6,31 @@ import { createProfile } from "../graphics/svg/profile.js";
 import { createCircle } from "../graphics/svg/circle.js";
 import { math, number, pair, renderMath } from "../ui/format.js";
 
+
+function counterexampleInset() {
+  // Local enlargement: h(t) = sin^3(t), t in [-0.5, 0.5].
+  const path = Array.from({ length: 161 }, (_, i) => {
+    const t = -0.5 + i / 160;
+    const x = 30 + (t + 0.5) * 300;
+    const y = 95 - 460 * Math.sin(t) ** 3;
+    return `${i ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`;
+  }).join(" ");
+  return `<figure class="counterexample-inset">
+    <svg role="img" aria-label="Увеличенный профиль sin в кубе около нуля: слева значения отрицательны, справа положительны, касательная горизонтальна" viewBox="0 0 360 192">
+      <line x1="30" y1="95" x2="330" y2="95" stroke="#929baa" stroke-width="1.5"/>
+      <line x1="180" y1="22" x2="180" y2="163" stroke="#929baa" stroke-width="1.2"/>
+      <path d="${path}" fill="none" stroke="#e3a15c" stroke-width="3"/>
+      <line x1="140" y1="95" x2="220" y2="95" stroke="#47e1c2" stroke-width="3" stroke-dasharray="7 4"/>
+      <circle cx="180" cy="95" r="5" fill="#e3a15c" stroke="#141b26" stroke-width="2"/>
+      <g fill="#d9e5ed" font-size="14" font-family="sans-serif">
+        <text x="31" y="184">−0,5</text><text x="176" y="184">0</text><text x="307" y="184">0,5</text>
+        <text x="37" y="140">h &lt; 0</text><text x="252" y="51">h &gt; 0</text>
+        <text x="194" y="86">h′(0) = 0</text>
+      </g>
+    </svg>
+    <figcaption>Около t = 0 значения меняют знак. Стационарная точка, не экстремум.</figcaption>
+  </figure>`;
+}
 export function CylinderScene(root) {
   const store = createStore(cylinder, { vectors: false });
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 3 · Экстремумы на окружности</span><button data-action="reset">Сбросить</button></div>
@@ -124,7 +149,7 @@ export function CylinderScene(root) {
         : "Максимум · y = 1";
       root.querySelector("[data-analysis]").innerHTML = isMain
         ? `${math("h'(t)=-\\sin t(1+4\\cos t)=0", true)}<p>Условие распадается на <span class="math-inline">${math("\\sin t=0")}</span> и <span class="math-inline">${math("\\cos t=-1/4")}</span>. Полный список кандидатов:</p><div class="table-scroll"><table><thead><tr><th>Точка</th><th>f</th><th>λ</th><th>Классификация</th></tr></thead><tbody><tr><td>(1; 0)</td><td>2</td><td>${math("\\frac32")}</td><td>Глобальный максимум</td></tr><tr><td>(−1; 0)</td><td>0</td><td>${math("\\frac12")}</td><td>Локальный, не глобальный максимум</td></tr><tr><td>(${math("-\\frac14")}; ${math("\\frac{\\sqrt{15}}4")})</td><td>${math("-\\frac98")}</td><td>−1</td><td>Глобальный минимум</td></tr><tr><td>(${math("-\\frac14")}; ${math("-\\frac{\\sqrt{15}}4")})</td><td>${math("-\\frac98")}</td><td>−1</td><td>Глобальный минимум</td></tr></tbody></table></div><p>В минимумах <span class="math-inline">${math("\\nabla f=-\\nabla g")}</span>: множитель отрицателен, поэтому градиенты противоположны.</p>`
-        : `${math("h(t)=\\sin^3t,\\qquad h'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Это другая целевая функция, а не новое ограничение. Проведите точку через правый край окружности. Значения при малом отрицательном t отрицательны, а при положительном t положительны. При этом градиент целевой функции ненулевой и условие Лагранжа выполнено с множителем 1. <strong>Стационарная точка, не экстремум.</strong></p>`;
+        : `${math("h(t)=\\sin^3t,\\qquad h'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Это другая целевая функция, а не новое ограничение. Проведите точку через правый край окружности. Значения при малом отрицательном t отрицательны, а при положительном t положительны. При этом градиент целевой функции ненулевой и условие Лагранжа выполнено с множителем 1. <strong>Стационарная точка, не экстремум.</strong></p>` + counterexampleInset();
       renderedModel = state.model;
     }
     root.dataset.t = state.t;
