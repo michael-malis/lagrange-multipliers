@@ -40,11 +40,12 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await expect(s.locator("[data-model-context]")).toContainText("Дополнительный пример");
   await expect(s.locator('[data-action="switch-model"]')).toHaveAttribute("aria-pressed", "true");
   await expect(s.locator('[data-action="switch-model"]')).toHaveText("Вернуться к исходной функции");
-  await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Стационарная точка · t = 0");
-  await expect(s.locator("[data-action=minimum-minus]")).toHaveText("Максимум · y = 1");
-  await s.locator("[data-action=minimum-minus]").click();
+  await expect(s.locator(".study-point-group")).toBeHidden();
+  await expect(s.locator("[data-action=local]")).toHaveText("Стационарная точка без экстремума");
+  await expect(s.locator("[data-action=global]")).toHaveText("Глобальный максимум · 1");
+  await s.locator("[data-action=global]").click();
   await expect(s.locator("[data-value=height]")).toHaveText("1");
-  await s.locator("[data-action=minimum-plus]").click();
+  await s.locator("[data-action=local]").click();
   await expect(s.locator("[data-value=lambda]")).toHaveText("0");
   await expect(circle.locator("[data-vector=gf]")).toHaveCount(0);
   await expect(s.locator(".proof-status")).toContainText("без экстремума");
