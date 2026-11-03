@@ -1539,3 +1539,21 @@ html { overflow-x: clip; }
   body[data-mode="demo"] #scene-two .profile-panel [data-profile] svg { display: block; width: 100%; height: auto; }
   body[data-mode="demo"] #scene-two svg.plane { display: block; width: auto; max-width: 100%; max-height: min(51vh, 550px); margin-inline: auto; }
 }
+
+/* In presentation mode the SVG itself and the synchronized readouts carry
+   the legend. Suppress duplicated below-the-plot instructional paragraphs. */
+@media (min-width: 1100px) and (min-height: 780px) {
+  body[data-mode="demo"] #scene-two .plot-pan-hint,
+  body[data-mode="demo"] #scene-two .plot-key,
+  body[data-mode="demo"] #scene-two .vector-key { display: none; }
+  body[data-mode="demo"] #scene-two svg.plane {
+    max-height: min(47vh, 505px);
+  }
+  body[data-mode="demo"] #scene-two svg.plane text { font-size: 1rem; }
+}
+@media (max-width: 34rem) {
+  .scene-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .4rem .6rem; }
+  .scene-top .scene-label { grid-column: 1 / -1; font-size: .94rem; letter-spacing: .035em; text-transform: none; line-height: 1.35; }
+  .scene-top .view-switch { grid-column: 1; white-space: normal; }
+  .scene-top button[data-action="reset"] { grid-column: 2; }
+}
