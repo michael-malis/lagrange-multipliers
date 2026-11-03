@@ -230,7 +230,7 @@ export function createGradientPlot(host, onChange) {
         svg.getScreenCTM().inverse(),
       ),
       x = (point.x - pad) / axisScale + min,
-      y = (size - pad - point.y) / axisScale + min;
+      y = yMax - (point.y - pad) / axisScale;
     onChange(Math.max(0, Math.min(3, (x - y + 3) / 2)));
   };
   svg.addEventListener("pointerdown", (event) => {
