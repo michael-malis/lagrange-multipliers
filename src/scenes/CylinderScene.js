@@ -35,10 +35,10 @@ function renderCriticalPoints() {
   // Descriptive identifiers distinguish global and local extrema; an
   // undifferentiated P* would incorrectly suggest that all are optima.
   const rows = [
-    { name: String.raw`P_{\max}`, point: String.raw`(1,0)`, height: "2", lambda: String.raw`\frac32`, kind: "Глобальный максимум" },
+    { name: String.raw`P_{\mathrm{max}}`, point: String.raw`(1,0)`, height: "2", lambda: String.raw`\frac32`, kind: "Глобальный максимум" },
     { name: String.raw`P_{\mathrm{loc.max}}`, point: String.raw`(-1,0)`, height: "0", lambda: String.raw`\frac12`, kind: "Локальный, не глобальный максимум" },
-    { name: String.raw`P_{\min}^{+}`, point: String.raw`\left(-\frac14,\frac{\sqrt{15}}4\right)`, height: String.raw`-\frac98`, lambda: "-1", kind: "Глобальный минимум" },
-    { name: String.raw`P_{\min}^{-}`, point: String.raw`\left(-\frac14,-\frac{\sqrt{15}}4\right)`, height: String.raw`-\frac98`, lambda: "-1", kind: "Глобальный минимум" },
+    { name: String.raw`P_{\mathrm{min}}^{+}`, point: String.raw`\left(-\frac14,\frac{\sqrt{15}}4\right)`, height: String.raw`-\frac98`, lambda: "-1", kind: "Глобальный минимум" },
+    { name: String.raw`P_{\mathrm{min}}^{-}`, point: String.raw`\left(-\frac14,-\frac{\sqrt{15}}4\right)`, height: String.raw`-\frac98`, lambda: "-1", kind: "Глобальный минимум" },
   ];
   return `
     ${math(String.raw`h'(t)=-\sin t(1+4\cos t)=0`, true)}
@@ -169,7 +169,7 @@ export function CylinderScene(root) {
         : "Максимум · y = 1";
       root.querySelector("[data-analysis]").innerHTML = isMain
         ? renderCriticalPoints()
-        : `${math("h(t)=\\sin^3t,\\qquad h'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Окружность та же, но функция другая. При ${math(String.raw` + "`t<0`" + `)} вблизи нуля высота отрицательна, а при ${math(String.raw` + "`t>0`" + `)} — положительна. Хотя градиент ненулевой и условие Лагранжа выполнено при ${math(String.raw` + "`\lambda=1`" + `)}, здесь нет ни максимума, ни минимума. <strong>Стационарная точка, не экстремум.</strong></p>` + counterexampleInset();
+        : `${math("h(t)=\\sin^3t,\\qquad h\'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Окружность та же, но функция другая. При ${math("t<0")} вблизи нуля высота отрицательна, а при ${math("t>0")} — положительна. Хотя градиент ненулевой и условие Лагранжа выполнено при ${math("\\lambda=1")}, здесь нет ни максимума, ни минимума. <strong>Стационарная точка, не экстремум.</strong></p>` + counterexampleInset();
       renderedModel = state.model;
     }
     root.dataset.t = state.t;
