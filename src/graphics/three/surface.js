@@ -458,8 +458,8 @@ export function createSurface(host, model) {
           world([x, y, z]),
           0.92,
           color,
-          0.2,
-          0.11,
+          0.25,
+          0.145,
         );
       for (const part of [arrow.line, arrow.cone]) {
         part.material.transparent = true;
