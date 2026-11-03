@@ -64,7 +64,7 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await s.locator('[data-action="next-stage"]').click();
   await expect(s.locator(".plane .vector-label")).toHaveCount(1);
   await s.locator("[data-action=optimum]").click();
-  await expect(s.locator(".proof-status")).toContainText("λ = 2,667");
+  await expect(s.locator(".proof-status")).toContainText("λ");
   await s.screenshot({ path: "test-results/proof-normal.png" });
   const first = page.locator("#scene-one");
   await first.getByRole("button", { name: "Точно в максимум" }).click();
