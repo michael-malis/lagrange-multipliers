@@ -46,13 +46,21 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await expect(circle.locator("[data-vector=gf]")).toHaveCount(0);
   await expect(s.locator(".proof-status")).toContainText("без экстремума");
   await s.screenshot({ path: "test-results/cylinder-counterexample.png" });
-  const box = await circle.boundingBox();
-  const center = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
-  await page.mouse.move(center.x + box.width * 0.2, center.y + 3);
+  // Use the SVG coordinate system, not the CSS bounding-box center:
+  // responsive layouts may add padding or alter the rendered aspect ratio.
+  const seam = await circle.evaluate((svg) => {
+    const matrix = svg.getScreenCTM();
+    const screen = (x, y) => {
+      const point = new DOMPoint(x, y).matrixTransform(matrix);
+      return { x: point.x, y: point.y };
+    };
+    return { below: screen(170, 132), above: screen(170, 128) };
+  });
+  await page.mouse.move(seam.below.x, seam.below.y);
   await page.mouse.down();
   expect(+(await s.getAttribute("data-t"))).toBeGreaterThan(6);
   expect(+(await s.getAttribute("data-height"))).toBeLessThan(0);
-  await page.mouse.move(center.x + box.width * 0.2, center.y - 3);
+  await page.mouse.move(seam.above.x, seam.above.y);
   await page.mouse.up();
   expect(+(await s.getAttribute("data-t"))).toBeLessThan(0.1);
   expect(+(await s.getAttribute("data-height"))).toBeGreaterThan(0);
