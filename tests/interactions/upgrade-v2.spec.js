@@ -141,3 +141,30 @@ test("v2: narrow-screen geometry/profile toggle preserves shared t and circle mo
   await expect(page.locator(".katex-error")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
+
+test("v2: level-set ell renders as one KaTeX symbol, not raw 'ell' or a line break", async ({ page, context }) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  const line = page.locator("#geometry .reading .equation").first();
+  await expect(line.locator(".katex")).toBeVisible();
+  const latex = await line.locator('annotation[encoding="application/x-tex"]').textContent();
+  expect(latex).toContain(String.raw`\ell`);
+  expect(latex).toContain("Longleftrightarrow");
+  const visibleMath = await line.locator(".katex-html").innerText();
+  expect(visibleMath).toContain("ℓ");
+  expect(visibleMath).not.toMatch(/\bell\b/);
+  await expect(page.locator("#geometry .katex-error")).toHaveCount(0);
+});
+
+test("v2: circle classification uses mathematical candidate labels and TeX fractions", async ({ page, context }) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  const analysis = page.locator("#scene-three [data-analysis]");
+  const rows = analysis.locator("tbody tr");
+  await expect(rows).toHaveCount(4);
+  for (const row of await rows.all()) {
+    await expect(row.locator("td").first().locator(".katex")).toHaveCount(1);
+    await expect(row.locator("td").nth(1).locator(".katex")).toHaveCount(1);
+  }
+  await expect(analysis.locator(".katex-error")).toHaveCount(0);
+});
