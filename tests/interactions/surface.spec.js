@@ -29,10 +29,16 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
     +(await scene.locator(".profile .point").getAttribute("data-height")),
   ).toBeCloseTo(position[2], 12);
   await scene.screenshot({ path: "test-results/surface-optimum.png" });
-  await scene.getByRole("button", { name: "Координатные сечения" }).click();
+  await scene.getByRole("button", { name: "Оба сечения" }).click();
   await expect(scene.locator("[data-value=fx]")).toHaveText("2,667");
   await expect(scene.locator("[data-value=fy]")).toHaveText("2,667");
   await scene.screenshot({ path: "test-results/surface-sections.png" });
+  await scene.locator('[data-action="section-x"]').click();
+  await expect(scene).toHaveAttribute("data-section-mode", "x");
+  await scene.screenshot({ path: "test-results/surface-section-x.png" });
+  await scene.locator('[data-action="section-y"]').click();
+  await expect(scene).toHaveAttribute("data-section-mode", "y");
+  await scene.screenshot({ path: "test-results/surface-section-y.png" });
   const box = await scene.locator("canvas").boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
