@@ -1487,11 +1487,6 @@ body[data-mode="demo"] .scene .world { min-height: 0; }
   body[data-mode="demo"] .masthead { flex-wrap: wrap; }
 }
 
-.understanding-check { margin: 1.4rem 0; padding: 1.1rem 1.2rem; border: 1px solid var(--rule-strong); border-radius: .5rem; background: var(--surface-raised); }
-.understanding-check h3 { margin-bottom: .5rem; }
-.understanding-check p { margin-bottom: .6rem; }
-.understanding-check button { min-width: 5rem; }
-.understanding-check .understanding-feedback { min-height: 1.4em; color: var(--accent); margin: .6rem 0 0; }
 
 .scene-top .view-switch { color: var(--accent); font-size: var(--fs-small); font-weight: 650; text-decoration: underline; white-space: nowrap; }
 .scene-top .view-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }

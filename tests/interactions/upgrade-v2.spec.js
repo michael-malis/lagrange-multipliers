@@ -41,13 +41,11 @@ test("v2: reading and demonstration reuse the same scenes and preserve state", a
   await expect(page.locator("#geometry")).toBeVisible();
 });
 
-test("v2: optional checks, enlarged non-extremum and vertical fractions", async ({ page, context }) => {
+test("v2: no quiz blocks, enlarged non-extremum and vertical fractions", async ({ page, context }) => {
   await context.setOffline(true);
   await page.goto(pageUrl);
-  await expect(page.locator(".understanding-check")).toHaveCount(2);
-  const first = page.locator(".understanding-check").first();
-  await first.getByRole("button", { name: "Нет" }).click();
-  await expect(first.locator(".understanding-feedback")).toContainText("Верно");
+  await expect(page.locator(".understanding-check")).toHaveCount(0);
+  await expect(page.getByText("Проверка понимания")).toHaveCount(0);
   const scene = page.locator("#scene-three");
   await scene.locator('[data-action="switch-model"]').click();
   await expect(scene.locator(".counterexample-inset")).toBeVisible();
