@@ -31,6 +31,26 @@ function counterexampleInset() {
     <figcaption>Около t = 0 значения меняют знак. Стационарная точка, не экстремум.</figcaption>
   </figure>`;
 }
+function renderCriticalPoints() {
+  // Descriptive identifiers distinguish global and local extrema; an
+  // undifferentiated P* would incorrectly suggest that all are optima.
+  const rows = [
+    { name: String.raw`P_{\max}`, point: String.raw`(1,0)`, height: "2", lambda: String.raw`\frac32`, kind: "Глобальный максимум" },
+    { name: String.raw`P_{\mathrm{loc.max}}`, point: String.raw`(-1,0)`, height: "0", lambda: String.raw`\frac12`, kind: "Локальный, не глобальный максимум" },
+    { name: String.raw`P_{\min}^{+}`, point: String.raw`\left(-\frac14,\frac{\sqrt{15}}4\right)`, height: String.raw`-\frac98`, lambda: "-1", kind: "Глобальный минимум" },
+    { name: String.raw`P_{\min}^{-}`, point: String.raw`\left(-\frac14,-\frac{\sqrt{15}}4\right)`, height: String.raw`-\frac98`, lambda: "-1", kind: "Глобальный минимум" },
+  ];
+  return `
+    ${math(String.raw`h'(t)=-\sin t(1+4\cos t)=0`, true)}
+    <p>Условие распадается на ${math(String.raw`\sin t=0`)} и ${math(String.raw`\cos t=-\frac14`)}. Четыре кандидата:</p>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Обозначение</th><th>Точка</th><th>${math("f")}</th><th>${math(String.raw`\lambda`)}</th><th>Тип</th></tr></thead>
+      <tbody>${rows.map(c => `<tr><td>${math(c.name)}</td><td>${math(c.point)}</td><td>${math(c.height)}</td><td>${math(c.lambda)}</td><td>${c.kind}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <p>В минимумах ${math(String.raw`\nabla f=-\nabla g`)}: отрицательный множитель означает противоположное направление градиентов.</p>
+  `;
+}
+
 export function CylinderScene(root) {
   const store = createStore(cylinder, { vectors: false });
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 3 · Экстремумы на окружности</span><button data-action="reset">Сбросить</button></div>
@@ -148,8 +168,8 @@ export function CylinderScene(root) {
         ? "Минимум · y < 0"
         : "Максимум · y = 1";
       root.querySelector("[data-analysis]").innerHTML = isMain
-        ? `${math("h'(t)=-\\sin t(1+4\\cos t)=0", true)}<p>Условие распадается на <span class="math-inline">${math("\\sin t=0")}</span> и <span class="math-inline">${math("\\cos t=-1/4")}</span>. Полный список кандидатов:</p><div class="table-scroll"><table><thead><tr><th>Точка</th><th>f</th><th>λ</th><th>Классификация</th></tr></thead><tbody><tr><td>(1; 0)</td><td>2</td><td>${math("\\frac32")}</td><td>Глобальный максимум</td></tr><tr><td>(−1; 0)</td><td>0</td><td>${math("\\frac12")}</td><td>Локальный, не глобальный максимум</td></tr><tr><td>(${math("-\\frac14")}; ${math("\\frac{\\sqrt{15}}4")})</td><td>${math("-\\frac98")}</td><td>−1</td><td>Глобальный минимум</td></tr><tr><td>(${math("-\\frac14")}; ${math("-\\frac{\\sqrt{15}}4")})</td><td>${math("-\\frac98")}</td><td>−1</td><td>Глобальный минимум</td></tr></tbody></table></div><p>В минимумах <span class="math-inline">${math("\\nabla f=-\\nabla g")}</span>: множитель отрицателен, поэтому градиенты противоположны.</p>`
-        : `${math("h(t)=\\sin^3t,\\qquad h'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Окружность та же, но функция другая. При t чуть меньше нуля высота отрицательна, при t чуть больше — положительна. Хотя градиент ненулевой и условие Лагранжа выполнено при λ = 1, здесь нет ни максимума, ни минимума. <strong>Стационарная точка, не экстремум.</strong></p>` + counterexampleInset();
+        ? renderCriticalPoints()
+        : `${math("h(t)=\\sin^3t,\\qquad h'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Окружность та же, но функция другая. При ${math(String.raw` + "`t<0`" + `)} вблизи нуля высота отрицательна, а при ${math(String.raw` + "`t>0`" + `)} — положительна. Хотя градиент ненулевой и условие Лагранжа выполнено при ${math(String.raw` + "`\lambda=1`" + `)}, здесь нет ни максимума, ни минимума. <strong>Стационарная точка, не экстремум.</strong></p>` + counterexampleInset();
       renderedModel = state.model;
     }
     root.dataset.t = state.t;
