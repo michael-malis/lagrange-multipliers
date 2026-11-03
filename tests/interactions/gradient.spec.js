@@ -12,7 +12,9 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s.locator("[data-vector]")).toHaveCount(0);
   await expect(s.locator('[data-action="next-stage"]')).toBeVisible();
   await expect(s.locator('[data-action="previous-stage"]')).toBeDisabled();
-  await expect(s.locator("[data-step-indicator]")).toHaveCount(4);
+  await expect(s.locator("[data-step-indicator]")).toHaveCount(0);
+  await expect(s.locator(".stage-meter")).toHaveAttribute("aria-valuenow", "1");
+  await expect(s.locator("[data-current-title]")).toHaveText("Знак производной");
   await expect(s).toHaveAttribute("data-t", "1");
   await s.screenshot({ path: "test-results/proof-initial.png" });
   await s.locator('[data-action="next-stage"]').click();
@@ -36,6 +38,7 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s.locator("[data-value=projection-coefficient]")).toBeVisible();
   await s.screenshot({ path: "test-results/proof-positive.png" });
   await s.locator("[data-action=optimum]").click();
+  await expect(s.locator('[data-action="optimum"]')).toHaveAttribute("aria-pressed", "true");
   await expect(s.locator("[data-zero-projection]")).toBeVisible();
   await expect(s.locator("[data-tangency]")).toBeVisible();
   await expect(s.locator("[data-value=projection-coefficient]")).toHaveText("0");
@@ -50,11 +53,12 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await s.screenshot({ path: "test-results/proof-negative.png" });
   await s.locator('[data-action="next-stage"]').click();
   await expect(s.locator("[data-vector=normal]")).toBeVisible();
-  await expect(s.locator("[data-step-indicator]")).toHaveCount(4);
-  await expect(s.locator('[data-action="next-stage"]')).toBeDisabled();
+  await expect(s.locator(".stage-meter")).toHaveAttribute("aria-valuenow", "4");
+  await expect(s.locator('[data-action="next-stage"]')).toBeHidden();
+  await expect(s.locator("[data-complete]")).toBeVisible();
   await expect(s.locator(".proof-status")).toContainText("не удовлетворяет");
   await expect(s.locator(".vector-key")).toContainText("градиент");
-  await expect(s.locator('[data-step-indicator="3"]')).toHaveAttribute("aria-current", "step");
+  await expect(s.locator("[data-current-title]")).toHaveText("Условие Лагранжа");
   await s.locator('[data-action="previous-stage"]').click();
   await expect(s).toHaveAttribute("data-step", "2");
   await s.locator('[data-action="next-stage"]').click();
