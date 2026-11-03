@@ -36,7 +36,7 @@ test("offline: zero external requests, loaded fonts and complete three-scene art
   await expect(page.locator("#scene-three [data-value=height]")).toHaveText(
     "2",
   );
-  await page.locator("[data-model=counterexample]").click();
+  await page.locator('#scene-three [data-action="switch-model"]').click();
   await expect(page.locator(".katex-error")).toHaveCount(0);
   expect(await page.locator(".katex").count()).toBeGreaterThan(70);
   expect(requests).toEqual([]);
