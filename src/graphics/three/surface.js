@@ -9,8 +9,8 @@ const colors = {
   grid: 0x7895a8,
   curve: 0xe3a15c,
   ink: 0xd1d3d1,
-  x: 0x47e1c2,
-  y: 0xb6a4cf,
+  x: 0x50f2d4,
+  y: 0xc7a7ff,
 };
 function disposeGroup(group) {
   while (group.children.length) {
@@ -102,6 +102,26 @@ export function createSurface(host, model) {
   scene.add(heightLine);
   const world = (p) => toWorld(p, scale);
   function line(points, color, width = 1, group = scene, opacity = 1) {
+    if (group === sections && width >= 3 && points.length >= 2) {
+      const tube = new THREE.Mesh(
+        new THREE.TubeGeometry(
+          new THREE.CatmullRomCurve3(points.map(world)),
+          Math.max(12, points.length - 1),
+          0.018,
+          6,
+          false,
+        ),
+        new THREE.MeshBasicMaterial({
+          color,
+          transparent: true,
+          opacity,
+          depthTest: false,
+        }),
+      );
+      tube.renderOrder = 7;
+      group.add(tube);
+      return tube;
+    }
     const obj = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints(points.map(world)),
       new THREE.LineBasicMaterial({
@@ -281,7 +301,7 @@ export function createSurface(host, model) {
         }),
       ),
     );
-    line([...points, points[0]], color, 1, group, 0.5);
+    line([...points, points[0]], color, group === sections ? 3 : 1, group, 0.65);
   }
   if (cylinder) {
     for (let i = 0; i < 32; i++) {
@@ -387,7 +407,7 @@ export function createSurface(host, model) {
       ],
       sections,
       colors.x,
-      0.05,
+      0.095,
     );
     plane(
       [
@@ -398,7 +418,7 @@ export function createSurface(host, model) {
       ],
       sections,
       colors.y,
-      0.05,
+      0.095,
     );
     for (const axis of [0, 1]) {
       let points = [];
@@ -408,7 +428,7 @@ export function createSurface(host, model) {
         const h = current.f(a, b);
         if (h >= floor && h <= ceil) points.push([a, b, h + 0.025]);
       }
-      line(points, axis ? colors.y : colors.x, 1, sections);
+      line(points, axis ? colors.y : colors.x, 3, sections);
     }
     const length = 0.6;
     line(
@@ -417,7 +437,7 @@ export function createSurface(host, model) {
         [x + length, y, z + fx * length],
       ],
       colors.x,
-      1,
+      3,
       sections,
     );
     line(
@@ -426,7 +446,7 @@ export function createSurface(host, model) {
         [x, y + length, z + fy * length],
       ],
       colors.y,
-      1,
+      3,
       sections,
     );
     for (const [vector, color] of [
@@ -437,10 +457,10 @@ export function createSurface(host, model) {
       const arrow = new THREE.ArrowHelper(
           direction,
           world([x, y, z]),
-          0.65,
+          0.92,
           color,
-          0.12,
-          0.07,
+          0.2,
+          0.11,
         );
       for (const part of [arrow.line, arrow.cone]) {
         part.material.transparent = true;
