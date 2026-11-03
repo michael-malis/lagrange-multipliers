@@ -10,17 +10,19 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   const s = page.locator("#scene-two");
   await s.scrollIntoViewIfNeeded();
   await expect(s.locator("[data-vector]")).toHaveCount(0);
-  await expect(s.locator("[data-action=next]")).toHaveCount(0);
+  await expect(s.locator('[data-action="next-stage"]')).toBeVisible();
+  await expect(s.locator('[data-action="previous-stage"]')).toBeDisabled();
+  await expect(s.locator("[data-step-indicator]")).toHaveCount(4);
   await expect(s).toHaveAttribute("data-t", "1");
   await s.screenshot({ path: "test-results/proof-initial.png" });
-  await s.locator('[data-step="1"]').click();
+  await s.locator('[data-action="next-stage"]').click();
   await expect(s.locator("[data-vector=gradient]")).toHaveCount(1);
   await expect(s.locator("[data-vector=gradient]")).toHaveAttribute(
     "stroke",
     "#47e1c2",
   );
   await expect(s.locator("[data-vector=projection]")).toHaveCount(0);
-  await s.locator('[data-step="2"]').click();
+  await s.locator('[data-action="next-stage"]').click();
   const plane = s.locator(".plane");
   expect(await plane.getAttribute("data-scale-x")).toBe(
     await plane.getAttribute("data-scale-y"),
@@ -46,12 +48,16 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
     -1, 1,
   ]);
   await s.screenshot({ path: "test-results/proof-negative.png" });
-  await s.locator('[data-step="3"]').click();
+  await s.locator('[data-action="next-stage"]').click();
   await expect(s.locator("[data-vector=normal]")).toBeVisible();
-  await expect(s.locator("[data-step]")).toHaveCount(4);
-  await s.locator('[data-step="3"]').click();
+  await expect(s.locator("[data-step-indicator]")).toHaveCount(4);
+  await expect(s.locator('[data-action="next-stage"]')).toBeDisabled();
   await expect(s.locator(".proof-status")).toContainText("не удовлетворяет");
   await expect(s.locator(".vector-key")).toContainText("градиент");
+  await expect(s.locator('[data-step-indicator="3"]')).toHaveAttribute("aria-current", "step");
+  await s.locator('[data-action="previous-stage"]').click();
+  await expect(s).toHaveAttribute("data-step", "2");
+  await s.locator('[data-action="next-stage"]').click();
   await expect(s.locator(".plane .vector-label")).toHaveCount(1);
   await s.locator("[data-action=optimum]").click();
   await expect(s.locator(".proof-status")).toContainText("λ = 8/3");
