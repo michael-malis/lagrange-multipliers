@@ -228,3 +228,22 @@ test("axis labels follow the visible coordinate window after zoom and pan", asyn
   expect(await ticks.allTextContents()).toEqual(initial);
   await plane.screenshot({ path: "test-results/axis-labels-after-reset.png" });
 });
+
+test("keyboard can pan, zoom and reset the focused contour without altering its point", async ({ page, context }) => {
+  await context.setOffline(true);
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const scene = page.locator("#scene-two");
+  const svg = scene.locator("svg.plane");
+  await svg.focus();
+  await expect(svg).toBeFocused();
+  const initial = await svg.getAttribute("viewBox");
+  const t = await scene.getAttribute("data-t");
+  await page.keyboard.press("ArrowRight");
+  expect(await svg.getAttribute("viewBox")).not.toBe(initial);
+  await expect(scene).toHaveAttribute("data-t", t);
+  await page.keyboard.press("+");
+  expect(+(await svg.getAttribute("data-zoom"))).toBeGreaterThan(1);
+  await page.keyboard.press("Home");
+  await expect(svg).toHaveAttribute("viewBox", initial);
+  await expect(scene).toHaveAttribute("data-t", t);
+});
