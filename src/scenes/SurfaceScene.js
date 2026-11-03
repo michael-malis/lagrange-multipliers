@@ -16,10 +16,10 @@ export function SurfaceScene(root) {
   );
   const slider = root.querySelector("input");
   slider.addEventListener("input", () =>
-    store.set({ t: +slider.value, step: Math.max(1, store.get().step) }),
+    store.set({ t: +slider.value, plane: true }),
   );
   root.querySelector("[data-action=plane]").onclick = () =>
-    store.set({ step: store.get().plane ? false : true });
+    store.set({ plane: !store.get().plane });
   root.querySelector("[data-action=optimum]").onclick = () =>
     store.set({ t: 5 / 3, plane: true });
   root.querySelector("[data-action=sections]").onclick = () =>
