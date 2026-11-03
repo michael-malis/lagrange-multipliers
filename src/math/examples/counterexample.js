@@ -3,8 +3,8 @@ export const counterexample = {
   ...cylinder,
   id: "counterexample",
   initial: 0,
-  f: (x, y) => y ** 3,
-  gradient: (x, y) => [0, 3 * y * y],
+  f: (x, y) => x * x + y * y - 1 + y ** 3,
+  gradient: (x, y) => [2 * x, 2 * y + 3 * y * y],
   h: (t) => Math.sin(t) ** 3,
   dh: (t) => 3 * Math.sin(t) ** 2 * Math.cos(t),
   ddh: (t) => 6 * Math.sin(t) * Math.cos(t) ** 2 - 3 * Math.sin(t) ** 3,
@@ -13,7 +13,7 @@ export const counterexample = {
       t: 0,
       point: [1, 0],
       height: 0,
-      lambda: 0,
+      lambda: 1,
       kind: "Стационарная точка без экстремума",
     },
     {
@@ -27,7 +27,7 @@ export const counterexample = {
       t: Math.PI,
       point: [-1, 0],
       height: 0,
-      lambda: 0,
+      lambda: 1,
       kind: "Стационарная точка без экстремума",
     },
     {
