@@ -48,8 +48,11 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await s.screenshot({ path: "test-results/proof-negative.png" });
   await s.locator('[data-step="3"]').click();
   await expect(s.locator("[data-vector=normal]")).toBeVisible();
-  await s.locator('[data-step="4"]').click();
+  await expect(s.locator("[data-step]")).toHaveCount(4);
+  await s.locator('[data-step="3"]').click();
   await expect(s.locator(".proof-status")).toContainText("не удовлетворяет");
+  await expect(s.locator(".vector-key")).toContainText("градиент");
+  await expect(s.locator(".plane .vector-label")).toHaveCount(1);
   await s.locator("[data-action=optimum]").click();
   await expect(s.locator(".proof-status")).toContainText("λ = 8/3");
   await s.screenshot({ path: "test-results/proof-normal.png" });
