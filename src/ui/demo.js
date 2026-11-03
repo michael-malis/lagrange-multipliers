@@ -1,0 +1,87 @@
+
+const chapters = [
+  { id: "surface", label: "Поверхность и подстановка" },
+  { id: "geometry", label: "Геометрический вывод" },
+  { id: "cylinder", label: "Кандидаты и контрпример" },
+];
+
+export function initDemo() {
+  const header = document.querySelector(".masthead");
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "demo-toggle";
+  toggle.textContent = "Демонстрация";
+  toggle.setAttribute("aria-pressed", "false");
+  toggle.setAttribute("aria-label", "Переключить режим чтения и демонстрации");
+  header.append(toggle);
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "demo-toolbar";
+  toolbar.hidden = true;
+  toolbar.innerHTML = `<button type="button" data-demo-prev>← Назад</button>
+    <span class="demo-chapter" aria-live="polite"></span>
+    <button type="button" class="primary" data-demo-next>Далее →</button>
+    <span class="demo-key-hint">← / → — шаги · 1, 2, 3 — положения · R — вид · Esc — чтение</span>`;
+  header.insertAdjacentElement("afterend", toolbar);
+  let chapter = 0;
+  let mode = "read";
+  const sceneFor = () => document.querySelector("#scene-" + ["one", "two", "three"][chapter]);
+  const setChapter = (n) => {
+    chapter = Math.max(0, Math.min(chapters.length - 1, n));
+    chapters.forEach((entry, i) => {
+      document.getElementById(entry.id).dataset.demoActive = String(i === chapter);
+    });
+    toolbar.querySelector(".demo-chapter").textContent =
+      `${chapter + 1} / ${chapters.length} · ${chapters[chapter].label}`;
+    toolbar.querySelector("[data-demo-prev]").disabled = chapter === 0;
+    toolbar.querySelector("[data-demo-next]").disabled = chapter === chapters.length - 1;
+    if (mode === "demo") window.scrollTo({ top: 0, behavior: "instant" });
+  };
+  const setMode = (next) => {
+    mode = next;
+    document.body.dataset.mode = next;
+    toggle.setAttribute("aria-pressed", String(next === "demo"));
+    toggle.textContent = next === "demo" ? "Вернуться к чтению" : "Демонстрация";
+    toolbar.hidden = next !== "demo";
+    if (next === "demo") setChapter(chapter);
+    else {
+      const dest = document.getElementById(chapters[chapter].id);
+      dest?.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  };
+  toggle.onclick = () => setMode(mode === "demo" ? "read" : "demo");
+  toolbar.querySelector("[data-demo-prev]").onclick = () => setChapter(chapter - 1);
+  toolbar.querySelector("[data-demo-next]").onclick = () => setChapter(chapter + 1);
+
+  window.addEventListener("keydown", (event) => {
+    if (mode !== "demo" || event.altKey || event.ctrlKey || event.metaKey) return;
+    const tag = event.target?.tagName?.toLowerCase();
+    if (["input", "textarea", "select"].includes(tag) || event.target?.isContentEditable) return;
+    if (event.key === "Escape") { event.preventDefault(); setMode("read"); return; }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      const scene = sceneFor();
+      const nextStep = chapter === 1 && scene.querySelector('[data-action="next-stage"]:not([hidden])');
+      if (nextStep) nextStep.click(); else setChapter(chapter + 1);
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      const scene = sceneFor();
+      const back = chapter === 1 && scene.querySelector('[data-action="previous-stage"]:not(:disabled)');
+      if (back) back.click(); else setChapter(chapter - 1);
+    }
+    if (event.key.toLowerCase() === "r") {
+      const scene = sceneFor();
+      (scene.querySelector('[data-action="camera"]') || scene.querySelector('[data-action="reset-view"]'))?.click();
+    }
+    if (["1", "2", "3"].includes(event.key)) {
+      const action = [
+        ["plane", "optimum", "camera"],
+        ["before", "optimum", "after"],
+        ["local", "global", "minimum-plus"],
+      ][chapter][Number(event.key) - 1];
+      sceneFor().querySelector(`[data-action="${action}"]`)?.click();
+    }
+  });
+  setChapter(0);
+}
