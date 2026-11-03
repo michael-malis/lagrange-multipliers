@@ -28,9 +28,4 @@ export const application = String.raw`
 <aside class="math-note"><h3>Стационарность без экстремума</h3><p>Переключите сцену на <span data-tex="f(x,y)=y^3"></span>. Тогда <span data-tex="h(t)=\sin^3t"></span>, а при <span data-tex="t=0"></span> выполняются <span data-tex="h'(0)=0"></span>, <span data-tex="\nabla f(1,0)=0"></span> и <span data-tex="\lambda=0"></span>. Однако <span data-tex="h"></span> меняет знак в любой окрестности нуля, поэтому локального экстремума нет.</p></aside>
 </div></section>
 
-<section id="recap" class="section reading"><div class="section-head"><span class="section-number">∎</span><div><h2>Происхождение метода в одной цепочке</h2><p class="section-deck">Каждая стрелка ниже обозначает уже обоснованный переход.</p></div></div>
-<div class="equation recap-equation" data-tex="g(r(t))=c\ \Longrightarrow\ T=r'(t)\ \text{допустим}\ \Longrightarrow\ h'(t)=\nabla f\cdot T."></div>
-<div class="equation recap-equation" data-tex="h'(t_0)=0,\quad \nabla g\cdot T=0\ \Longrightarrow\ \nabla f(P)=\lambda\nabla g(P)."></div>
-<p>Ненулевой <span data-tex="\nabla f(P)"></span> не противоречит условному максимуму. Он означает, что функция продолжает меняться в некоторых направлениях плоскости; запрещены лишь эти движения. В допустимом касательном направлении изменение первого порядка равно нулю.</p>
-<p>После этого геометрического шага лагранжиан служит компактной записью системы, а найденные решения остаются кандидатами до проверки типа и глобальности.</p>
-</section>`;
+`;
