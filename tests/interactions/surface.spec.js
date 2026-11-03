@@ -66,3 +66,20 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
   await scene.screenshot({ path: "test-results/surface-after.png" });
   expect(errors).toEqual([]);
 });
+
+test("surface controls distinguish position, coordinate sections and camera", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const scene = page.locator("#scene-one");
+  await expect(scene.locator(".surface-control-group")).toHaveCount(3);
+  await expect(scene.getByRole("group", {name: "Положение точки и ограничение"})).toBeVisible();
+  await expect(scene.getByRole("group", {name: "Выбор координатного сечения"})).toBeVisible();
+  await expect(scene.getByRole("group", {name: "Положение камеры"})).toBeVisible();
+  const initialT = await scene.getAttribute("data-t");
+  await scene.getByRole("group", {name: "Положение камеры"}).getByRole("button", {name: "Вид сверху"}).click();
+  await expect(scene).toHaveAttribute("data-t", initialT);
+  await scene.getByRole("group", {name: "Выбор координатного сечения"}).getByRole("button", {name: "По x"}).click();
+  await expect(scene).toHaveAttribute("data-section-mode", "x");
+  await scene.getByRole("group", {name: "Положение точки и ограничение"}).getByRole("button", {name: "Точно в максимум"}).click();
+  await expect(scene).toHaveAttribute("data-t", String(5 / 3));
+});
