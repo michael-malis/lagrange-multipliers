@@ -440,10 +440,19 @@ export function createSurface(host, model) {
     render();
   }
   function resetCamera() { setView("surface"); }
-  const resize = new ResizeObserver(() => {
+  // Keep canvas writes out of ResizeObserver delivery. On WebKit resizing
+  // the WebGL canvas from inside that callback can trigger a notification
+  // cycle ("undelivered notifications") even when the scene is healthy.
+  let pendingResize = false;
+  let previousWidth = 0;
+  let previousHeight = 0;
+  const applySize = () => {
+    pendingResize = false;
     const width = host.clientWidth,
       height = host.clientHeight;
-    if (!width || !height) return;
+    if (!width || !height || (width === previousWidth && height === previousHeight)) return;
+    previousWidth = width;
+    previousHeight = height;
     const span = cylinder ? 3.85 : 4.65;
     camera.left = (-span * width) / height;
     camera.right = (span * width) / height;
@@ -452,6 +461,11 @@ export function createSurface(host, model) {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
     render();
+  };
+  const resize = new ResizeObserver(() => {
+    if (pendingResize) return;
+    pendingResize = true;
+    requestAnimationFrame(applySize);
   });
   resize.observe(host);
   controls.addEventListener("change", render);
