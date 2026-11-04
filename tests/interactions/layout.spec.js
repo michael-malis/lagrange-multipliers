@@ -84,7 +84,7 @@ for (const [width, height] of [
 
 test("200% text reflow keeps mathematical graph controls reachable on narrow screens", async ({page, context}) => {
   await context.setOffline(true);
-  for (const width of [320, 360, 390]) {
+  for (const width of [320, 360, 390, 720]) {
     await page.setViewportSize({width, height: 900});
     await page.goto(pathToFileURL(resolve("dist/index.html")).href);
     await page.addStyleTag({content: "html {font-size: 200% !important}"});
@@ -98,6 +98,15 @@ test("200% text reflow keeps mathematical graph controls reachable on narrow scr
       viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth,
     }));
     expect(geometry.overflow).toBeLessThanOrEqual(0);
+    // The mid-width breakpoint must also reflow long scene-header actions.
+    const headers = await page.locator(".scene-top button").evaluateAll(buttons => buttons.map(node => {
+      const r=node.getBoundingClientRect();
+      return {left:r.left,right:r.right};
+    }));
+    for (const rect of headers) {
+      expect(rect.left).toBeGreaterThanOrEqual(-1);
+      expect(rect.right).toBeLessThanOrEqual(width + 1);
+    }
     for (const rect of geometry.buttons) {
       expect(rect.left).toBeGreaterThanOrEqual(-1);
       expect(rect.right).toBeLessThanOrEqual(width + 1);
