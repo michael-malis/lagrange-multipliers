@@ -61,7 +61,7 @@ export function initDemo() {
     // Reuse the same proof DOM and move it beside the plot only when there is room.
     syncProofPosition();
     toggle.setAttribute("aria-pressed", String(next === "demo"));
-    toggle.textContent = next === "demo" ? "Вернуться к чтению" : "Демонстрация";
+    toggle.textContent = next === "demo" ? "К чтению" : "Демонстрация";
     toolbar.hidden = next !== "demo";
     if (next === "demo") setChapter(chapter);
     else {
