@@ -1,8 +1,9 @@
 export const opening = String.raw`
 <a class="skip" href="#problem">Перейти к статье</a>
-<header class="masthead"><a href="#top">Геометрия оптимизации</a><nav aria-label="Разделы статьи"><a href="#surface">Допустимая кривая</a><a href="#geometry">Условие</a><a href="#calculation">Вычисление</a><a href="#cylinder">Экстремумы</a></nav></header>
+<header class="masthead"><a class="masthead-brand" href="#top">Метод Лагранжа</a><span class="masthead-context">Интерактивная математическая статья</span></header>
 <main id="top">
-<header class="hero"><div class="eyebrow">Интерактивная математическая статья</div><h1>Множители Лагранжа</h1><p class="lead">Как найти максимум функции, если выбирать можно только точки на заданной кривой? Сначала решим простую задачу подстановкой, затем выведем геометрическое условие, которое помогает решать задачи, когда ограничение нельзя удобно выразить через одну переменную.</p><div class="meta"><span>От прямой подстановки к геометрии</span><span>Три интерактивные сцены</span><span>Автономная работа без сети</span></div></header>
+<header class="hero"><div class="eyebrow">Оптимизация с ограничениями · интерактивный разбор</div><h1>Метод множителей Лагранжа</h1><p class="lead">Как искать экстремум, когда точка обязана оставаться на кривой? Сначала решим задачу подстановкой, затем увидим роль касательного направления и выведем условие на градиенты. Наконец, проверим, почему одного этого условия недостаточно.</p><p class="hero-meta">Три связанные демонстрации · от первого примера к границам метода</p></header>
+<nav class="article-route" aria-label="Маршрут трёх демонстраций"><span class="article-route-caption">Маршрут</span><a href="#surface" data-route="surface"><span>01</span> Допустимое движение</a><span class="route-arrow" aria-hidden="true">/</span><a href="#geometry" data-route="geometry"><span>02</span> Градиенты и касание</a><span class="route-arrow" aria-hidden="true">/</span><a href="#cylinder" data-route="cylinder"><span>03</span> Кандидаты и контрпример</a></nav>
 
 <section id="problem" class="reading"><div class="section-head"><span class="section-number">§ 1</span><div><h2>Экстремум при ограничении</h2><p class="section-deck">Ищем максимум не на всей плоскости, а только среди точек, удовлетворяющих ограничению.</p></div></div>
 <p>Рассмотрим задачу</p>
@@ -12,8 +13,8 @@ export const opening = String.raw`
 <h3>Первое решение: исключим переменную</h3><p>Поскольку <span data-tex="x+y=3"></span>, можно положить <span data-tex="y=3-x"></span>. Подставим в ту же целевую функцию:</p><div class="equation" data-tex="h(x)=f(x,3-x)=5-(x-3)^2-2(1-x)^2=-3x^2+10x-6."></div><p>Осталась квадратичная функция одной переменной. Найдём её вершину через производную:</p><div class="equation" data-tex="h'(x)=-6x+10=0\ \Longrightarrow\ x^*=\frac53,\quad y^*=3-x^*=\frac43,\quad h(x^*)=\frac73."></div><p>Итак, максимум на прямой равен <span data-tex="\frac73"></span>. Передвиньте точку на графике ниже: её высота меняется по той самой функции <span data-tex="h"></span>, которую мы только что нашли.</p>
 </section>
 
-<section id="surface" class="section"><div class="reading"><div class="section-head"><span class="section-number">I</span><div><h2>Высота вдоль допустимой кривой</h2><p class="section-deck">Все допустимые точки на поверхности образуют одну кривую.</p></div></div>
-<p>В плоскости <span data-tex="xy"></span> условие <span data-tex="x+y=3"></span> задаёт прямую. Проведём через неё вертикальную плоскость: она пересечёт параболоид по кривой, вдоль которой мы можем двигаться.</p><p>Нажмите «Показать ограничение» и перемещайте точку. Маркер на поверхности и маркер на графике высоты всегда соответствуют одной точке.</p></div>
+<section id="surface" class="section"><div class="reading"><div class="section-head"><span class="section-number">I</span><div><h2>Допустимое движение по поверхности</h2><p class="section-deck">Как выглядит максимум, если разрешено двигаться только вдоль заданной прямой?</p></div></div>
+<p>В плоскости <span data-tex="xy"></span> ограничение <span data-tex="x+y=3"></span> задаёт прямую. Вертикальная плоскость через неё вырезает на параболоиде допустимую пространственную кривую.</p><p class="scene-direction"><strong>Попробуйте:</strong> включите «Показать ограничение» и перемещайте точку. Сравните её высоту на поверхности с положением маркера на профиле справа.</p></div>
 <div id="scene-one" class="scene" data-scene="1"></div>
 <div class="reading">
 <h3>Подстановка как параметризация</h3><p>В подстановке мы свободно выбирали <span data-tex="x"></span>, а затем находили <span data-tex="y=3-x"></span>. Назовём выбранное число <span data-tex="t"></span>. Параметризация — это способ сопоставить каждому <span data-tex="t"></span> точку прямой. Мы могли бы оставить букву <span data-tex="x"></span>; новая запись лишь удобнее для геометрического вывода. Сам метод Лагранжа явной параметризации не требует.</p><p>Параметризация прямой автоматически выполняет ограничение:</p>
@@ -30,7 +31,8 @@ export const opening = String.raw`
 <p>На допустимой прямой при увеличении <span data-tex="t"></span> имеем <span data-tex="dx=dt"></span> и <span data-tex="dy=-dt"></span>. Поэтому полный дифференциал даёт</p>
 <div class="equation" data-tex="dh=f_x\,dx+f_y\,dy=(f_x-f_y)\,dt,\qquad h'(t)=f_x-f_y."></div>
 <p>Теперь запишем то же равенство через градиент и направление вдоль прямой.</p>
+<div class="chapter-transition"><span class="transition-kicker">Следующий вопрос</span><p>Мы нашли максимум вдоль допустимой кривой. Как увидеть его через направление градиента, не исключая переменную?</p><a href="#geometry">02 · Линии уровня и условие Лагранжа <span aria-hidden="true">→</span></a></div>
 </div></section>
 `;
 
-export const ending = `<footer class="footer"><span>Множители Лагранжа<br>Геометрия допустимого движения</span><span>Версия <code id="build-id"></code> · один автономный HTML</span></footer></main>`;
+export const ending = `<footer class="footer"><span>Метод множителей Лагранжа<br>Геометрия ограниченной оптимизации</span><span>Версия <code id="build-id"></code> · один автономный HTML</span></footer></main>`;
