@@ -13,17 +13,20 @@ let currentLanguage = "ru";
 let observer;
 const missing = new Set();
 
-function translatePhrase(source) {
+function translatePhrase(source, node = null) {
   const key = source.trim().replace(NORMALIZE, " ");
   if (!key) return source;
-  const value = en[key];
+  const contextual = node?.parentElement?.closest("[data-i18n-context]")?.dataset.i18nContext;
+  const value = (contextual ? en[contextual + "::" + key] : undefined) ?? en[key];
   if (value === undefined) {
     if (CYRILLIC.test(key)) missing.add(key);
     return source;
   }
-  const leading = source.match(/^\s*/u)?.[0] ?? "";
+  const rawLeading = source.match(/^\s*/u)?.[0] ?? "";
+  const leading = /^[,;:]/.test(value) ? "" : rawLeading;
+  const punctuationGap = !leading && /^[.,;:]/.test(key) && /^[A-Za-z]/.test(value) ? " " : "";
   const trailing = source.match(/\s*$/u)?.[0] ?? "";
-  return leading + value + trailing;
+  return leading + punctuationGap + value + trailing;
 }
 function skip(el) {
   return !el || !!el.closest(".katex, script, style, noscript, [data-no-i18n]");
@@ -39,7 +42,7 @@ function updateText(node) {
     source = now;
     storedText.set(node, source);
   }
-  const next = currentLanguage === "en" ? translatePhrase(source) : source;
+  const next = currentLanguage === "en" ? translatePhrase(source, node) : source;
   renderedText.set(node, next);
   if (now !== next) node.nodeValue = next;
 }
