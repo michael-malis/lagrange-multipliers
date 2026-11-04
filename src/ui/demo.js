@@ -47,11 +47,17 @@ export function initDemo() {
     if (mode === "demo" && window.innerWidth >= 900) proofSide.prepend(proofCopy);
     else proofControls.before(proofCopy);
   };
+  const mastheadControls = header.querySelector(".masthead-controls");
   const setMode = (next) => {
     mode = next;
     document.body.dataset.mode = next;
-    if (next === "demo") toolbar.append(toggle);
-    else header.append(toggle);
+    if (next === "demo") {
+      toolbar.append(mastheadControls);
+      toolbar.append(toggle);
+    } else {
+      header.append(mastheadControls);
+      header.append(toggle);
+    }
     // Reuse the same proof DOM and move it beside the plot only when there is room.
     syncProofPosition();
     toggle.setAttribute("aria-pressed", String(next === "demo"));
