@@ -3,8 +3,8 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const url = pathToFileURL(resolve("dist/index.html")).href;
-const cyrillic = /[А-Яа-яЁё]/;
 const unlocalized = () => {
+  const cyrillic = /[А-Яа-яЁё]/;
   const found = [];
   const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   let node;
