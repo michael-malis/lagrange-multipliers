@@ -27,8 +27,22 @@ for (const [name, engine] of [["Firefox", firefox], ["WebKit", webkit]]) {
     assert.equal(await page.locator("#geometry").getAttribute("data-demo-active"), "true");
     await page.keyboard.press("Escape");
     assert.equal(await page.locator("body").getAttribute("data-mode"), "read");
+
+    // Cross-engine localization is a functional requirement, not merely
+    // a Chromium-only screenshot: update all three scenes on the same DOM.
+    await page.locator('[data-language="en"]').click();
+    assert.equal(await page.locator("html").getAttribute("lang"), "en");
+    assert.match(await page.locator("h1").textContent(), /Lagrange Multipliers/);
+    assert.equal(await page.locator("#scene-one").getAttribute("data-t"), String(5/3));
+    await page.locator('#scene-three [data-action="switch-model"]').click();
+    assert.equal(await page.locator("#scene-three").getAttribute("data-model"), "counterexample");
+    assert.equal(await page.locator("#scene-three .world").getAttribute("data-surface-domain"), "disc-neighborhood");
+    assert.equal(await page.locator("#scene-three [data-value=lambda]").textContent(), "1");
+    await page.locator('[data-language="ru"]').click();
+    assert.equal(await page.locator("html").getAttribute("lang"), "ru");
+    assert.equal(await page.locator("#scene-three").getAttribute("data-model"), "counterexample");
     assert.deepEqual(errors,[], `${name} JavaScript errors`);
-    console.log(`${name}: offline HTML, KaTeX, shared t, demo navigation and no JS errors PASS`);
+    console.log(`${name}: offline HTML, RU/EN, KaTeX, synchronized scenes and navigation PASS`);
     await context.close();
   } finally {
     await browser.close();
