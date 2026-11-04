@@ -28,7 +28,7 @@ export function createSurface(host, model) {
   let current = model;
   const cylinder = model.periodic;
   const scale = cylinder ? 1 : 0.48;
-  const bounds = cylinder ? [-1.5, 1.5, -1.5, 1.5] : [-0.3, 4.5, -0.2, 3.8];
+  const bounds = cylinder ? [-1.28, 1.28, -1.28, 1.28] : [-0.3, 4.5, -0.2, 3.8];
   const floor = cylinder ? -2.8 : -7.5,
     ceil = cylinder ? 3.2 : 5.6;
   let renderer;
@@ -183,15 +183,15 @@ export function createSurface(host, model) {
     disposeGroup(candidates);
     const positions = [];
     const focusedPatch = current.id === "counterexample";
-    // The previous full square emphasized the radial quadratic term rather
-    // than the sign-changing constrained profile. Show the exact SAME f_alt,
-    // but only on an annular neighborhood of the admissible circle. This
-    // reveals the inflection more clearly; no vertical exaggeration or
-    // subtraction of an off-constraint term is applied.
+    // Visual audit: a smooth complete disk is more interpretable than a
+    // square clipped into jagged triangles or an annulus with a hole.
+    // Its height is the original f_alt at every surface vertex. The radius
+    // 1 constraint lies INSIDE the disk, and the entire footprint is drawn
+    // without vertical clipping or artificial shifts of the function.
     if (focusedPatch) {
-      const radialSteps = 18, angularSteps = 144;
+      const radialSteps = 24, angularSteps = 144;
       const patch = (i, j) => {
-        const radius = 0.72 + (0.56 * i) / radialSteps;
+        const radius = 0.002 + (1.278 * i) / radialSteps;
         const angle = (2 * Math.PI * j) / angularSteps;
         const x = radius * Math.cos(angle);
         const y = radius * Math.sin(angle);
@@ -241,7 +241,7 @@ export function createSurface(host, model) {
       ),
     );
     if (focusedPatch) {
-      for (const radius of [0.76, 0.88, 1, 1.12, 1.24]) {
+      for (const radius of [0.25, 0.5, 0.75, 1, 1.25]) {
         const ring = Array.from({ length: 145 }, (_, j) => {
           const angle = (j * Math.PI) / 72;
           const x = radius * Math.cos(angle);
@@ -252,8 +252,8 @@ export function createSurface(host, model) {
       }
       for (let j = 0; j < 16; j++) {
         const angle = (j * Math.PI) / 8;
-        const spoke = Array.from({ length: 41 }, (_, i) => {
-          const radius = 0.72 + (i * 0.56) / 40;
+        const spoke = Array.from({ length: 45 }, (_, i) => {
+          const radius = (1.28 * i) / 44;
           const x = radius * Math.cos(angle), y = radius * Math.sin(angle);
           return [x, y, current.f(x, y) + 0.007];
         });
@@ -549,7 +549,7 @@ export function createSurface(host, model) {
       heightLine.visible = marker.visible;
       candidates.visible = s.candidates;
       updateSections(s);
-      host.dataset.surfaceDomain = current.id === "counterexample" ? "annular-neighborhood" : "rectangular";
+      host.dataset.surfaceDomain = current.id === "counterexample" ? "disc-neighborhood" : "rectangular";
       host.dataset.position = JSON.stringify(s.math.position);
       render();
       // Expose renderer allocations for leak regression tests; these are
@@ -590,8 +590,8 @@ function createFallback(host, initial, verticalScale) {
       const m = s.model,
         range = m.periodic ? [-1.4, 1.4] : [0, 4];
       if (m.id === "counterexample") {
-        // Same annular domain as WebGL, using the actual values of f_alt.
-        for (const radius of [0.76, 0.88, 1, 1.12, 1.24]) {
+        // Same complete disk as WebGL: no hole, no altered function.
+        for (const radius of [0.25, 0.5, 0.75, 1, 1.25]) {
           const ring = Array.from({length:121},(_,i)=>{
             const t=2*Math.PI*i/120, x=radius*Math.cos(t), y=radius*Math.sin(t);
             return [x,y,m.f(x,y)];
@@ -603,7 +603,7 @@ function createFallback(host, initial, verticalScale) {
         for (let j=0;j<12;j++) {
           const t=j*Math.PI/6;
           const radial=Array.from({length:31},(_,i)=>{
-            const radius=.72+.56*i/30, x=radius*Math.cos(t), y=radius*Math.sin(t);
+            const radius=1.28*i/30, x=radius*Math.cos(t), y=radius*Math.sin(t);
             return [x,y,m.f(x,y)];
           });
           svg.append(svgElement("path", {
@@ -660,7 +660,7 @@ function createFallback(host, initial, verticalScale) {
         }
         for(const [points,color]of[[[[x-.5,y,z-fx*.5],[x+.5,y,z+fx*.5]],'#47e1c2'],[[[x,y-.5,z-fy*.5],[x,y+.5,z+fy*.5]],'#c29aff']].filter((_,axis) => s.sectionMode === 'both' || (axis === 0 ? s.sectionMode === 'x' : s.sectionMode === 'y')))svg.append(svgElement('path',{d:path(points),stroke:color}));
       }
-      host.dataset.surfaceDomain = m.id === "counterexample" ? "annular-neighborhood" : "rectangular";
+      host.dataset.surfaceDomain = m.id === "counterexample" ? "disc-neighborhood" : "rectangular";
       host.dataset.position = JSON.stringify(s.math.position);
       host.dataset.rendered = "true";
     },
