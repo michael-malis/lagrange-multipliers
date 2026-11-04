@@ -251,6 +251,14 @@ test("repeated mode, camera and model changes do not duplicate scene resources",
     circle: document.querySelectorAll("#scene-three svg.circle-plot").length,
   }));
   const baseline = await count();
+  const allocations = [];
+  const sampleResources = async () => page.evaluate(() => {
+    return [...document.querySelectorAll(".world[data-webgl=ready]")].map(node => ({
+      geometries: Number(node.dataset.geometryCount),
+      textures: Number(node.dataset.textureCount)
+    }));
+  });
+  allocations.push(await sampleResources());
   for (let i=0; i<15; i++) {
     await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
     const previous = page.locator("[data-demo-prev]");
@@ -261,8 +269,15 @@ test("repeated mode, camera and model changes do not duplicate scene resources",
     await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
     await page.locator("#scene-one [data-action=camera-top]").click();
     await page.locator("#scene-one [data-action=camera]").click();
+    allocations.push(await sampleResources());
   }
   expect(await count()).toEqual(baseline);
+  // Three.js must free mesh buffers when the alternative surface is rebuilt.
+  // The circle alternates between exactly two mesh geometries sets.
+  const first = allocations[0][1];
+  const latest = allocations[allocations.length-1][1];
+  expect(latest.geometries, JSON.stringify(allocations)).toBeLessThanOrEqual(first.geometries + 10);
+  expect(latest.textures, JSON.stringify(allocations)).toBeLessThanOrEqual(first.textures + 3);
   await expect(page.locator(".katex-error")).toHaveCount(0);
 });
 
