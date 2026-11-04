@@ -1,9 +1,9 @@
 export const opening = String.raw`
 <a class="skip" href="#problem">Перейти к статье</a>
-<header class="masthead"><a class="masthead-brand" href="#top">Метод Лагранжа</a><span class="masthead-context">Интерактивная математическая статья</span></header>
+<header class="masthead"><a class="masthead-brand" href="#top">Метод Лагранжа</a><div class="masthead-controls"><label class="chapter-select-label" for="chapter-select"><span class="sr-only">Выберите демонстрацию</span><select id="chapter-select" aria-label="Выберите демонстрацию"><option value="surface">01 · Допустимая кривая</option><option value="geometry">02 · Градиенты и касание</option><option value="cylinder">03 · Необходимость и достаточность</option></select></label><div class="language-switch" role="group" aria-label="Язык сайта"><button type="button" data-language="ru" aria-pressed="true">RU</button><button type="button" data-language="en" aria-pressed="false">EN</button></div></div></header>
 <main id="top">
 <header class="hero"><div class="eyebrow">Оптимизация с ограничениями · интерактивный разбор</div><h1>Метод множителей Лагранжа</h1><p class="lead">Как искать экстремум, когда точка обязана оставаться на кривой? Сначала решим задачу подстановкой, затем увидим роль касательного направления и выведем условие на градиенты. Наконец, проверим, почему одного этого условия недостаточно.</p><p class="hero-meta">Три связанные демонстрации · от первого примера к границам метода</p></header>
-<nav class="article-route" aria-label="Маршрут трёх демонстраций"><span class="article-route-caption">Маршрут</span><a href="#surface" data-route="surface"><span>01</span> Допустимое движение</a><span class="route-arrow" aria-hidden="true">/</span><a href="#geometry" data-route="geometry"><span>02</span> Градиенты и касание</a><span class="route-arrow" aria-hidden="true">/</span><a href="#cylinder" data-route="cylinder"><span>03</span> Кандидаты и контрпример</a></nav>
+
 
 <section id="problem" class="reading"><div class="section-head"><span class="section-number">§ 1</span><div><h2>Экстремум при ограничении</h2><p class="section-deck">Ищем максимум не на всей плоскости, а только среди точек, удовлетворяющих ограничению.</p></div></div>
 <p>Рассмотрим задачу</p>
