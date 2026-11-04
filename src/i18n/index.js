@@ -23,7 +23,7 @@ function translatePhrase(source, node = null) {
     return source;
   }
   const rawLeading = source.match(/^\s*/u)?.[0] ?? "";
-  const leading = /^[,;:]/.test(value) ? "" : rawLeading;
+  const leading = /^[,;:\-]/.test(value) ? "" : rawLeading;
   const punctuationGap = !leading && /^[.,;:]/.test(key) && /^[A-Za-z]/.test(value) ? " " : "";
   const trailing = source.match(/\s*$/u)?.[0] ?? "";
   return leading + punctuationGap + value + trailing;
