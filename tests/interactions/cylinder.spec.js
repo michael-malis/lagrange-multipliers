@@ -37,7 +37,7 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await s.screenshot({ path: "test-results/cylinder-minimum.png" });
   await s.locator('[data-action="switch-model"]').click();
   await expect(s).toHaveAttribute("data-model", "counterexample");
-  await expect(s.locator(".world")).toHaveAttribute("data-surface-domain", "annular-neighborhood");
+  await expect(s.locator(".world")).toHaveAttribute("data-surface-domain", "disc-neighborhood");
   await expect(s).toHaveAttribute("data-profile-view", "focus");
   await expect(s.locator("[data-model-context]")).toContainText("Дополнительный пример");
   await expect(s.locator('[data-action="switch-model"]')).toHaveAttribute("aria-pressed", "true");
