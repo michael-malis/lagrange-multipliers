@@ -552,6 +552,10 @@ export function createSurface(host, model) {
       host.dataset.surfaceDomain = current.id === "counterexample" ? "annular-neighborhood" : "rectangular";
       host.dataset.position = JSON.stringify(s.math.position);
       render();
+      // Expose renderer allocations for leak regression tests; these are
+      // diagnostic counts only and never influence the mathematical model.
+      host.dataset.geometryCount = String(renderer.info.memory.geometries);
+      host.dataset.textureCount = String(renderer.info.memory.textures);
     },
   };
 }
