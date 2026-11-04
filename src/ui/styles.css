@@ -919,6 +919,22 @@ th {
 }
 
 @media (max-width: 56rem) {
+  .scene-top {
+    flex-wrap: wrap;
+  }
+  .scene-top .scene-label {
+    flex-basis: 100%;
+  }
+  .scene-top .view-switch {
+    flex: 1 1 auto;
+    white-space: normal;
+  }
+  .scene-top button[data-action="reset"] {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 56rem) {
   .scene {
     margin-left: 1rem;
     margin-right: 1rem;
