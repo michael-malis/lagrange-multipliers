@@ -1,4 +1,5 @@
 import { en, metadata } from "./catalog.js";
+import { rerenderLocalizedMath } from "../ui/format.js";
 
 const storedText = new WeakMap();
 const renderedText = new WeakMap();
@@ -80,6 +81,7 @@ function refresh() {
   translateTree(document.body);
   const meta = metadata[currentLanguage];
   document.documentElement.lang = currentLanguage;
+  rerenderLocalizedMath();
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
   for (const button of document.querySelectorAll("[data-language]")) {
