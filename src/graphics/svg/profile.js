@@ -14,6 +14,7 @@ export function createProfile(
     showDerivative = true,
     tangentLabel = false,
     height = 235,
+    focusWindow = null,
   } = {},
 ) {
   let activeModel = model;
@@ -30,13 +31,23 @@ export function createProfile(
     "aria-label":
       "Профиль высоты вдоль допустимой кривой. Для изменения точки используйте ползунок или перетаскивание.",
   });
-  const x = (t) =>
-    left +
-    ((t - activeModel.domain[0]) /
-      (activeModel.domain[1] - activeModel.domain[0])) *
-      (right - left);
-  const y = (z) =>
-    bottom - ((z - yRange[0]) / (yRange[1] - yRange[0])) * (bottom - top);
+  let focused = false;
+  const rangeT = () => focused && focusWindow ? focusWindow.t : activeModel.domain;
+  const rangeY = () => focused && focusWindow ? focusWindow.y : yRange;
+  const x = (t) => {
+    const [a, b] = rangeT();
+    return left + ((t - a) / (b - a)) * (right - left);
+  };
+  const y = (z) => {
+    const [a, b] = rangeY();
+    return bottom - ((z - a) / (b - a)) * (bottom - top);
+  };
+  const visibleT = (t) => {
+    if (!focused || !activeModel.periodic) return t;
+    const end = activeModel.domain[1];
+    // At t=0, also show the immediately preceding arc as negative angles.
+    return t > end / 2 ? t - end : t;
+  };
   const fixed = svgElement("g"),
     dynamic = svgElement("g");
   svg.append(fixed, dynamic);
@@ -55,8 +66,10 @@ export function createProfile(
   dynamic.append(guide, tangent, slopeLabel, point);
   function rebuild() {
     fixed.replaceChildren();
+    const [tStart, tEnd] = rangeT();
+    const [zStart, zEnd] = rangeY();
     for (let i = 0; i <= 4; i++) {
-      const z = yRange[0] + (i * (yRange[1] - yRange[0])) / 4;
+      const z = zStart + (i * (zEnd - zStart)) / 4;
       fixed.append(
         svgElement("line", {
           x1: left,
@@ -84,15 +97,13 @@ export function createProfile(
       }),
     );
     for (let i = 0; i <= 3; i++) {
-      const t =
-        activeModel.domain[0] +
-        (i * (activeModel.domain[1] - activeModel.domain[0])) / 3;
+      const t = tStart + (i * (tEnd - tStart)) / 3;
       const label = svgElement("text", {
         x: x(t),
         y: bottom + 20,
         "text-anchor": "middle",
       });
-      label.textContent = activeModel.periodic
+      label.textContent = focused ? number(t, 2) : activeModel.periodic
         ? i === 0
           ? "0"
           : i === 3
@@ -110,13 +121,28 @@ export function createProfile(
     tlabel.textContent = "t";
     fixed.append(tlabel);
     const samples = Array.from({ length: 241 }, (_, i) => {
-      const t =
-        activeModel.domain[0] +
-        (i * (activeModel.domain[1] - activeModel.domain[0])) / 240;
+      const t = tStart + (i * (tEnd - tStart)) / 240;
       return `${i ? "L" : "M"}${x(t).toFixed(2)},${y(activeModel.h(t)).toFixed(2)}`;
     }).join(" ");
     curve.setAttribute("d", samples);
     fixed.append(curve);
+    if (focused) {
+      const axis = svgElement("line", {
+        x1: left, x2: right, y1: y(0), y2: y(0),
+        class: "axis focus-zero",
+      });
+      fixed.append(axis);
+      const vertical = svgElement("line", {
+        x1: x(0), x2: x(0), y1: top, y2: bottom,
+        class: "axis focus-zero",
+      });
+      fixed.append(vertical);
+      const marker = svgElement("text", {
+        x: x(0) + 9, y: y(0) - 12, class: "focus-origin-label",
+      });
+      marker.textContent = "h′(0) = 0";
+      fixed.append(marker);
+    }
   }
   rebuild();
   let dragging = false;
@@ -125,10 +151,9 @@ export function createProfile(
       svg.getScreenCTM().inverse(),
     );
     const fraction = Math.max(0, Math.min(1, (p.x - left) / (right - left)));
-    onChange(
-      activeModel.domain[0] +
-        fraction * (activeModel.domain[1] - activeModel.domain[0]),
-    );
+    const [a, b] = rangeT();
+    const t = a + fraction * (b - a);
+    onChange(activeModel.periodic && t < 0 ? t + activeModel.domain[1] : t);
   };
   svg.addEventListener("pointerdown", (e) => {
     e.preventDefault();
@@ -143,26 +168,33 @@ export function createProfile(
     svg.addEventListener(type, () => (dragging = false));
   return {
     svg,
-    update(s, { derivative = showDerivative, candidates = false } = {}) {
-      if (activeModel !== s.model) {
+    update(s, { derivative = showDerivative, candidates = false, focus = false } = {}) {
+      const nextFocus = !!(focus && focusWindow);
+      if (activeModel !== s.model || nextFocus !== focused) {
         activeModel = s.model;
+        focused = nextFocus;
         rebuild();
       }
       const m = s.math;
-      point.setAttribute("cx", x(s.t));
+      const shownT = visibleT(s.t);
+      const inView = !focused || (shownT >= rangeT()[0] && shownT <= rangeT()[1]);
+      point.style.display = inView ? "" : "none";
+      guide.style.display = inView ? "" : "none";
+      tangent.style.display = inView && derivative ? "" : "none";
+      point.setAttribute("cx", x(shownT));
       point.setAttribute("cy", y(m.height));
       point.dataset.t = String(s.t);
       point.dataset.height = String(m.height);
-      guide.setAttribute("x1", x(s.t));
-      guide.setAttribute("x2", x(s.t));
+      guide.setAttribute("x1", x(shownT));
+      guide.setAttribute("x2", x(shownT));
       guide.setAttribute("y1", y(m.height));
       guide.setAttribute("y2", bottom);
-      const dt = (activeModel.domain[1] - activeModel.domain[0]) * 0.09;
-      tangent.setAttribute("x1", x(s.t - dt));
+      const dt = (rangeT()[1] - rangeT()[0]) * 0.09;
+      tangent.setAttribute("x1", x(shownT - dt));
       tangent.setAttribute("y1", y(m.height - dt * m.derivative));
-      tangent.setAttribute("x2", x(s.t + dt));
+      tangent.setAttribute("x2", x(shownT + dt));
       tangent.setAttribute("y2", y(m.height + dt * m.derivative));
-      tangent.style.display = derivative ? "" : "none";
+      tangent.style.display = inView && derivative ? "" : "none";
       tangent.dataset.slope = String(m.derivative);
       // A fixed top-right readout cannot collide with the moving curve or tangent.
       slopeLabel.setAttribute("x", right);
@@ -172,8 +204,10 @@ export function createProfile(
       svg.querySelectorAll(".candidate").forEach((el) => el.remove());
       if (candidates)
         for (const c of activeModel.critical) {
+          const shownCandidateT = visibleT(c.t);
+          if (focused && (shownCandidateT < rangeT()[0] || shownCandidateT > rangeT()[1])) continue;
           const el = svgElement("circle", {
-            cx: x(c.t),
+            cx: x(shownCandidateT),
             cy: y(c.height),
             r: 4,
             fill: "none",
