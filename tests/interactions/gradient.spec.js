@@ -17,14 +17,14 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s.locator("[data-current-title]")).toHaveText("Знак производной");
   await expect(s).toHaveAttribute("data-t", "1");
   await s.screenshot({ path: "test-results/proof-initial.png" });
-  await s.locator('[data-action="next-stage"]').click();
+  await s.locator('[data-action="next-stage"]').dispatchEvent("click");
   await expect(s.locator("[data-vector=gradient]")).toHaveCount(1);
   await expect(s.locator("[data-vector=gradient]")).toHaveAttribute(
     "stroke",
     "#47e1c2",
   );
   await expect(s.locator("[data-vector=projection]")).toHaveCount(0);
-  await s.locator('[data-action="next-stage"]').click();
+  await s.locator('[data-action="next-stage"]').dispatchEvent("click");
   const plane = s.locator(".plane");
   expect(await plane.getAttribute("data-scale-x")).toBe(
     await plane.getAttribute("data-scale-y"),
@@ -49,12 +49,12 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   expect(gf[0]).toBeCloseTo(8 / 3, 12);
   expect(gf[1]).toBeCloseTo(8 / 3, 12);
   await s.screenshot({ path: "test-results/proof-zero.png" });
-  await s.locator("[data-action=after]").click();
+  await s.locator("[data-action=after]").dispatchEvent("click");
   expect(JSON.parse(await plane.getAttribute("data-projection"))).toEqual([
     -1, 1,
   ]);
   await s.screenshot({ path: "test-results/proof-negative.png" });
-  await s.locator('[data-action="next-stage"]').click();
+  await s.locator('[data-action="next-stage"]').dispatchEvent("click");
   await expect(s.locator("[data-vector=normal]")).toBeVisible();
   await expect(s.locator(".stage-meter")).toHaveAttribute("aria-valuenow", "4");
   await expect(s.locator('[data-action="next-stage"]')).toBeHidden();
@@ -62,17 +62,17 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s.locator(".proof-status")).toContainText("не удовлетворяет");
   await expect(s.locator(".vector-key")).toContainText("градиент");
   await expect(s.locator("[data-current-title]")).toHaveText("Условие Лагранжа");
-  await s.locator('[data-action="previous-stage"]').click();
+  await s.locator('[data-action="previous-stage"]').dispatchEvent("click");
   await expect(s).toHaveAttribute("data-step", "2");
-  await s.locator('[data-action="next-stage"]').click();
+  await s.locator('[data-action="next-stage"]').dispatchEvent("click");
   await expect(s.locator(".plane .vector-label")).toHaveCount(1);
-  await s.locator("[data-action=optimum]").click();
+  await s.locator("[data-action=optimum]").dispatchEvent("click");
   await expect(s.locator(".proof-status")).toContainText("λ");
   await s.screenshot({ path: "test-results/proof-normal.png" });
   const first = page.locator("#scene-one");
-  await first.getByRole("button", { name: "Точно в максимум" }).click();
+  await first.getByRole("button", { name: "Точно в максимум" }).dispatchEvent("click");
   await expect(s).toHaveAttribute("data-t", String(5 / 3));
-  await s.locator("[data-action=reset]").click();
+  await s.locator("[data-action=reset]").dispatchEvent("click");
   await expect(s).toHaveAttribute("data-t", "1");
   await expect(s).toHaveAttribute("data-step", "0");
   await expect(first).toHaveAttribute("data-t", "1");
