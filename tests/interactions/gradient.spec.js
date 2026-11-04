@@ -250,3 +250,20 @@ test("keyboard can pan, zoom and reset the focused contour without altering its 
   await expect(svg).toHaveAttribute("viewBox", initial);
   await expect(scene).toHaveAttribute("data-t", t);
 });
+
+test("Lagrange right-angle mark and zero-gradient projection appear only at the optimum", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const scene=page.locator("#scene-two");
+  for (let i=0;i<3;i++) await scene.locator('[data-action="next-stage"]').click();
+  await expect(scene).toHaveAttribute("data-step","3");
+  await scene.locator("[data-action=after]").click();
+  await expect(scene.locator(".right-angle")).toHaveCount(0);
+  await expect(scene.locator("[data-zero-projection]")).toHaveCount(0);
+  const formula=await scene.locator("[data-formula] annotation").allTextContents();
+  expect(formula.join(" ")).toContain("P_{\\max}");
+  await scene.locator("[data-action=optimum]").click();
+  await expect(scene.locator(".right-angle")).toHaveCount(1);
+  await expect(scene.locator("[data-zero-projection]")).toHaveCount(1);
+  await expect(scene.locator("[data-value=projection-coefficient]")).toHaveText("0");
+});
