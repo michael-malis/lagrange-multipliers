@@ -230,3 +230,28 @@ test("all principal SVG controls and scene sliders have accessible descriptions"
     expect(attr?.length).toBeGreaterThan(10);
   }
 });
+
+test("repeated mode, camera and model changes do not duplicate scene resources", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  const count = () => page.evaluate(() => ({
+    scenes: document.querySelectorAll("[data-scene]").length,
+    canvases: document.querySelectorAll(".world canvas").length,
+    profiles: document.querySelectorAll("[data-profile] svg").length,
+    listenersRelatedNodes: document.querySelectorAll(".demo-toolbar").length,
+    geometry: document.querySelectorAll("#scene-two svg.plane").length,
+    circle: document.querySelectorAll("#scene-three svg.circle-plot").length,
+  }));
+  const baseline = await count();
+  for (let i=0; i<15; i++) {
+    await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
+    await page.locator("[data-demo-next]").click();
+    await page.locator("[data-demo-next]").click();
+    await page.locator("#scene-three [data-action=switch-model]").click();
+    await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
+    await page.locator("#scene-one [data-action=camera-top]").click();
+    await page.locator("#scene-one [data-action=camera]").click();
+  }
+  expect(await count()).toEqual(baseline);
+  await expect(page.locator(".katex-error")).toHaveCount(0);
+});
