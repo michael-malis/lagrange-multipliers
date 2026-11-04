@@ -182,6 +182,35 @@ export function createSurface(host, model) {
     disposeGroup(pathGroup);
     disposeGroup(candidates);
     const positions = [];
+    // Clip each triangle against the visible z slab rather than dropping it
+    // if a single corner is out of range. Dropping whole triangles caused
+    // jagged holes in the paraboloid at the lower altitude boundary.
+    function addAltitudeClipped(triangle) {
+      let polygon = triangle;
+      for (const [limit, above] of [[floor, true], [ceil, false]]) {
+        const clipped = [];
+        for (let i = 0; i < polygon.length; i++) {
+          const a = polygon[i], b = polygon[(i + 1) % polygon.length];
+          const insideA = above ? a[2] >= limit : a[2] <= limit;
+          const insideB = above ? b[2] >= limit : b[2] <= limit;
+          if (insideA !== insideB) {
+            const t = (limit - a[2]) / (b[2] - a[2]);
+            clipped.push([
+              a[0] + t * (b[0] - a[0]),
+              a[1] + t * (b[1] - a[1]),
+              limit,
+            ]);
+          }
+          if (insideB) clipped.push(b);
+        }
+        polygon = clipped;
+        if (polygon.length < 3) return;
+      }
+      for (let i = 1; i < polygon.length - 1; i++) {
+        for (const vertex of [polygon[0], polygon[i], polygon[i + 1]])
+          positions.push(...world(vertex).toArray());
+      }
+    }
     const focusedPatch = current.id === "counterexample";
     // Visual audit: a smooth complete disk is more interpretable than a
     // square clipped into jagged triangles or an annulus with a hole.
@@ -216,8 +245,7 @@ export function createSurface(host, model) {
           const a = p(i, j), b = p(i + 1, j),
             c = p(i + 1, j + 1), d = p(i, j + 1);
           for (const triangle of [[a, b, d], [b, c, d]])
-            if (triangle.every(v => v[2] >= floor && v[2] <= ceil))
-              for (const vertex of triangle) positions.push(...world(vertex).toArray());
+            addAltitudeClipped(triangle);
         }
     }
     const geometry = new THREE.BufferGeometry();
