@@ -214,7 +214,7 @@ test("axis labels follow the visible coordinate window after zoom and pan", asyn
     await scene.locator('[data-action="zoom-in"]').click();
   const zoomed = await ticks.allTextContents();
   expect(zoomed).not.toEqual(initial);
-  expect(zoomed.some(value => value.includes(".5"))).toBe(true);
+  expect(zoomed.some(value => /[.,]5/.test(value))).toBe(true);
   await expect(scene).toHaveAttribute("data-t", initialT);
   const beforePan = await plane.getAttribute("viewBox");
   // Choose a point inside the currently *visible* viewport. A fixed
