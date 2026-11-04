@@ -13,11 +13,17 @@ import { CylinderScene } from "./scenes/CylinderScene.js";
 document.querySelector("#app").innerHTML =
   opening + geometry + application + ending;
 renderMath();
-SurfaceScene(document.querySelector("#scene-one"));
+const paraboloidStore = SurfaceScene(document.querySelector("#scene-one"));
 GradientScene(document.querySelector("#scene-two"));
-CylinderScene(document.querySelector("#scene-three"));
+const circleStore = CylinderScene(document.querySelector("#scene-three"));
 initDemo();
 initMobileViews();
 initI18n();
+document.addEventListener("languagechange", () => {
+  // Reformat decimal values and localised KaTeX without changing t, the
+  // camera, proof step, selected function, or any geometric state.
+  paraboloidStore.set({});
+  circleStore.set({});
+});
 document.documentElement.dataset.build = __BUILD_ID__;
 document.querySelector("#build-id").textContent = __BUILD_ID__.slice(0, 7);
