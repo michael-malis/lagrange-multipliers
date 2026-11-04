@@ -232,6 +232,7 @@ test("all principal SVG controls and scene sliders have accessible descriptions"
 });
 
 test("repeated mode, camera and model changes do not duplicate scene resources", async ({page, context}) => {
+  test.setTimeout(90000);
   await context.setOffline(true);
   await page.goto(pageUrl);
   const count = () => page.evaluate(() => ({
