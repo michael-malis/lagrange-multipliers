@@ -145,6 +145,9 @@ export function createProfile(
     }
   }
   rebuild();
+  // Numerical SVG axis ticks are not lexical translations. Recompute them
+  // in place after a locale switch; the mathematical point remains shared.
+  document.addEventListener("languagechange", rebuild);
   let dragging = false;
   const move = (e) => {
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(
