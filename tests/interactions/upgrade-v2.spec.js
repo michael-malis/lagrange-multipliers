@@ -324,6 +324,20 @@ test("non-extremum focused profile shows both signs and keeps one draggable mode
   await expect(scene).toHaveAttribute("data-profile-view","focus");
   await scene.locator("[data-action=local]").click();
   await expect(scene.locator("[data-value=lambda]")).toHaveText("1");
+  await scene.locator('[data-action=global]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","full");
+  await expect(scene.locator("[data-profile] .point")).toBeVisible();
+  await expect(scene.locator("[data-value=height]")).toHaveText("1");
+  await scene.locator('[data-action=local]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","focus");
+  await scene.locator("#cylinder-t").evaluate(node => {
+    node.value = "3.14";
+    node.dispatchEvent(new Event("input",{bubbles:true}));
+  });
+  await expect(scene).toHaveAttribute("data-profile-view","full");
+  await expect(scene.locator("[data-profile] .point")).toBeVisible();
+  await scene.locator('[data-action=local]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","focus");
   await page.screenshot({path:"test-results/counterexample-interactive-focus.png"});
   await scene.locator('[data-action="switch-model"]').click();
   await expect(scene).toHaveAttribute("data-profile-view","full");
@@ -362,4 +376,19 @@ test("the presentation has only one active mathematical position control across 
   await page.locator("[data-demo-prev]").click();
   expect(await visibleSliders()).toBe(1);
   await expect(page.locator("#scene-one")).toHaveAttribute("data-t","1");
+});
+
+test("circle: context-sensitive vector note and uncluttered counterexample lesson", async ({page,context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  const scene=page.locator("#scene-three");
+  await expect(scene.locator("[data-vector-scale-note]")).toBeHidden();
+  await scene.locator("[data-action=vectors]").click();
+  await expect(scene.locator("[data-vector-scale-note]")).toBeVisible();
+  await scene.locator('[data-action="switch-model"]').click();
+  await expect(scene.locator("[data-study-heading]")).toHaveText("Почему условие Лагранжа недостаточно");
+  await expect(scene.locator("[data-model-context]")).toContainText("Ограничение прежнее");
+  await expect(scene.locator(".study-context")).toHaveCount(0);
+  await expect(scene.locator(".scene-function-picker > .instruction")).toHaveCount(0);
+  await expect(scene.locator("[data-analysis]")).toContainText("не экстремум");
 });
