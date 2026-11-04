@@ -29,7 +29,7 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
     +(await scene.locator(".profile .point").getAttribute("data-height")),
   ).toBeCloseTo(position[2], 12);
   await scene.screenshot({ path: "test-results/surface-optimum.png" });
-  await scene.getByRole("button", { name: "Оба сечения" }).click();
+  await scene.getByRole("group", {name:"Выбор координатного сечения"}).getByRole("button", { name: "Оба" }).click();
   await expect(scene.locator("[data-value=fx]")).toHaveText("2,667");
   await expect(scene.locator("[data-value=fy]")).toHaveText("2,667");
   await scene.screenshot({ path: "test-results/surface-sections.png" });
