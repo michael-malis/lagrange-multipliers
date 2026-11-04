@@ -209,7 +209,8 @@ test("reduced-motion preserves interactive controls and disables progress animat
   await page.goto(pageUrl);
   const progress = page.locator("#scene-two [data-progress-fill]");
   const duration = await progress.evaluate(node => getComputedStyle(node).transitionDuration);
-  expect(["0s", "0.00001s"]).toContain(duration);
+  // Computed values may serialize 0.00001s as 1e-05s.
+  expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.0001);
   await page.locator('#scene-two [data-action="next-stage"]').click();
   await expect(page.locator("#scene-two")).toHaveAttribute("data-step", "1");
   await expect(page.locator(".katex-error")).toHaveCount(0);
