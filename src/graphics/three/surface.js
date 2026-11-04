@@ -588,7 +588,7 @@ function createFallback(host, initial, verticalScale) {
     update(s) {
       svg.replaceChildren();
       const m = s.model,
-        range = m.periodic ? [-1.4, 1.4] : [0, 4];
+        range = m.periodic ? [-1.28, 1.28] : [0, 4];
       if (m.id === "counterexample") {
         // Same complete disk as WebGL: no hole, no altered function.
         for (const radius of [0.25, 0.5, 0.75, 1, 1.25]) {
