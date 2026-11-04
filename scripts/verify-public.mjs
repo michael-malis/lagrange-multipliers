@@ -78,6 +78,35 @@ try {
       String(id === "scene-three" ? Math.PI : 1),
     );
   }
+  // Hosted-origin verification: file:// may prohibit localStorage, so this
+  // is the authoritative persistence test on the actual published website.
+  const stableT = await page.locator("#scene-one").getAttribute("data-t");
+  const stableBuild = await page.locator("html").getAttribute("data-build");
+  await page.locator('[data-language="en"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("h1")).toContainText("Lagrange Multipliers");
+  await expect(page.locator("#scene-one")).toHaveAttribute("data-t", stableT);
+  await expect(page.locator("#chapter-select option[value=geometry]")).toContainText(
+    "Gradients and tangency",
+  );
+  assert.equal(
+    await page.evaluate(() => localStorage.getItem("lagrange-language")),
+    "en",
+    "Persisting English language on the published HTTPS origin",
+  );
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("html")).toHaveAttribute("data-build", stableBuild);
+  await expect(page.locator('[data-language="en"]')).toHaveAttribute("aria-pressed", "true");
+  await page.locator("#chapter-select").selectOption("cylinder");
+  await page.locator(".demo-toggle").click();
+  await expect(page.locator("#cylinder")).toHaveAttribute("data-demo-active", "true");
+  await expect(page.locator(".demo-toolbar [data-language=en]")).toHaveCount(1);
+  await page.locator('[data-language="ru"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator("#cylinder")).toHaveAttribute("data-demo-active", "true");
+  assert.equal(await page.evaluate(() => localStorage.getItem("lagrange-language")), "ru");
+  await page.locator(".demo-toggle").click();
   await page.evaluate(() => document.fonts.ready);
   assert(await page.evaluate(() => document.fonts.check("16px KaTeX_Main")));
   assert.deepEqual(external, [], "External runtime dependencies");
@@ -88,7 +117,7 @@ try {
     fullPage: false,
   });
   console.log(
-    `Public HTTP 200, current SHA, fonts, three scenes, interactions, reset and clean network/console verified: ${await page.locator("html").getAttribute("data-build")}`,
+    `Public HTTP 200, current SHA, fonts, three scenes, interactions, RU/EN persistence, chapter selection, reset and clean network/console verified: ${await page.locator("html").getAttribute("data-build")}`,
   );
 } finally {
   await browser.close();
