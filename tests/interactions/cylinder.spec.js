@@ -37,6 +37,8 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await s.screenshot({ path: "test-results/cylinder-minimum.png" });
   await s.locator('[data-action="switch-model"]').click();
   await expect(s).toHaveAttribute("data-model", "counterexample");
+  await expect(s.locator(".world")).toHaveAttribute("data-surface-domain", "annular-neighborhood");
+  await expect(s).toHaveAttribute("data-profile-view", "focus");
   await expect(s.locator("[data-model-context]")).toContainText("Дополнительный пример");
   await expect(s.locator('[data-action="switch-model"]')).toHaveAttribute("aria-pressed", "true");
   await expect(s.locator('[data-action="switch-model"]')).toHaveText("Вернуться к исходной функции");
@@ -71,6 +73,7 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   expect(+(await s.getAttribute("data-height"))).toBeGreaterThan(0);
   await s.locator('[data-action="switch-model"]').click();
   await expect(s).toHaveAttribute("data-model", "cylinder");
+  await expect(s.locator(".world")).toHaveAttribute("data-surface-domain", "rectangular");
   await s.locator("[data-action=reset]").click();
   await expect(s).toHaveAttribute("data-model", "cylinder");
   await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Минимум · y > 0");
