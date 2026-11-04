@@ -181,26 +181,45 @@ export function createSurface(host, model) {
     disposeGroup(surface);
     disposeGroup(pathGroup);
     disposeGroup(candidates);
-    const n = 64,
-      positions = [];
-    function p(i, j) {
-      const x = xmin + ((xmax - xmin) * i) / n,
-        y = ymin + ((ymax - ymin) * j) / n;
-      return [x, y, current.f(x, y)];
+    const positions = [];
+    const focusedPatch = current.id === "counterexample";
+    // The previous full square emphasized the radial quadratic term rather
+    // than the sign-changing constrained profile. Show the exact SAME f_alt,
+    // but only on an annular neighborhood of the admissible circle. This
+    // reveals the inflection more clearly; no vertical exaggeration or
+    // subtraction of an off-constraint term is applied.
+    if (focusedPatch) {
+      const radialSteps = 18, angularSteps = 144;
+      const patch = (i, j) => {
+        const radius = 0.72 + (0.56 * i) / radialSteps;
+        const angle = (2 * Math.PI * j) / angularSteps;
+        const x = radius * Math.cos(angle);
+        const y = radius * Math.sin(angle);
+        return [x, y, current.f(x, y)];
+      };
+      for (let i = 0; i < radialSteps; i++)
+        for (let j = 0; j < angularSteps; j++) {
+          const a = patch(i, j), b = patch(i + 1, j),
+            c = patch(i + 1, j + 1), d = patch(i, j + 1);
+          for (const triangle of [[a, b, d], [b, c, d]])
+            for (const vertex of triangle) positions.push(...world(vertex).toArray());
+        }
+    } else {
+      const n = 64;
+      const p = (i, j) => {
+        const x = xmin + ((xmax - xmin) * i) / n;
+        const y = ymin + ((ymax - ymin) * j) / n;
+        return [x, y, current.f(x, y)];
+      };
+      for (let i = 0; i < n; i++)
+        for (let j = 0; j < n; j++) {
+          const a = p(i, j), b = p(i + 1, j),
+            c = p(i + 1, j + 1), d = p(i, j + 1);
+          for (const triangle of [[a, b, d], [b, c, d]])
+            if (triangle.every(v => v[2] >= floor && v[2] <= ceil))
+              for (const vertex of triangle) positions.push(...world(vertex).toArray());
+        }
     }
-    for (let i = 0; i < n; i++)
-      for (let j = 0; j < n; j++) {
-        const a = p(i, j),
-          b = p(i + 1, j),
-          c = p(i + 1, j + 1),
-          d = p(i, j + 1);
-        for (const triangle of [
-          [a, b, d],
-          [b, c, d],
-        ])
-          if (triangle.every((v) => v[2] >= floor && v[2] <= ceil))
-            for (const v of triangle) positions.push(...world(v).toArray());
-      }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute(
       "position",
@@ -221,6 +240,26 @@ export function createSurface(host, model) {
         }),
       ),
     );
+    if (focusedPatch) {
+      for (const radius of [0.76, 0.88, 1, 1.12, 1.24]) {
+        const ring = Array.from({ length: 145 }, (_, j) => {
+          const angle = (j * Math.PI) / 72;
+          const x = radius * Math.cos(angle);
+          const y = radius * Math.sin(angle);
+          return [x, y, current.f(x, y) + 0.007];
+        });
+        line(ring, colors.grid, 1, surface, 0.35);
+      }
+      for (let j = 0; j < 16; j++) {
+        const angle = (j * Math.PI) / 8;
+        const spoke = Array.from({ length: 41 }, (_, i) => {
+          const radius = 0.72 + (i * 0.56) / 40;
+          const x = radius * Math.cos(angle), y = radius * Math.sin(angle);
+          return [x, y, current.f(x, y) + 0.007];
+        });
+        line(spoke, colors.grid, 1, surface, 0.25);
+      }
+    } else {
     for (let j = 0; j <= 16; j++)
       for (const direction of [0, 1]) {
         let run = [];
@@ -240,6 +279,7 @@ export function createSurface(host, model) {
         }
         if (run.length) line(run, colors.grid, 1, surface, 0.3);
       }
+    }
     const points = Array.from({ length: 241 }, (_, i) => {
       const t =
         current.domain[0] + (i * (current.domain[1] - current.domain[0])) / 240;
@@ -509,6 +549,7 @@ export function createSurface(host, model) {
       heightLine.visible = marker.visible;
       candidates.visible = s.candidates;
       updateSections(s);
+      host.dataset.surfaceDomain = current.id === "counterexample" ? "annular-neighborhood" : "rectangular";
       host.dataset.position = JSON.stringify(s.math.position);
       render();
     },
