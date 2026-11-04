@@ -209,6 +209,7 @@ export const en = Object.freeze(Object.fromEntries(
 export const texLabels = Object.freeze({
   [String.raw`\text{во внутреннем экстремуме}`]: String.raw`\text{at an interior extremum}`,
   [String.raw`\text{или}`]: String.raw`\text{or}`,
+  [String.raw`\text{(ограничение)}`]: String.raw`\text{(constraint)}`,
   [String.raw`\text{в стационарной точке}`]: String.raw`\text{at a stationary point}`,
 });
 export const metadata = Object.freeze({
