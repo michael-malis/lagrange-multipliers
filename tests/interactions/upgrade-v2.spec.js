@@ -139,6 +139,8 @@ test("v2: narrow-screen geometry/profile toggle preserves shared t and circle mo
   await expect(gradient.locator(".plane-column")).toBeVisible();
   const circle = page.locator("#scene-three");
   await circle.locator('[data-action="switch-model"]').click();
+  await expect(circle).toHaveAttribute("data-mobile-view", "profile");
+  await expect(circle.locator("[data-focus-controls]")).toBeVisible();
   await circle.locator(".mobile-view-toggle").getByRole("button", { name: "Профиль высоты" }).click();
   await expect(circle.locator("[data-profile] svg")).toBeVisible();
   await expect(circle.locator("[data-value=lambda]")).toHaveText("1");
