@@ -182,3 +182,51 @@ test("v2: mathematical labels on 3D surfaces and constraints use KaTeX", async (
   expect(raw).toContain("x^2+y^2-1+y^3");
   await expect(page.locator(".katex-error")).toHaveCount(0);
 });
+
+test("demo keyboard navigation preserves math and never hijacks focused inputs", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#geometry")).toHaveAttribute("data-demo-active", "true");
+  const scene = page.locator("#scene-two");
+  await page.keyboard.press("2");
+  await expect(scene).toHaveAttribute("data-t", String(5 / 3));
+  const beforeStep = await scene.getAttribute("data-step");
+  await scene.locator("#gradient-t").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(scene).toHaveAttribute("data-step", beforeStep);
+  await scene.locator('[data-action="next-stage"]').focus();
+  await page.keyboard.press("Enter");
+  await expect(scene).toHaveAttribute("data-step", String(+beforeStep + 1));
+  await page.keyboard.press("Escape");
+  await expect(page.locator("body")).toHaveAttribute("data-mode", "read");
+});
+
+test("reduced-motion preserves interactive controls and disables progress animation", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await page.goto(pageUrl);
+  const progress = page.locator("#scene-two [data-progress-fill]");
+  const duration = await progress.evaluate(node => getComputedStyle(node).transitionDuration);
+  expect(["0s", "0.00001s"]).toContain(duration);
+  await page.locator('#scene-two [data-action="next-stage"]').click();
+  await expect(page.locator("#scene-two")).toHaveAttribute("data-step", "1");
+  await expect(page.locator(".katex-error")).toHaveCount(0);
+});
+
+test("all principal SVG controls and scene sliders have accessible descriptions", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  for (const id of ["surface-t", "gradient-t", "cylinder-t"]) {
+    const input = page.locator("#" + id);
+    await expect(input).toHaveCount(1);
+    const labelled = await input.evaluate(node => !!node.labels?.length || !!node.getAttribute("aria-label"));
+    expect(labelled).toBe(true);
+  }
+  await expect(page.locator("#scene-two svg.plane")).toHaveAttribute("tabindex", "0");
+  for (const s of await page.locator('[data-profile] svg').all()) {
+    const attr = await s.getAttribute("aria-label");
+    expect(attr?.length).toBeGreaterThan(10);
+  }
+});
