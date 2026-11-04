@@ -214,9 +214,11 @@ test("axis labels follow the visible coordinate window after zoom and pan", asyn
   expect(zoomed.some(value => value.includes(".5"))).toBe(true);
   await expect(scene).toHaveAttribute("data-t", initialT);
   const beforePan = await plane.getAttribute("viewBox");
+  // Choose a point inside the currently *visible* viewport. A fixed
+  // SVG coordinate can end up outside the canvas after repeated zooming.
   const target = await plane.evaluate(node => {
-    const point = new DOMPoint(410, 120).matrixTransform(node.getScreenCTM());
-    return {x: point.x, y: point.y};
+    const rect = node.getBoundingClientRect();
+    return {x: rect.left + rect.width * .72, y: rect.top + rect.height * .22};
   });
   await page.mouse.move(target.x, target.y);
   await page.mouse.down();
