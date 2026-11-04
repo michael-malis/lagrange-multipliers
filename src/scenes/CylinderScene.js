@@ -7,30 +7,6 @@ import { createCircle } from "../graphics/svg/circle.js";
 import { math, number, pair, renderMath } from "../ui/format.js";
 
 
-function counterexampleInset() {
-  // Local enlargement: h(t) = sin^3(t), t in [-0.5, 0.5].
-  const path = Array.from({ length: 161 }, (_, i) => {
-    const t = -0.5 + i / 160;
-    const x = 30 + (t + 0.5) * 300;
-    const y = 95 - 460 * Math.sin(t) ** 3;
-    return `${i ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`;
-  }).join(" ");
-  return `<figure class="counterexample-inset">
-    <svg role="img" aria-label="Увеличенный профиль sin в кубе около нуля: слева значения отрицательны, справа положительны, касательная горизонтальна" viewBox="0 0 360 192">
-      <line x1="30" y1="95" x2="330" y2="95" stroke="#929baa" stroke-width="1.5"/>
-      <line x1="180" y1="22" x2="180" y2="163" stroke="#929baa" stroke-width="1.2"/>
-      <path d="${path}" fill="none" stroke="#e3a15c" stroke-width="3"/>
-      <line x1="140" y1="95" x2="220" y2="95" stroke="#47e1c2" stroke-width="3" stroke-dasharray="7 4"/>
-      <circle cx="180" cy="95" r="5" fill="#e3a15c" stroke="#141b26" stroke-width="2"/>
-      <g fill="#d9e5ed" font-size="14" font-family="sans-serif">
-        <text x="31" y="184">−0,5</text><text x="176" y="184">0</text><text x="307" y="184">0,5</text>
-        <text x="37" y="140">h &lt; 0</text><text x="252" y="51">h &gt; 0</text>
-        <text x="194" y="86">h′(0) = 0</text>
-      </g>
-    </svg>
-    <figcaption>Около t = 0 значения меняют знак. Стационарная точка, не экстремум.</figcaption>
-  </figure>`;
-}
 function renderCriticalPoints() {
   // Descriptive identifiers distinguish global and local extrema; an
   // undifferentiated P* would incorrectly suggest that all are optima.
@@ -55,7 +31,7 @@ export function CylinderScene(root) {
   const store = createStore(cylinder, { vectors: false });
   root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 3 · Экстремумы на окружности</span><button data-action="reset">Сбросить</button></div>
   <div class="controls"><div class="slider-row"><label for="cylinder-t">Угол <span data-tex="t"></span></label><input id="cylinder-t" type="range" min="0" max="6.283185307179586" step="0.005" value="3.141592653589793"><output for="cylinder-t"></output></div><div class="cylinder-actions"><div class="cylinder-presets"><span class="controls-label">Положение точки</span><div class="control-buttons" role="group" aria-label="Характерные точки на окружности"><button data-action="local">Локальный максимум · 0</button><button data-action="global">Глобальный максимум · 2</button></div></div><div class="cylinder-view-options"><span class="controls-label">Что показать на графике</span><div class="control-buttons"><button data-action="candidates" aria-pressed="false">Стационарные точки</button><button data-action="vectors" aria-pressed="false">Градиенты</button><button data-action="camera">Вернуть ракурс</button></div></div></div><p class="instruction">Точка движется по окружности. Её положение на поверхности, на окружности и на графике высоты изменяется одновременно.</p><div class="scene-function-picker"><div class="study-mode-group"><span class="study-label">Дополнительный опыт: достаточно ли условия <span data-tex="h\'(t)=0"></span> для экстремума?</span><button data-action="switch-model" aria-pressed="false">Проверить контрпример: <span data-tex="f(x,y)=x^2+y^2-1+y^3"></span></button></div><p class="instruction">Сравните две функции на одной и той же окружности. Изменится поверхность и график высоты, но не ограничение.</p></div><p class="model-context" data-model-context>Исходная функция: <span data-tex="f(x,y)=x+x^2-y^2"></span> при <span data-tex="x^2+y^2=1"></span>.</p></div>
-  <div class="scene-layout"><div class="world"><div class="world-labels"><span class="blue" data-surface-label data-tex="z=x+x^2-y^2"></span><span class="orange" data-tex="x^2+y^2=1"></span></div><div class="world-note">Мышь — поворот · колесо — масштаб<br>Оси x, y, z показаны в одном масштабе</div></div><div class="profile-panel"><div class="plot-title" data-profile-title></div><div data-profile></div><div class="circle-readouts"><div data-circle></div><dl class="readouts math-readouts"><div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div><div><dt data-tex="h(t)"></dt><dd data-value="height"></dd></div><div><dt data-tex="h'(t)"></dt><dd data-value="derivative"></dd></div><div class="wide"><dt data-tex="\\lambda\\ \\text{в стационарной точке}"></dt><dd data-value="lambda"></dd></div></dl></div><p class="proof-status" aria-live="polite"></p></div></div>
+  <div class="scene-layout"><div class="world"><div class="world-labels"><span class="blue" data-surface-label data-tex="z=x+x^2-y^2"></span><span class="orange" data-tex="x^2+y^2=1"></span></div><div class="world-note">Мышь — поворот · колесо — масштаб<br>Оси x, y, z показаны в одном масштабе</div></div><div class="profile-panel"><div class="plot-title" data-profile-title></div><div class="counterexample-view-switch" data-focus-controls hidden role="group" aria-label="Область просмотра графика высоты"><button type="button" data-action="profile-focus" aria-pressed="true">Вблизи стационарной точки</button><button type="button" data-action="profile-full" aria-pressed="false">Вся окружность</button></div><div data-profile></div><div class="circle-readouts"><div data-circle></div><dl class="readouts math-readouts"><div class="wide"><dt data-tex="P=r(t)"></dt><dd data-value="point"></dd></div><div><dt data-tex="h(t)"></dt><dd data-value="height"></dd></div><div><dt data-tex="h'(t)"></dt><dd data-value="derivative"></dd></div><div class="wide"><dt data-tex="\\lambda\\ \\text{в стационарной точке}"></dt><dd data-value="lambda"></dd></div></dl></div><p class="proof-status" aria-live="polite"></p></div></div>
   <div class="legend"><span class="blue">Поверхность <span data-tex="f"></span></span><span class="orange">Цилиндр, пересечение и окружность</span><span class="teal" data-vector-legend hidden>Градиент <span data-tex="\\nabla f"></span></span><span class="violet" data-vector-legend hidden>Градиент <span data-tex="\\nabla g"></span></span></div>
   
   <div class="cylinder-study"><h3>Почему условие ещё не гарантирует экстремум?</h3><p class="study-context">Заменим только <em>целевую функцию</em>; ограничение остаётся <span data-tex="x^2+y^2=1"></span>. Посмотрим, что произойдёт со стационарной точкой. При переключении изменятся поверхность, график высоты и вычисления.</p><div class="study-toolbar"><div class="study-point-group"><span class="study-label">Выберите точку на окружности</span><div class="control-buttons" role="group" aria-label="Точки выбранной функции"><button data-action="minimum-plus">Минимум · y &gt; 0</button><button data-action="minimum-minus">Минимум · y &lt; 0</button></div></div></div><p class="instruction">Для стрелок <span data-tex="\\nabla f"></span> и <span data-tex="\\nabla g"></span> используется один масштаб: 0,38 единицы оси на единицу вектора. Нулевой градиент стрелкой не изображается.</p><div data-analysis></div></div>`;
@@ -66,7 +42,7 @@ export function CylinderScene(root) {
       root.querySelector("[data-profile]"),
       cylinder,
       (t) => store.set({ t }),
-      { yRange: [-1.5, 2.5], height: 190 },
+      { yRange: [-1.5, 2.5], height: 190, focusWindow: { t: [-0.85, 0.85], y: [-0.75, 0.75] } },
     ),
     circle = createCircle(root.querySelector("[data-circle]"), (t) =>
       store.set({ t }),
@@ -90,8 +66,12 @@ export function CylinderScene(root) {
   root.querySelector('[data-action="switch-model"]').onclick = () => {
     const alternate = store.get().model !== counterexample;
     store.useModel(alternate ? counterexample : cylinder);
-    store.set({ candidates: alternate, vectors: alternate, t: alternate ? 0 : Math.PI });
+    store.set({ candidates: alternate, vectors: alternate, t: alternate ? 0 : Math.PI, focusProfile: alternate });
   };
+  root.querySelector('[data-action="profile-focus"]').onclick = () =>
+    store.set({ focusProfile: true });
+  root.querySelector('[data-action="profile-full"]').onclick = () =>
+    store.set({ focusProfile: false });
   root.querySelector("[data-action=minimum-plus]").onclick = () =>
     store.set({
       t: store.get().model === cylinder ? Math.acos(-0.25) : 0,
@@ -111,7 +91,12 @@ export function CylinderScene(root) {
   let renderedModel;
   store.subscribe((state) => {
     world.update(state);
-    profile.update(state, { candidates: state.candidates });
+    const focused = state.model === counterexample && !!state.focusProfile;
+    profile.update(state, { candidates: state.candidates, focus: focused });
+    root.querySelector("[data-focus-controls]").hidden = state.model !== counterexample;
+    root.querySelector('[data-action="profile-focus"]').setAttribute("aria-pressed", String(focused));
+    root.querySelector('[data-action="profile-full"]').setAttribute("aria-pressed", String(!focused));
+    root.dataset.profileView = focused ? "focus" : "full";
     circle.update(state, { gradients: state.vectors });
     slider.value = state.t;
     root.querySelector("output").textContent = number(state.t);
@@ -169,7 +154,7 @@ export function CylinderScene(root) {
         : "Максимум · y = 1";
       root.querySelector("[data-analysis]").innerHTML = isMain
         ? renderCriticalPoints()
-        : `${math("h(t)=\\sin^3t,\\qquad h\'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>Окружность та же, но функция другая. При ${math("t<0")} вблизи нуля высота отрицательна, а при ${math("t>0")} — положительна. Хотя градиент ненулевой и условие Лагранжа выполнено при ${math("\\lambda=1")}, здесь нет ни максимума, ни минимума. <strong>Стационарная точка, не экстремум.</strong></p>` + counterexampleInset();
+        : `${math("h(t)=\\sin^3t,\\qquad h\'(0)=0,\\qquad \\nabla f(1,0)=(2,0)=\\nabla g(1,0),\\qquad \\lambda=1", true)}<p>На увеличенном графике высоты ${math("h(t)=\\sin^3 t")} видно: слева от ${math("t=0")} функция отрицательна, справа — положительна. При ${math("h'(0)=0")} горизонтальная касательная не означает экстремума. Хотя ${math("\\nabla f(1,0)=\\nabla g(1,0)=(2,0)")} и ${math("\\lambda=1")}, здесь нет ни максимума, ни минимума. <strong>Стационарная точка, не экстремум.</strong></p>`;
       renderedModel = state.model;
     }
     root.dataset.t = state.t;
