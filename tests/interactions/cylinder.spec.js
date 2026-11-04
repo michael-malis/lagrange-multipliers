@@ -55,6 +55,9 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await s.screenshot({ path: "test-results/cylinder-counterexample.png" });
   // Use the SVG coordinate system, not the CSS bounding-box center:
   // responsive layouts may add padding or alter the rendered aspect ratio.
+  // The focused height view increases panel height: bring the independent
+  // circle control into the viewport before using raw pointer coordinates.
+  await circle.scrollIntoViewIfNeeded();
   const seam = await circle.evaluate((svg) => {
     const matrix = svg.getScreenCTM();
     const screen = (x, y) => {
