@@ -1101,19 +1101,13 @@ th {
    progress indicator. The indicator does not pretend to be a second set of tabs. */
 #scene-two .proof-navigation {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.55rem 1rem;
   padding: 0.65rem 1rem;
   border-bottom: 1px solid var(--rule);
   background: var(--surface-raised);
 }
 #scene-two .proof-progress {
   min-width: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.3rem 0.45rem;
 }
 #scene-two [data-step-indicator] {
   padding: 0.38rem 0.55rem;
@@ -1201,10 +1195,7 @@ th {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.45rem 1rem;
   margin-top: 0.6rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--rule);
 }
 #scene-three .scene-function-picker .study-mode-group {
   display: flex;
@@ -1520,7 +1511,7 @@ html { overflow-x: clip; }
   body[data-mode="demo"] #scene-two .profile-panel .proof-status { grid-column: 1 / -1; }
   body[data-mode="demo"] #scene-one .profile-panel [data-profile] svg,
   body[data-mode="demo"] #scene-two .profile-panel [data-profile] svg { display: block; width: 100%; height: auto; }
-  body[data-mode="demo"] #scene-two svg.plane { display: block; width: auto; max-width: 100%; max-height: min(51vh, 550px); margin-inline: auto; }
+  body[data-mode="demo"] #scene-two svg.plane { display: block; width: auto; max-width: 100%; margin-inline: auto; }
 }
 
 /* In presentation mode the SVG itself and the synchronized readouts carry
@@ -1545,8 +1536,6 @@ html { overflow-x: clip; }
    in the focused Full HD presentation. The model itself is unchanged. */
 @media (min-width: 1100px) and (min-height: 780px) {
   body[data-mode="demo"] #scene-three .world {
-    height: clamp(23rem, 46vh, 32rem);
-    min-height: 0;
     align-self: start;
   }
   body[data-mode="demo"] #scene-three .profile-panel [data-profile] svg {
