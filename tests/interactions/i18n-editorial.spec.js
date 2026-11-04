@@ -112,3 +112,30 @@ test("editorial equation display, dropdown accessibility and mobile bilingual la
     await page.screenshot({path: "test-results/bilingual-editorial-"+width+".png"});
   }
 });
+
+test("EN prose remains grammatical across inline equations and plotted decimal ticks follow locale", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(url);
+  const profile = page.locator("#scene-one svg.profile");
+  const texts = () => profile.locator("text").allTextContents();
+  expect((await texts()).some(t => /-?\d,\d/.test(t))).toBe(true);
+  await page.locator('[data-language="en"]').click();
+  await expect(page.locator("#surface [data-i18n-context=partials]")).toContainText("axis while holding");
+  await expect(page.locator("#surface [data-i18n-context=differential]")).toContainText("increases along the feasible line");
+  await expect(page.locator("#geometry [data-i18n-context=regularity]")).toContainText("the condition");
+  await expect(page.locator("#geometry [data-i18n-context=sign-lambda]")).toContainText("A zero multiplier is permitted");
+  const english = await texts();
+  expect(english.some(t => /-?\d\.\d/.test(t))).toBe(true);
+  expect(english.some(t => /-?\d,\d/.test(t))).toBe(false);
+  const geometry = page.locator("#scene-two");
+  await geometry.locator('[data-action="zoom-in"]').click();
+  await geometry.locator('[data-action="zoom-in"]').click();
+  await geometry.locator('[data-action="zoom-in"]').click();
+  const enTicks = await geometry.locator(".plane .tick").allTextContents();
+  expect(enTicks.some(t => /[.,]5/.test(t))).toBe(true);
+  expect(enTicks.some(t => /,\d/.test(t))).toBe(false);
+  await page.locator('[data-language="ru"]').click();
+  expect((await texts()).some(t => /-?\d,\d/.test(t))).toBe(true);
+  const ruTicks = await geometry.locator(".plane .tick").allTextContents();
+  expect(ruTicks.some(t => /,\d/.test(t))).toBe(true);
+});
