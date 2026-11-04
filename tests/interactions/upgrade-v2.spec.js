@@ -48,8 +48,12 @@ test("v2: no quiz blocks, enlarged non-extremum and vertical fractions", async (
   await expect(page.getByText("Проверка понимания")).toHaveCount(0);
   const scene = page.locator("#scene-three");
   await scene.locator('[data-action="switch-model"]').click();
-  await expect(scene.locator(".counterexample-inset")).toBeVisible();
-  await expect(scene.locator(".counterexample-inset figcaption")).toContainText("не экстремум");
+  await expect(scene).toHaveAttribute("data-profile-view", "focus");
+  await expect(scene.locator(".counterexample-inset")).toHaveCount(0);
+  await expect(scene.locator("[data-focus-controls]")).toBeVisible();
+  await expect(scene.locator(".profile .focus-zero")).toHaveCount(2);
+  await expect(scene.locator(".profile .focus-origin-label")).toContainText("h′(0) = 0");
+  await expect(scene.locator("[data-analysis]")).toContainText("Стационарная точка, не экстремум");
   await expect(scene.locator("[data-value=lambda]")).toHaveText("1");
   await expect(scene.locator(".circle-plot")).toHaveAttribute("data-gradient", "[2,0]");
   await expect(page.locator(".katex-error")).toHaveCount(0);
@@ -258,4 +262,53 @@ test("repeated mode, camera and model changes do not duplicate scene resources",
   }
   expect(await count()).toEqual(baseline);
   await expect(page.locator(".katex-error")).toHaveCount(0);
+});
+
+test("non-extremum focused profile shows both signs and keeps one draggable model", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  const scene = page.locator("#scene-three");
+  await scene.locator('[data-action="switch-model"]').click();
+  const svg = scene.locator("[data-profile] svg.profile");
+  await expect(scene).toHaveAttribute("data-profile-view","focus");
+  const curve = svg.locator("path.curve");
+  const metrics = await svg.evaluate(node => {
+    const path = node.querySelector("path.curve");
+    const origin = node.querySelector(".focus-origin-label");
+    const box = path.getBBox();
+    const center = node.querySelector(".point");
+    return {
+      curveY: [box.y, box.y + box.height],
+      originY: Number(origin.getAttribute("y")) + 12,
+      pointX: Number(center.getAttribute("cx")),
+      view: node.getAttribute("viewBox")
+    };
+  });
+  expect(metrics.curveY[0]).toBeLessThan(metrics.originY);
+  expect(metrics.curveY[1]).toBeGreaterThan(metrics.originY);
+  expect(metrics.pointX).toBeCloseTo(191, 0);
+  const screen = await svg.evaluate(node => {
+    const matrix = node.getScreenCTM();
+    const point = (x, y) => {
+      const s = new DOMPoint(x,y).matrixTransform(matrix);
+      return {x:s.x,y:s.y};
+    };
+    return {left:point(105, 95), right:point(270, 95)};
+  });
+  await page.mouse.click(screen.left.x,screen.left.y);
+  expect(+(await scene.getAttribute("data-height"))).toBeLessThan(0);
+  await expect(scene).toHaveAttribute("data-profile-view","focus");
+  await page.mouse.click(screen.right.x,screen.right.y);
+  expect(+(await scene.getAttribute("data-height"))).toBeGreaterThan(0);
+  await scene.locator('[data-action="profile-full"]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","full");
+  await expect(svg.locator(".focus-origin-label")).toHaveCount(0);
+  await scene.locator('[data-action="profile-focus"]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","focus");
+  await scene.locator("[data-action=local]").click();
+  await expect(scene.locator("[data-value=lambda]")).toHaveText("1");
+  await page.screenshot({path:"test-results/counterexample-interactive-focus.png"});
+  await scene.locator('[data-action="switch-model"]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","full");
+  await expect(scene.locator("[data-focus-controls]")).toBeHidden();
 });
