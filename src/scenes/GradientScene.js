@@ -8,7 +8,7 @@ import { math, number, pair, renderMath } from "../ui/format.js";
 export function GradientScene(root) {
   const store = paraboloidStore;
   const stageNames = proofSteps.map((stage) => stage.title.replace(/^\d+\.\s*/, ""));
-  root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Линии уровня, допустимое направление и производная</span><a class="view-switch" href="#surface" data-view="surface">Поверхность (3D) ↗</a><button data-action="reset">Сбросить</button></div>
+  root.innerHTML = `<div class="scene-top"><span class="scene-label">Рис. 2 · Линии уровня, допустимое направление и производная</span><button data-action="reset">Сбросить</button></div>
   <div class="proof-navigation" aria-label="Пошаговый математический вывод">
     <div class="proof-progress">
       <span class="stage-current" aria-live="polite">Шаг <strong data-current-step>1</strong> из 4: <strong data-current-title>${stageNames[0]}</strong></span>
