@@ -67,6 +67,10 @@ export function CylinderScene(root) {
     const alternate = store.get().model !== counterexample;
     store.useModel(alternate ? counterexample : cylinder);
     store.set({ candidates: alternate, vectors: alternate, t: alternate ? 0 : Math.PI, focusProfile: alternate });
+    // On a narrow display the newly focused mathematical profile would
+    // otherwise remain hidden behind the default "Geometry" mobile tab.
+    if (alternate && window.matchMedia("(max-width: 760px)").matches)
+      root.querySelector('[data-mobile-view-button="profile"]')?.click();
   };
   root.querySelector('[data-action="profile-focus"]').onclick = () => {
     const t = store.get().t;
