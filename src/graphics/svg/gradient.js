@@ -427,7 +427,9 @@ export function createGradientPlot(host, onChange) {
       }
       if (state.step >= 3)
         arrow("normal", point, math.normal, { dx: -38, dy: -14 });
-      if (state.step >= 3 || (state.step >= 2 && math.stationary)) {
+      // A right-angle marker for the objective gradient is valid only at a
+      // stationary constrained point, never at an arbitrary slider position.
+      if (state.step >= 2 && math.stationary) {
         const u = 0.22,
           a = [point[0] + u, point[1] - u],
           b = [point[0] + 2 * u, point[1]],
