@@ -37,7 +37,17 @@ export const application = String.raw`
 <p>Для двух оставшихся точек <span data-tex="\cos t=-\frac14"></span>, поэтому <span data-tex="\cos 2t=-\frac78"></span> и <span data-tex="h''(t)=\frac{15}4>0"></span>. Это строгие локальные минимумы высоты <span data-tex="-\frac98"></span>. Они также глобальные: при <span data-tex="u=\cos t\in[-1,1]"></span> получаем <span data-tex="h(t)=2u^2+u-1=2(u+\frac14)^2-\frac98"></span>, так что меньшей высоты на окружности нет.</p>
 <p>Наконец, в этих минимумах <span data-tex="\lambda=-1"></span>. Следовательно, <span data-tex="\nabla f=-\nabla g"></span>: градиенты направлены противоположно. На рисунке 3 это можно увидеть, включив векторы в соответствующем положении точки.</p>
 <aside class="math-note"><h3>Почему глобальные экстремумы существуют</h3><p>Окружность компактна, поэтому непрерывная функция достигает на ней глобальных максимума и минимума. Это утверждение гарантирует существование, но не классифицирует каждую стационарную точку. В основной задаче допустимая прямая некомпактна; существование максимума там было доказано непосредственно формой <span data-tex="h(t)"></span>.</p></aside>
-<aside class="math-note"><h3>Дополнительный пример: стационарная точка без экстремума</h3><p>Переключите рисунок 3 на другую целевую функцию <span data-tex="f_{\mathrm{alt}}(x,y)=x^2+y^2-1+y^3"></span>, сохранив то же ограничение <span data-tex="x^2+y^2=1"></span>. Тогда <span data-tex="h(t)=\sin^3t"></span>, а при <span data-tex="t=0"></span> выполняются <span data-tex="h'(0)=0"></span>, <span data-tex="\nabla f_{\mathrm{alt}}(1,0)=(2,0)=\nabla g(1,0)\ne0"></span> и <span data-tex="\lambda=1"></span>. Однако <span data-tex="h"></span> меняет знак в любой окрестности нуля, поэтому локального экстремума нет. На допустимой окружности это <em>стационарная точка перегиба профиля</em>, а не максимум или минимум.</p></aside>
+<aside class="math-note math-example"><h3>Дополнительный пример: стационарная точка без экстремума</h3>
+<p>Переключите рисунок 3 на новую целевую функцию. Ограничение остаётся прежним:</p>
+<div class="equation" data-tex="\begin{aligned} f_{\mathrm{alt}}(x,y)&=x^2+y^2-1+y^3,\\ g(x,y)&=x^2+y^2=1.\end{aligned}"></div>
+<p>На окружности высота и её производная имеют вид</p>
+<div class="equation" data-tex="\begin{aligned}h(t)&=\sin^3t,\\h'(t)&=3\sin^2t\cos t,\\h'(0)&=0.\end{aligned}"></div>
+<p>В точке <span data-tex="P=(1,0)"></span> выполнено необходимое условие с ненулевыми градиентами:</p>
+<div class="equation" data-tex="\begin{aligned}\nabla f_{\mathrm{alt}}(P)&=(2,0)=\nabla g(P)\ne0,\\\lambda&=1.\end{aligned}"></div>
+<p>Однако для достаточно малого <span data-tex="\varepsilon>0"></span>:</p>
+<div class="equation" data-tex="h(-\varepsilon)<h(0)=0<h(\varepsilon)."></div>
+<p class="observation">Высота меняет знак при переходе через <span data-tex="t=0"></span>. Это <strong>стационарная точка перегиба ограниченного профиля</strong>, но не условный максимум или минимум.</p>
+</aside>
 <div class="chapter-transition chapter-outro"><span class="transition-kicker">Что мы установили</span><p>Ненулевые коллинеарные градиенты не гарантируют максимум или минимум: необходимое условие не является достаточным. Поэтому после решения системы Лагранжа всегда нужна классификация кандидатов.</p><a href="#geometry">Вернуться к геометрическому выводу <span aria-hidden="true">↗</span></a></div>
 </div></section>
 
