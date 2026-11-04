@@ -98,8 +98,8 @@ try {
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("html")).toHaveAttribute("data-build", stableBuild);
   await expect(page.locator('[data-language="en"]')).toHaveAttribute("aria-pressed", "true");
-  await page.locator("#chapter-select").selectOption("cylinder");
   await page.locator(".demo-toggle").click();
+  await page.locator("#chapter-select").selectOption("cylinder");
   await expect(page.locator("#cylinder")).toHaveAttribute("data-demo-active", "true");
   await expect(page.locator(".demo-toolbar [data-language=en]")).toHaveCount(1);
   await page.locator('[data-language="ru"]').click();
