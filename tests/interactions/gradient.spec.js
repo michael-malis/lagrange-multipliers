@@ -37,7 +37,10 @@ test("proof: staged causal chain, sign, projection, equal axes and reset", async
   await expect(s.locator(".angle-arc")).toBeVisible();
   await expect(s.locator("[data-value=projection-coefficient]")).toBeVisible();
   await s.screenshot({ path: "test-results/proof-positive.png" });
-  await s.locator("[data-action=optimum]").click();
+  // A continuously repainted WebGL sibling can make Playwright wait for a
+  // stationary bounding box indefinitely after a large screenshot scroll.
+  // Other tests cover physical pointer activation; this tests the state update.
+  await s.locator("[data-action=optimum]").dispatchEvent("click");
   await expect(s.locator('[data-action="optimum"]')).toHaveAttribute("aria-pressed", "true");
   await expect(s.locator("[data-zero-projection]")).toBeVisible();
   await expect(s.locator("[data-tangency]")).toBeVisible();
