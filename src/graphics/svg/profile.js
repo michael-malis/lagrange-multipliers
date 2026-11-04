@@ -175,6 +175,10 @@ export function createProfile(
         focused = nextFocus;
         rebuild();
       }
+      svg.dataset.viewMode = focused ? "focus" : "full";
+      svg.setAttribute("aria-label", focused
+        ? "Увеличенный профиль высоты от минус 0,85 до плюс 0,85 радиана. Слева от нуля высота отрицательна, справа положительна, производная в нуле равна нулю. Точка перед нулём соответствует концу предыдущего оборота. График можно перетаскивать."
+        : "Профиль высоты вдоль допустимой кривой. Для изменения точки используйте ползунок или перетаскивание.");
       const m = s.math;
       const shownT = visibleT(s.t);
       const inView = !focused || (shownT >= rangeT()[0] && shownT <= rangeT()[1]);
