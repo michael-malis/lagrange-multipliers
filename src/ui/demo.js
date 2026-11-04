@@ -31,6 +31,7 @@ export function initDemo() {
     chapters.forEach((entry, i) => {
       document.getElementById(entry.id).dataset.demoActive = String(i === chapter);
     });
+    document.querySelector("#chapter-select").value = chapters[chapter].id;
     toolbar.querySelector(".demo-chapter").textContent =
       `${chapter + 1} / ${chapters.length}  ·  ${chapters[chapter].label}`;
     toolbar.querySelector(".demo-question").textContent =
@@ -69,6 +70,24 @@ export function initDemo() {
     event.preventDefault();
     setChapter(chapters.findIndex((c) => c.id === link.dataset.view));
   }));
+  document.querySelector("#chapter-select").addEventListener("change", (event) => {
+    const next = chapters.findIndex((entry) => entry.id === event.target.value);
+    if (next < 0) return;
+    setChapter(next);
+    if (mode === "read") {
+      document.getElementById(chapters[next].id).scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  });
+  // The selection is a real native select: mouse, touch, Enter and arrow keys
+  // work without a custom menu or a separate navigation implementation.
+  const readObserver = new IntersectionObserver((entries) => {
+    if (mode === "demo") return;
+    for (const entry of entries) if (entry.isIntersecting) {
+      const index = chapters.findIndex((chapter) => chapter.id === entry.target.id);
+      if (index >= 0) document.querySelector("#chapter-select").value = chapters[index].id;
+    }
+  }, { rootMargin: "-12% 0px -70% 0px" });
+  chapters.forEach(({id}) => readObserver.observe(document.getElementById(id)));
   toolbar.querySelector("[data-demo-prev]").onclick = () => setChapter(chapter - 1);
   toolbar.querySelector("[data-demo-next]").onclick = () => setChapter(chapter + 1);
 
