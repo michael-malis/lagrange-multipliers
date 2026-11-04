@@ -21,7 +21,7 @@ export function initDemo() {
   toolbar.innerHTML = `<button type="button" data-demo-prev>← Назад</button>
     <div class="demo-location"><span class="demo-chapter" aria-live="polite"></span><span class="demo-question"></span></div>
     <button type="button" class="primary" data-demo-next>Далее →</button>
-    <details class="demo-help"><summary aria-label="Клавиатурные команды демонстрации">Клавиши</summary><span>← / → — этапы · 1–3 — точки · R — камера · Esc — чтение</span></details>`;
+    <span class="demo-help" aria-label="Клавиатурные команды демонстрации" title="← / → — этапы · 1–3 — точки · R — камера · Esc — чтение">⌨</span>`;
   header.insertAdjacentElement("afterend", toolbar);
   let chapter = 0;
   let mode = "read";
