@@ -22,6 +22,7 @@ const lines = String.raw`
 Разделы статьи|Article sections
 Демонстрация|Presentation
 Вернуться к чтению|Return to reading
+К чтению|Reading view
 1 / 3 · Поверхность и подстановка|1 / 3 · Surface and substitution
 2 / 3 · Геометрический вывод|2 / 3 · Geometric derivation
 3 / 3 · Кандидаты и контрпример|3 / 3 · Candidates and counterexample
