@@ -1,8 +1,8 @@
 
 const chapters = [
-  { id: "surface", label: "Поверхность и подстановка" },
-  { id: "geometry", label: "Геометрический вывод" },
-  { id: "cylinder", label: "Кандидаты и контрпример" },
+  { id: "surface", label: "01 · Допустимая кривая", question: "Почему максимум на прямой отличается от максимума на плоскости?" },
+  { id: "geometry", label: "02 · Градиенты и касание", question: "Почему в условном максимуме касательная проекция равна нулю?" },
+  { id: "cylinder", label: "03 · Необходимость и достаточность", question: "Может ли условие Лагранжа выполняться без экстремума?" },
 ];
 
 export function initDemo() {
@@ -19,9 +19,9 @@ export function initDemo() {
   toolbar.className = "demo-toolbar";
   toolbar.hidden = true;
   toolbar.innerHTML = `<button type="button" data-demo-prev>← Назад</button>
-    <span class="demo-chapter" aria-live="polite"></span>
+    <div class="demo-location"><span class="demo-chapter" aria-live="polite"></span><span class="demo-question"></span></div>
     <button type="button" class="primary" data-demo-next>Далее →</button>
-    <span class="demo-key-hint">← / → — шаги · 1, 2, 3 — положения · R — вид · Esc — чтение</span>`;
+    <details class="demo-help"><summary aria-label="Клавиатурные команды демонстрации">Клавиши</summary><span>← / → — этапы · 1–3 — точки · R — камера · Esc — чтение</span></details>`;
   header.insertAdjacentElement("afterend", toolbar);
   let chapter = 0;
   let mode = "read";
@@ -32,7 +32,9 @@ export function initDemo() {
       document.getElementById(entry.id).dataset.demoActive = String(i === chapter);
     });
     toolbar.querySelector(".demo-chapter").textContent =
-      `${chapter + 1} / ${chapters.length} · ${chapters[chapter].label}`;
+      `${chapter + 1} / ${chapters.length}  ·  ${chapters[chapter].label}`;
+    toolbar.querySelector(".demo-question").textContent =
+      chapters[chapter].question;
     toolbar.querySelector("[data-demo-prev]").disabled = chapter === 0;
     toolbar.querySelector("[data-demo-next]").disabled = chapter === chapters.length - 1;
     if (mode === "demo") window.scrollTo({ top: 0, behavior: "instant" });
