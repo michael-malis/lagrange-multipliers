@@ -68,8 +68,11 @@ export function CylinderScene(root) {
     store.useModel(alternate ? counterexample : cylinder);
     store.set({ candidates: alternate, vectors: alternate, t: alternate ? 0 : Math.PI, focusProfile: alternate });
   };
-  root.querySelector('[data-action="profile-focus"]').onclick = () =>
-    store.set({ focusProfile: true });
+  root.querySelector('[data-action="profile-focus"]').onclick = () => {
+    const t = store.get().t;
+    const nearZero = t <= 0.85 || t >= 2 * Math.PI - 0.85;
+    store.set({ focusProfile: true, ...(nearZero ? {} : { t: 0 }) });
+  };
   root.querySelector('[data-action="profile-full"]').onclick = () =>
     store.set({ focusProfile: false });
   root.querySelector("[data-action=minimum-plus]").onclick = () =>
