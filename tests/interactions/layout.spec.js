@@ -106,3 +106,29 @@ test("200% text reflow keeps mathematical graph controls reachable on narrow scr
     await page.screenshot({path: `test-results/text-200-percent-${width}.png`});
   }
 });
+
+test("academic dark palette preserves WCAG AA text contrast and readable UI labels", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  const report = await page.evaluate(() => {
+    const css = getComputedStyle(document.documentElement);
+    const colors = ["--ink", "--text", "--muted", "--accent", "--blue", "--orange", "--teal", "--violet"];
+    const toRgb = value => {
+      const canvas = document.createElement("canvas").getContext("2d");
+      canvas.fillStyle = value.trim();
+      return canvas.fillStyle.match(/^#/) ? [1,3,5].map(i=>parseInt(canvas.fillStyle.slice(i,i+2),16)/255)
+        : canvas.fillStyle.match(/[\d.]+/g).slice(0,3).map(x=>+x/255);
+    };
+    const lightness = c => c.map(x => x <= .04045 ? x/12.92 : ((x+.055)/1.055)**2.4)
+      .reduce((acc, value, index) => acc + value*[.2126,.7152,.0722][index],0);
+    const ratio = (a,b) => {
+      const hi=Math.max(lightness(toRgb(a)),lightness(toRgb(b)));
+      const lo=Math.min(lightness(toRgb(a)),lightness(toRgb(b)));
+      return (hi+.05)/(lo+.05);
+    };
+    return colors.map(name=>({name, contrast:ratio(css.getPropertyValue(name), css.getPropertyValue("--surface-raised"))}));
+  });
+  for (const c of report) expect(c.contrast, c.name).toBeGreaterThanOrEqual(4.5);
+  const small = await page.locator(".scene-label").first().evaluate(n => parseFloat(getComputedStyle(n).fontSize));
+  expect(small).toBeGreaterThanOrEqual(14);
+});
