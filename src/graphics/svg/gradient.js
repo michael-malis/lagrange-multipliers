@@ -235,7 +235,7 @@ export function createGradientPlot(host, onChange) {
       const label = svgElement("text", {
         x, y, "text-anchor": anchor, class: kind,
       });
-      label.textContent = String(value);
+      label.textContent = typeof value === "number" ? number(value, 2) : String(value);
       tickLabels.append(label);
     };
     tickLabels.replaceChildren();
@@ -372,6 +372,7 @@ export function createGradientPlot(host, onChange) {
 
   svg.dataset.dragMode = "idle";
   refreshCamera();
+  document.addEventListener("languagechange", refreshCamera);
 
   return {
     svg,
