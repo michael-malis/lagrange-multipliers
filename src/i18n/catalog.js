@@ -206,6 +206,11 @@ export const en = Object.freeze(Object.fromEntries(
     return [line.slice(0,at).trim(),line.slice(at+1).trim()];
   })
 ));
+export const texLabels = Object.freeze({
+  [String.raw`\\text{во внутреннем экстремуме}`]: String.raw`\\text{at an interior extremum}`,
+  [String.raw`\\text{или}`]: String.raw`\\text{or}`,
+  [String.raw`\\text{в стационарной точке}`]: String.raw`\\text{at a stationary point}`,
+});
 export const metadata = Object.freeze({
  ru: { title: "Метод множителей Лагранжа — интерактивная геометрия", description: "Интерактивный учебник по методу множителей Лагранжа: допустимое движение, касание и градиенты, кандидаты и контрпример." },
  en: { title: "The Method of Lagrange Multipliers — Interactive Geometry", description: "An interactive lesson on Lagrange multipliers: feasible motion, tangency and gradients, stationary candidates, and a counterexample." }
