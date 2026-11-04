@@ -1660,6 +1660,17 @@ body[data-mode="demo"] .demo-toolbar .demo-toggle { flex: 0 0 auto; }
   body[data-mode="demo"] #scene-three .proof-status { margin-top: .2rem; }
 }
 
+/* In the mobile no-extremum experiment, the 3D-only toggles are available
+   on the Geometry tab. The Profile tab prioritizes the sign-changing curve
+   directly below the model switch instead of duplicating guidance. */
+@media (max-width: 760px) {
+  #scene-three[data-model="counterexample"][data-mobile-view="profile"] .cylinder-view-options,
+  #scene-three[data-model="counterexample"][data-mobile-view="profile"] .controls > .instruction,
+  #scene-three[data-model="counterexample"][data-mobile-view="profile"] .scene-function-picker > .instruction {
+    display: none;
+  }
+}
+
 /* Mobile keeps each mathematical view legible instead of squeezing both into
    one very tall panel. Switching does not modify t, cameras or proof stages. */
 .mobile-view-toggle { display: none; }
