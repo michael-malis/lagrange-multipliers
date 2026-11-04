@@ -125,6 +125,12 @@ export function CylinderScene(root) {
 
     if (renderedModel !== state.model) {
       const isMain = state.model === cylinder;
+      // Explain the real geometric crop: only the displayed domain changes.
+      // The 3D height still equals the same f_alt evaluated at every vertex.
+      if (root.querySelector(".world").dataset.webgl === "ready")
+        root.querySelector(".world-note").innerHTML = isMain
+          ? "Мышь — поворот · колесо — масштаб<br>Оси x, y, z показаны в одном масштабе"
+          : "Показана часть поверхности вблизи окружности<br>Высота в каждой точке — точное значение целевой функции";
       root.querySelector("[data-model-context]").innerHTML = isMain
         ? `Основная функция: ${math("f(x,y)=x+x^2-y^2")} на окружности ${math("x^2+y^2=1")}.`
         : `Дополнительный пример: ${math("f(x,y)=x^2+y^2-1+y^3")} на той же окружности ${math("x^2+y^2=1")}. Здесь ${math("h\'(0)=0")}, но экстремума нет: высота меняет знак при прохождении точки ${math("(1,0)")}.`;
