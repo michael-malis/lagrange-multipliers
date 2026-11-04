@@ -39,7 +39,7 @@ export const application = String.raw`
 <aside class="math-note"><h3>Почему глобальные экстремумы существуют</h3><p>Окружность компактна, поэтому непрерывная функция достигает на ней глобальных максимума и минимума. Это утверждение гарантирует существование, но не классифицирует каждую стационарную точку. В основной задаче допустимая прямая некомпактна; существование максимума там было доказано непосредственно формой <span data-tex="h(t)"></span>.</p></aside>
 <aside class="math-note math-example"><h3>Дополнительный пример: стационарная точка без экстремума</h3>
 <p>Переключите рисунок 3 на новую целевую функцию. Ограничение остаётся прежним:</p>
-<div class="equation" data-tex="\begin{aligned} f_{\mathrm{alt}}(x,y)&=x^2+y^2-1+y^3,\\ g(x,y)&=x^2+y^2,\quad g(x,y)=1\ \text{(constraint)}.\end{aligned}"></div>
+<div class="equation" data-tex="\begin{aligned} f_{\mathrm{alt}}(x,y)&=x^2+y^2-1+y^3,\\ g(x,y)&=x^2+y^2,\quad g(x,y)=1\ \text{(ограничение)}.\end{aligned}"></div>
 <p>На окружности высота и её производная имеют вид</p>
 <div class="equation" data-tex="\begin{aligned}h(t)&=\sin^3t,\\h'(t)&=3\sin^2t\cos t,\\h'(0)&=0.\end{aligned}"></div>
 <p>В точке <span data-tex="P=(1,0)"></span> выполнено необходимое условие с ненулевыми градиентами:</p>
