@@ -329,3 +329,20 @@ test("non-extremum focused experiment stays usable in Full HD presentation", asy
   await expect(scene.locator("[data-focus-controls]")).toBeVisible();
   await page.screenshot({path:"test-results/counterexample-fullhd-demo.png"});
 });
+
+test("the presentation has only one active mathematical position control across 3D and 2D", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  await page.getByRole("button",{name:"Переключить режим чтения и демонстрации"}).click();
+  const visibleSliders = async () => page.locator('#scene-one input[type="range"]:visible, #scene-two input[type="range"]:visible').count();
+  expect(await visibleSliders()).toBe(1);
+  await page.locator("#scene-one [data-action=optimum]").click();
+  await page.locator("[data-demo-next]").click();
+  expect(await visibleSliders()).toBe(1);
+  await expect(page.locator("#scene-two")).toHaveAttribute("data-t",String(5/3));
+  await page.locator("#scene-two [data-action=before]").click();
+  await expect(page.locator("#scene-one")).toHaveAttribute("data-t","1");
+  await page.locator("[data-demo-prev]").click();
+  expect(await visibleSliders()).toBe(1);
+  await expect(page.locator("#scene-one")).toHaveAttribute("data-t","1");
+});
