@@ -39,7 +39,7 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await expect(s).toHaveAttribute("data-model", "counterexample");
   await expect(s.locator(".world")).toHaveAttribute("data-surface-domain", "disc-neighborhood");
   await expect(s).toHaveAttribute("data-profile-view", "focus");
-  await expect(s.locator("[data-model-context]")).toContainText("Дополнительный пример");
+  await expect(s.locator("[data-model-context]")).toContainText("Изменена только целевая функция");
   await expect(s.locator('[data-action="switch-model"]')).toHaveAttribute("aria-pressed", "true");
   await expect(s.locator('[data-action="switch-model"]')).toHaveText("Вернуться к исходной функции");
   await expect(s.locator(".study-point-group")).toBeHidden();
