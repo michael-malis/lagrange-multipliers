@@ -246,6 +246,8 @@ test("repeated mode, camera and model changes do not duplicate scene resources",
   const baseline = await count();
   for (let i=0; i<15; i++) {
     await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
+    const previous = page.locator("[data-demo-prev]");
+    while (await previous.isEnabled()) await previous.click();
     await page.locator("[data-demo-next]").click();
     await page.locator("[data-demo-next]").click();
     await page.locator("#scene-three [data-action=switch-model]").click();
