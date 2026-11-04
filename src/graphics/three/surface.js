@@ -585,6 +585,28 @@ function createFallback(host, initial, verticalScale) {
       svg.replaceChildren();
       const m = s.model,
         range = m.periodic ? [-1.4, 1.4] : [0, 4];
+      if (m.id === "counterexample") {
+        // Same annular domain as WebGL, using the actual values of f_alt.
+        for (const radius of [0.76, 0.88, 1, 1.12, 1.24]) {
+          const ring = Array.from({length:121},(_,i)=>{
+            const t=2*Math.PI*i/120, x=radius*Math.cos(t), y=radius*Math.sin(t);
+            return [x,y,m.f(x,y)];
+          });
+          svg.append(svgElement("path", {
+            d:path(ring), stroke:"#8faec5", opacity:0.5,
+          }));
+        }
+        for (let j=0;j<12;j++) {
+          const t=j*Math.PI/6;
+          const radial=Array.from({length:31},(_,i)=>{
+            const radius=.72+.56*i/30, x=radius*Math.cos(t), y=radius*Math.sin(t);
+            return [x,y,m.f(x,y)];
+          });
+          svg.append(svgElement("path", {
+            d:path(radial),stroke:"#8faec5",opacity:0.32,
+          }));
+        }
+      } else {
       for (let j = 0; j <= 10; j++)
         for (const axis of [0, 1]) {
           const ps = [];
@@ -604,6 +626,7 @@ function createFallback(host, initial, verticalScale) {
             }),
           );
         }
+      }
       if (m.periodic || s.plane) {
         const floor=m.periodic?-2.8:-7.5,ceil=m.periodic?3.2:5.6;
         const wire=(points)=>svg.append(svgElement('path',{d:path(points),stroke:'#e3a15c',opacity:.35}));
@@ -633,6 +656,7 @@ function createFallback(host, initial, verticalScale) {
         }
         for(const [points,color]of[[[[x-.5,y,z-fx*.5],[x+.5,y,z+fx*.5]],'#47e1c2'],[[[x,y-.5,z-fy*.5],[x,y+.5,z+fy*.5]],'#c29aff']].filter((_,axis) => s.sectionMode === 'both' || (axis === 0 ? s.sectionMode === 'x' : s.sectionMode === 'y')))svg.append(svgElement('path',{d:path(points),stroke:color}));
       }
+      host.dataset.surfaceDomain = m.id === "counterexample" ? "annular-neighborhood" : "rectangular";
       host.dataset.position = JSON.stringify(s.math.position);
       host.dataset.rendered = "true";
     },
