@@ -84,6 +84,7 @@ export function GradientScene(root) {
   };
 
   let renderedStep = -1;
+  document.addEventListener("languagechange", () => { renderedStep = -1; });
   store.subscribe((state) => {
     plot.update(state);
     profile.update(state);
