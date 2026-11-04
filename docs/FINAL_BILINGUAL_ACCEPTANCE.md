@@ -46,7 +46,7 @@
 | Браузерное поведение | **43/43 PASS** в Chromium. |
 | Firefox и WebKit | **PASS** автономного HTML с обеими локализациями, общим состоянием и контрпримером. |
 | Адаптивность и изображения | **PASS** проверенных viewport и 200% reflow; реальные screenshots просмотрены, включая WebGL-рисунок III. |
-| GitHub Pages | **PASS**: HTTP 200, exact SHA 767f8fd232f28ea6cb5bcb9564278a9c70e92265, Google-hosted? Нет: это GitHub Pages; public locale persistence, interactions, fonts, zero browser errors и zero external dependencies. |
+| GitHub Pages | **PASS**: HTTP 200, exact SHA 767f8fd232f28ea6cb5bcb9564278a9c70e92265, public locale persistence, interactions, fonts, zero browser errors и zero external dependencies. |
 | Внешние Skills | **Недоступны в текущем каталоге:** frontend-design, ui-ux-pro-max, math-lecture-notes, math-figures, explain-anything-html. Применение их инструкций не приписывается выполненной работе. |
 | Физические устройства, VoiceOver/TalkBack, независимая пользовательская сессия | **Не проверялись**: доступны эмуляция размеров/жестов, клавиатурные сценарии и реальные браузерные движки, но не физический телефон и не слепой UX-тест с аудиторией. Не заявляется абсолютная идеальность. |
 
