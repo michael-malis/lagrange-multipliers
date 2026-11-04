@@ -2,7 +2,7 @@
    Russian remains the canonical authored copy, with formulas shared verbatim.
    The runtime translates text nodes, attributes, dynamic HTML and SVG without
    recreating any interactive component or changing camera/model state. */
-const lines = String.raw\`
+const lines = String.raw`
 Метод множителей Лагранжа|The Method of Lagrange Multipliers
 Метод Лагранжа|Lagrange Multipliers
 Множители Лагранжа|Lagrange Multipliers
@@ -195,7 +195,7 @@ WebGL недоступен. Схематическая проекция; про�
 Профиль высоты вдоль допустимой кривой. Для изменения точки используйте ползунок или перетаскивание.|Height along the feasible curve. Adjust the parameter using the slider or by dragging.
 Схематическое пространственное представление поверхности и допустимой траектории|Schematic spatial depiction of the surface and feasible curve
 Увеличенный профиль высоты от минус 0,85 до плюс 0,85 радиана. Слева от нуля высота отрицательна, справа положительна, производная в нуле равна нулю. Точка перед нулём соответствует концу предыдущего оборота. График можно перетаскивать.|Enlarged height profile from −0.85 to +0.85 radians. Height is negative to the left of zero and positive to the right, while the derivative at zero vanishes. Negative angles correspond to the end of the previous revolution. The plot is draggable.
-\`;
+`;
 export const en = Object.freeze(Object.fromEntries(
   lines.trim().split("\n").map(line => {
     const at = line.indexOf("|");
