@@ -68,6 +68,12 @@ test("WebGL unavailable: meaningful fallback and working controls", async ({
   await expect(page.locator("#scene-three [data-value=height]")).toHaveText(
     "2",
   );
+  // Alternative model must remain mathematically consistent without WebGL.
+  await page.locator('#scene-three [data-action="switch-model"]').click();
+  await expect(page.locator("#scene-three .world")).toHaveAttribute("data-surface-domain", "annular-neighborhood");
+  await expect(page.locator("#scene-three")).toHaveAttribute("data-profile-view", "focus");
+  await expect(page.locator("#scene-three .fallback path").first()).toHaveAttribute("d", /L/);
+  await expect(page.locator("#scene-three .profile .focus-zero")).toHaveCount(2);
   await page
     .locator("#scene-one")
     .screenshot({ path: "test-results/fallback-surface.png" });
