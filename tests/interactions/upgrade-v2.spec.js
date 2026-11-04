@@ -312,3 +312,20 @@ test("non-extremum focused profile shows both signs and keeps one draggable mode
   await expect(scene).toHaveAttribute("data-profile-view","full");
   await expect(scene.locator("[data-focus-controls]")).toBeHidden();
 });
+
+test("non-extremum focused experiment stays usable in Full HD presentation", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.setViewportSize({width:1920,height:1080});
+  await page.goto(pageUrl);
+  await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
+  await page.locator("[data-demo-next]").click();
+  await page.locator("[data-demo-next]").click();
+  const scene=page.locator("#scene-three");
+  await scene.locator('[data-action="switch-model"]').click();
+  await expect(scene).toHaveAttribute("data-profile-view","focus");
+  const rect = await scene.locator(".scene-layout").boundingBox();
+  expect(rect.y + rect.height).toBeLessThanOrEqual(1080);
+  await expect(scene.locator("[data-profile] svg")).toBeVisible();
+  await expect(scene.locator("[data-focus-controls]")).toBeVisible();
+  await page.screenshot({path:"test-results/counterexample-fullhd-demo.png"});
+});
