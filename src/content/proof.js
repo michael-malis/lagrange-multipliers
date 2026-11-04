@@ -7,7 +7,7 @@ export const proofSteps = [
   {
     title: "2. Правило цепочки",
     text: "При изменении t координаты меняются вместе: x′(t)=1, y′(t)=−1. По правилу цепочки их вклады складываются. Вектор T=(1,−1) направлен вдоль прямой, а ∇f задаёт изменение функции. Их скалярное произведение равно h′(t). Если угол между ними острый, высота растёт; если тупой — убывает.",
-    formula: String.raw`\begin{aligned}h'(t)&=f_xx'(t)+f_yy'(t)\\&=\nabla f(r(t))\cdot T.\end{aligned}`,
+    formula: String.raw`\begin{aligned}h'(t)&=f_x(r(t))\,x'(t)+f_y(r(t))\,y'(t)\\&=\nabla f(r(t))\cdot T.\end{aligned}`,
     extra: String.raw`D_{\widehat T}f=\nabla f\cdot\widehat T=\frac{h'(t)}{\|T\|}=\frac{h'(t)}{\sqrt2}.`,
   },
   {
@@ -19,8 +19,8 @@ export const proofSteps = [
   {
     title: "4. Условие Лагранжа",
     text: "Вдоль допустимой прямой значение g постоянно, поэтому ∇g·T=0. В максимуме также ∇f·T=0. Значит, оба градиента перпендикулярны T и лежат на одной нормальной прямой. При ∇g≠0 существует число λ, для которого ∇f=λ∇g. Это необходимое условие, а не доказательство максимума.",
-    formula: String.raw`\begin{aligned}\nabla f(P)\cdot T&=0,\\ \nabla g(P)\cdot T&=0.\end{aligned}`,
-    extra: String.raw`\boxed{\nabla f(P)=\lambda\nabla g(P)},\quad g(P)=c,\quad \nabla g(P)\ne0.`,
+    formula: String.raw`\begin{aligned}\nabla f(P_{\max})\cdot T&=0,\\ \nabla g(P_{\max})\cdot T&=0.\end{aligned}`,
+    extra: String.raw`\boxed{\nabla f(P_{\max})=\lambda\nabla g(P_{\max})},\quad g(P_{\max})=c,\quad \nabla g(P_{\max})\ne0.`,
   },
 ];
 
