@@ -2048,3 +2048,25 @@ body[data-mode="demo"] .demo-toolbar .demo-toggle { flex: 0 0 auto; }
     padding-inline: .58rem;
   }
 }
+
+/* Blog publishing polish: keyboard-visible shortcut help and touch targets. */
+.demo-help summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border-radius: 3px;
+}
+.demo-help summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.language-switch button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+#scene-two .plot-view-buttons button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
