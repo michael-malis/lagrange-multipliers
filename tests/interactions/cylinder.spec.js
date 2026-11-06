@@ -18,7 +18,7 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await expect(s.locator(".study-point-group button")).toHaveCount(2);
   await expect(s.locator("[data-action=minimum-plus]")).toHaveText("Минимум · y > 0");
   await s.screenshot({ path: "test-results/cylinder-local.png" });
-  await s.getByRole("button", { name: "Глобальный максимум · 2" }).click();
+  await s.getByRole("button", { name: "Глобальный максимум · h=2" }).click();
   await expect(s).toHaveAttribute("data-height", "2");
   await s.getByRole("button", { name: "Стационарные точки", exact: true }).click();
   await expect(s.locator(".profile .candidate")).toHaveCount(4);
@@ -44,7 +44,7 @@ test("cylinder: distinct maxima, all candidates, negative multiplier, zero gradi
   await expect(s.locator('[data-action="switch-model"]')).toHaveText("Вернуться к исходной функции");
   await expect(s.locator(".study-point-group")).toBeHidden();
   await expect(s.locator("[data-action=local]")).toHaveText("Стационарная точка без экстремума");
-  await expect(s.locator("[data-action=global]")).toHaveText("Глобальный максимум · 1");
+  await expect(s.locator("[data-action=global]")).toHaveText("Глобальный максимум · h=1");
   await s.locator("[data-action=global]").click();
   await expect(s.locator("[data-value=height]")).toHaveText("1");
   await s.locator("[data-action=local]").click();
