@@ -175,6 +175,11 @@ export function GradientScene(root) {
       root.querySelector("[data-complete]").hidden = !isComplete;
       renderedStep = state.step;
     }
+    if (state.step === 0) {
+      root.querySelector("[data-formula]").innerHTML =
+        math(String.raw`h(t)=f(r(t)),\\qquad h'(t)=10-6t=${number(state.math.derivative)}`, true)
+        + math(String.raw`h'(t^*)=0\\quad\\text{во внутреннем экстремуме}.`, true);
+    }
     root.dataset.t = state.t;
     root.dataset.step = state.step;
     root.dataset.derivative = state.math.derivative;
