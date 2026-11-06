@@ -21,7 +21,7 @@ export function initDemo() {
   toolbar.innerHTML = `<button type="button" data-demo-prev>← Назад</button>
     <div class="demo-location"><span class="demo-chapter" aria-live="polite"></span><span class="demo-question"></span></div>
     <button type="button" class="primary" data-demo-next>Далее →</button>
-    <span class="demo-help" aria-label="Клавиатурные команды демонстрации" title="← / → — этапы · 1–3 — точки · R — камера · Esc — чтение">⌨</span>`;
+    <details class="demo-help"><summary aria-label="Клавиатурные команды демонстрации" title="Клавиатурные команды демонстрации">⌨</summary><span>← / → — этапы · 1–3 — точки · R — камера · Esc — чтение</span></details>`;
   header.insertAdjacentElement("afterend", toolbar);
   let chapter = 0;
   let mode = "read";
@@ -100,7 +100,7 @@ export function initDemo() {
   window.addEventListener("keydown", (event) => {
     if (mode !== "demo" || event.altKey || event.ctrlKey || event.metaKey) return;
     const tag = event.target?.tagName?.toLowerCase();
-    if (["input", "textarea", "select"].includes(tag) || event.target?.isContentEditable) return;
+    if (["input", "textarea", "select", "button", "summary", "a"].includes(tag) || event.target?.isContentEditable) return;
     if (event.key === "Escape") { event.preventDefault(); setMode("read"); return; }
     if (event.key === "ArrowRight") {
       event.preventDefault();
