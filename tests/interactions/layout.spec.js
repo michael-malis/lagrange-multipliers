@@ -12,7 +12,10 @@ for (const [width, height] of [
     await context.setOffline(true);
     await page.goto(pathToFileURL(resolve("dist/index.html")).href);
     await expect(page.locator("[data-scene]")).toHaveCount(3);
-    await expect(page.locator("details")).toHaveCount(0);
+    // Shortcut help deliberately uses a single accessible native <details>.
+    await expect(page.locator("details")).toHaveCount(1);
+    await expect(page.locator(".demo-toolbar details.demo-help")).toHaveCount(1);
+    await expect(page.locator(".demo-help")).not.toHaveAttribute("open", "");
     await expect(page.locator("#extras")).toHaveCount(0);
     await expect(page.locator(".katex-error")).toHaveCount(0);
     expect(
