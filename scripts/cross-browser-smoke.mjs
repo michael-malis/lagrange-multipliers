@@ -15,6 +15,9 @@ for (const [name, engine] of [["Firefox", firefox], ["WebKit", webkit]]) {
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(uri, {waitUntil:"load", timeout:30000});
+    assert.equal(await page.locator("html").getAttribute("lang"), "en");
+    assert.match(await page.locator("h1").textContent(), /Lagrange Multipliers/);
+    await page.locator('[data-language="ru"]').click();
     assert.match(await page.locator("h1").textContent(), /Лагранжа/);
     assert.equal(await page.locator("[data-scene]").count(), 3);
     assert((await page.locator(".katex").count()) > 30);
