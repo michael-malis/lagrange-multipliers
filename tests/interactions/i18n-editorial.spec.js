@@ -1,8 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const url = pathToFileURL(resolve("dist/index.html")).href;
+const standalone = readFileSync(resolve("dist/index.html"), "utf8");
 const unlocalized = () => {
   const cyrillic = /[А-Яа-яЁё]/;
   const found = [];
@@ -21,6 +23,37 @@ const unlocalized = () => {
   }
   return [...new Set(found)].slice(0, 50);
 };
+
+test("legacy automatic RU preference does not override EN, but explicit language selections persist", async ({ page }) => {
+  const origin = "https://lagrange.test/";
+  // Route the self-contained HTML through a secure origin so localStorage
+  // works even though the standard offline tests use file://.
+  await page.route(origin, (route) => route.fulfill({
+    status: 200,
+    contentType: "text/html",
+    body: standalone,
+  }));
+  await page.goto(origin);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  expect(await page.evaluate(() => localStorage.getItem("lagrange-language-preference"))).toBeNull();
+
+  // Old site versions saved "ru" without any deliberate language selection.
+  await page.evaluate(() => localStorage.setItem("lagrange-language", "ru"));
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("h1")).toContainText("The Method of Lagrange Multipliers");
+
+  await page.locator('[data-language="ru"]').first().click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  expect(await page.evaluate(() => localStorage.getItem("lagrange-language-preference"))).toBe("ru");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+
+  await page.locator('[data-language="en"]').first().click();
+  expect(await page.evaluate(() => localStorage.getItem("lagrange-language-preference"))).toBe("en");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+});
 
 test("English is the default and static social metadata matches the rendered page", async ({page, context}) => {
   await context.setOffline(true);
@@ -101,7 +134,7 @@ test("language and selected demonstration persist across navigation, demonstrati
   await expect(page.locator("#chapter-select")).toHaveValue("geometry");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   const saved = await page.evaluate(() => {
-    try { return localStorage.getItem("lagrange-language"); } catch { return null; }
+    try { return localStorage.getItem("lagrange-language-preference"); } catch { return null; }
   });
   // Browsers may deny storage on file://; persistence is separately checked
   // on GitHub Pages, where same-origin localStorage is available.
