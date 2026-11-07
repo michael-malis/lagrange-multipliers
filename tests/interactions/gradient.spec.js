@@ -1,12 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+
+// These legacy regression scenarios intentionally assert the Russian UI.
+// English remains the default for first-time visitors.
+async function openRussian(page, url) {
+  await page.goto(url);
+  await page.locator('[data-language="ru"]').first().click();
+}
+
 test("proof: staged causal chain, sign, projection, equal axes and reset", async ({
   page,
   context,
 }) => {
   await context.setOffline(true);
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const s = page.locator("#scene-two");
   await s.scrollIntoViewIfNeeded();
   await expect(s.locator("[data-vector]")).toHaveCount(0);
@@ -84,7 +92,7 @@ test("second figure: zoom, pan and drag its mathematical point independently", a
 }) => {
   await context.setOffline(true);
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const scene = page.locator("#scene-two"),
     svg = scene.locator("svg.plane");
   await svg.scrollIntoViewIfNeeded();
@@ -148,7 +156,7 @@ test("second figure: changing proof step reveals the explanation near navigation
 }) => {
   await context.setOffline(true);
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const scene = page.locator("#scene-two"),
     next = scene.locator('[data-action="next-stage"]'),
     explanation = scene.locator(".proof-copy");
@@ -172,7 +180,7 @@ test("second figure: changing proof step reveals the explanation near navigation
 test("default contour viewport is centered and fully contains the outer ellipse", async ({ page, context }) => {
   await context.setOffline(true);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const svg = page.locator("#scene-two svg.plane");
   await expect(svg).toHaveAttribute("data-zoom", "1");
   const geometry = await svg.evaluate((node) => {
@@ -202,7 +210,7 @@ test("default contour viewport is centered and fully contains the outer ellipse"
 test("axis labels follow the visible coordinate window after zoom and pan", async ({ page, context }) => {
   await context.setOffline(true);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const scene = page.locator("#scene-two");
   const plane = scene.locator("svg.plane");
   const ticks = plane.locator(".axis-tick-labels text.tick");
@@ -237,7 +245,7 @@ test("axis labels follow the visible coordinate window after zoom and pan", asyn
 
 test("keyboard can pan, zoom and reset the focused contour without altering its point", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const scene = page.locator("#scene-two");
   const svg = scene.locator("svg.plane");
   await svg.focus();
@@ -256,7 +264,7 @@ test("keyboard can pan, zoom and reset the focused contour without altering its 
 
 test("Lagrange right-angle mark and zero-gradient projection appear only at the optimum", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const scene=page.locator("#scene-two");
   for (let i=0;i<3;i++) await scene.locator('[data-action="next-stage"]').click();
   await expect(scene).toHaveAttribute("data-step","3");
