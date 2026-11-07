@@ -2,11 +2,19 @@ import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 
+// These legacy regression scenarios intentionally assert the Russian UI.
+// English remains the default for first-time visitors.
+async function openRussian(page, url) {
+  await page.goto(url);
+  await page.locator('[data-language="ru"]').first().click();
+}
+
+
 const pageUrl = pathToFileURL(resolve("dist/index.html")).href;
 
 test("v2: shared parameter across 3D and level sets, independent proof stage", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const surface = page.locator("#scene-one");
   const proof = page.locator("#scene-two");
   await surface.locator("[data-action=optimum]").click();
@@ -24,7 +32,7 @@ test("v2: shared parameter across 3D and level sets, independent proof stage", a
 
 test("v2: reading and demonstration reuse the same scenes and preserve state", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const surface = page.locator("#scene-one");
   await surface.locator("[data-action=optimum]").click();
   await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
@@ -48,7 +56,7 @@ test("v2: reading and demonstration reuse the same scenes and preserve state", a
 
 test("v2: no quiz blocks, enlarged non-extremum and vertical fractions", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   await expect(page.locator(".understanding-check")).toHaveCount(0);
   await expect(page.getByText("Проверка понимания")).toHaveCount(0);
   const scene = page.locator("#scene-three");
@@ -68,7 +76,7 @@ test("v2: no quiz blocks, enlarged non-extremum and vertical fractions", async (
 test("v2: demonstration geometry, formula and controls fit a Full HD viewport", async ({ page, context }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
   const measure = async () => page.evaluate(() => {
     const toolbar = document.querySelector(".demo-toolbar").getBoundingClientRect();
@@ -89,7 +97,7 @@ test("v2: mobile and 200 percent zoom reflow keeps control buttons within viewpo
   await context.setOffline(true);
   for (const width of [390, 640]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto(pageUrl);
+    await openRussian(page, pageUrl);
     await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
     await page.screenshot({ path: `test-results/v2-demo-reflow-${width}.png` });
     const overflowing = await page.evaluate(() => [...document.querySelectorAll('body[data-mode="demo"] button')].filter(el => {
@@ -104,7 +112,7 @@ test("v2: laptop demonstration shows geometry and profile without vertical jumps
   await context.setOffline(true);
   for (const [width, height] of [[1440, 900], [1280, 800]]) {
     await page.setViewportSize({ width, height });
-    await page.goto(pageUrl);
+    await openRussian(page, pageUrl);
     await page.getByRole("button", { name: "Переключить режим чтения и демонстрации" }).click();
     for (let i = 0; i < 3; i++) {
       const active = page.locator('[data-demo-active="true"] .scene');
@@ -125,7 +133,7 @@ test("v2: laptop demonstration shows geometry and profile without vertical jumps
 test("v2: narrow-screen geometry/profile toggle preserves shared t and circle model", async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const surface = page.locator("#scene-one");
   const gradient = page.locator("#scene-two");
   await surface.locator("[data-action=optimum]").click();
@@ -155,7 +163,7 @@ test("v2: narrow-screen geometry/profile toggle preserves shared t and circle mo
 
 test("v2: level-set ell renders as one KaTeX symbol, not raw 'ell' or a line break", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const line = page.locator("#geometry .reading .equation").first();
   await expect(line.locator(".katex")).toBeVisible();
   const latex = await line.locator('annotation[encoding="application/x-tex"]').textContent();
@@ -169,7 +177,7 @@ test("v2: level-set ell renders as one KaTeX symbol, not raw 'ell' or a line bre
 
 test("v2: circle classification uses mathematical candidate labels and TeX fractions", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const analysis = page.locator("#scene-three [data-analysis]");
   const rows = analysis.locator("tbody tr");
   await expect(rows).toHaveCount(4);
@@ -182,7 +190,7 @@ test("v2: circle classification uses mathematical candidate labels and TeX fract
 
 test("v2: mathematical labels on 3D surfaces and constraints use KaTeX", async ({ page, context }) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   for (const id of ["scene-one", "scene-three"]) {
     await expect(page.locator(`#${id} .world-labels .katex`)).toHaveCount(2);
   }
@@ -196,7 +204,7 @@ test("v2: mathematical labels on 3D surfaces and constraints use KaTeX", async (
 
 test("demo keyboard navigation preserves math and never hijacks focused inputs", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
   await page.keyboard.press("ArrowRight");
   await expect(page.locator("#geometry")).toHaveAttribute("data-demo-active", "true");
@@ -216,7 +224,7 @@ test("demo keyboard navigation preserves math and never hijacks focused inputs",
 
 test("demo shortcut help is keyboard accessible and Escape closes it before exiting", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
   const help = page.locator(".demo-help");
   const summary = help.locator("summary");
@@ -235,7 +243,7 @@ test("demo shortcut help is keyboard accessible and Escape closes it before exit
 test("reduced-motion preserves interactive controls and disables progress animation", async ({page, context}) => {
   await context.setOffline(true);
   await page.emulateMedia({reducedMotion:"reduce"});
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const progress = page.locator("#scene-two [data-progress-fill]");
   const duration = await progress.evaluate(node => getComputedStyle(node).transitionDuration);
   // Computed values may serialize 0.00001s as 1e-05s.
@@ -247,7 +255,7 @@ test("reduced-motion preserves interactive controls and disables progress animat
 
 test("all principal SVG controls and scene sliders have accessible descriptions", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   for (const id of ["surface-t", "gradient-t", "cylinder-t"]) {
     const input = page.locator("#" + id);
     await expect(input).toHaveCount(1);
@@ -264,7 +272,7 @@ test("all principal SVG controls and scene sliders have accessible descriptions"
 test("repeated mode, camera and model changes do not duplicate scene resources", async ({page, context}) => {
   test.setTimeout(90000);
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const count = () => page.evaluate(() => ({
     scenes: document.querySelectorAll("[data-scene]").length,
     canvases: document.querySelectorAll(".world canvas").length,
@@ -306,7 +314,7 @@ test("repeated mode, camera and model changes do not duplicate scene resources",
 
 test("non-extremum focused profile shows both signs and keeps one draggable model", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const scene = page.locator("#scene-three");
   await scene.locator('[data-action="switch-model"]').click();
   const svg = scene.locator("[data-profile] svg.profile");
@@ -370,7 +378,7 @@ test("non-extremum focused profile shows both signs and keeps one draggable mode
 test("non-extremum focused experiment stays usable in Full HD presentation", async ({page, context}) => {
   await context.setOffline(true);
   await page.setViewportSize({width:1920,height:1080});
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
   await page.locator("[data-demo-next]").click();
   await page.locator("[data-demo-next]").click();
@@ -386,7 +394,7 @@ test("non-extremum focused experiment stays usable in Full HD presentation", asy
 
 test("the presentation has only one active mathematical position control across 3D and 2D", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   await page.getByRole("button",{name:"Переключить режим чтения и демонстрации"}).click();
   const visibleSliders = async () => page.locator('#scene-one input[type="range"]:visible, #scene-two input[type="range"]:visible').count();
   expect(await visibleSliders()).toBe(1);
@@ -403,7 +411,7 @@ test("the presentation has only one active mathematical position control across 
 
 test("circle: context-sensitive vector note and uncluttered counterexample lesson", async ({page,context}) => {
   await context.setOffline(true);
-  await page.goto(pageUrl);
+  await openRussian(page, pageUrl);
   const scene=page.locator("#scene-three");
   await expect(scene.locator("[data-vector-scale-note]")).toBeHidden();
   await scene.locator("[data-action=vectors]").click();
