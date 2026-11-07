@@ -1,6 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+
+// These legacy regression scenarios intentionally assert the Russian UI.
+// English remains the default for first-time visitors.
+async function openRussian(page, url) {
+  await page.goto(url);
+  await page.locator('[data-language="ru"]').first().click();
+}
+
 const url = pathToFileURL(resolve("dist/index.html")).href;
 test("offline: zero external requests, loaded fonts and complete three-scene article", async ({
   page,
@@ -19,7 +27,7 @@ test("offline: zero external requests, loaded fonts and complete three-scene art
   page.on("requestfailed", (r) => failures.push(r.url()));
   await context.setOffline(true);
   await context.route(/^https?:/, (route) => route.abort());
-  await page.goto(url);
+  await openRussian(page, url);
   await page.evaluate(() => document.fonts.ready);
   expect(
     await page.evaluate(() => document.fonts.check("16px KaTeX_Main")),
@@ -57,7 +65,7 @@ test("WebGL unavailable: meaningful fallback and working controls", async ({
   });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto(url);
+  await openRussian(page, url);
   await expect(page.locator(".world[data-webgl=fallback]")).toHaveCount(2);
   await expect(page.locator(".fallback")).toHaveCount(2);
   await page.locator("#scene-one [data-action=optimum]").click();
@@ -85,7 +93,7 @@ test("WebGL unavailable: meaningful fallback and working controls", async ({
 test("WebGL context loss keeps fallback synchronized after later input", async ({
   page,
 }) => {
-  await page.goto(url);
+  await openRussian(page, url);
   await page
     .locator("#scene-one canvas")
     .evaluate((canvas) =>
@@ -115,7 +123,7 @@ test("touch: profile, circle and keyboard alternatives remain operable", async (
     offline: true,
   });
   const page = await context.newPage();
-  await page.goto(url);
+  await openRussian(page, url);
   const scene = page.locator("#scene-one");
   // Mobile starts in the geometry view; the profile is a separate tab.
   await scene.locator(".mobile-view-toggle").getByRole("button", { name: "Профиль высоты" }).click();
