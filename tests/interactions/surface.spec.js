@@ -1,6 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+
+// These legacy regression scenarios intentionally assert the Russian UI.
+// English remains the default for first-time visitors.
+async function openRussian(page, url) {
+  await page.goto(url);
+  await page.locator('[data-language="ru"]').first().click();
+}
+
 const url = pathToFileURL(resolve("dist/index.html")).href;
 test("surface: layers, synchronized values, sections, camera and reset", async ({
   page,
@@ -9,7 +17,7 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
   await context.setOffline(true);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto(url);
+  await openRussian(page, url);
   const scene = page.locator("#scene-one");
   await scene.scrollIntoViewIfNeeded();
   await expect(scene.locator(".world")).toHaveAttribute("data-webgl", "ready");
@@ -69,7 +77,7 @@ test("surface: layers, synchronized values, sections, camera and reset", async (
 
 test("surface controls distinguish position, coordinate sections and camera", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const scene = page.locator("#scene-one");
   await expect(scene.locator(".surface-control-group")).toHaveCount(3);
   await expect(scene.getByRole("group", {name: "Положение точки и ограничение"})).toBeVisible();
