@@ -44,6 +44,14 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 5000));
   }
   assert(matched, "Current public build was not observed");
+  // Social crawlers do not run JavaScript: these tags must be English in raw HTML.
+  const rawHtml = await page.evaluate(async () => (await fetch(location.href)).text());
+  assert.match(rawHtml, /<html lang="en">/);
+  assert.match(rawHtml, /<meta property="og:locale" content="en_US"/);
+  assert.match(rawHtml, /<meta property="og:title" content="The Method of Lagrange Multipliers/);
+  assert.match(rawHtml, /<meta name="twitter:title" content="The Method of Lagrange Multipliers/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.locator('[data-language="ru"]').first().click();
   assert((await page.locator(".katex").count()) > 0);
   await expect(page.locator("[data-scene]")).toHaveCount(3);
   for (const id of ["scene-one", "scene-three"])
