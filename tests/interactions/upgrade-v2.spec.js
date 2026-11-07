@@ -33,6 +33,11 @@ test("v2: reading and demonstration reuse the same scenes and preserve state", a
   await page.locator("[data-demo-next]").click();
   await expect(page.locator("#geometry")).toHaveAttribute("data-demo-active", "true");
   await expect(page.locator("#scene-two")).toHaveAttribute("data-t", String(5 / 3));
+  // Chapter navigation leaves the clicked button focused. Global arrows
+  // must not hijack controls, but they still work when focus is on the page.
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#scene-two")).toHaveAttribute("data-step", "0");
+  await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.press("ArrowRight");
   await expect(page.locator("#scene-two")).toHaveAttribute("data-step", "1");
   await page.keyboard.press("Escape");
@@ -205,6 +210,24 @@ test("demo keyboard navigation preserves math and never hijacks focused inputs",
   await scene.locator('[data-action="next-stage"]').focus();
   await page.keyboard.press("Enter");
   await expect(scene).toHaveAttribute("data-step", String(+beforeStep + 1));
+  await page.keyboard.press("Escape");
+  await expect(page.locator("body")).toHaveAttribute("data-mode", "read");
+});
+
+test("demo shortcut help is keyboard accessible and Escape closes it before exiting", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(pageUrl);
+  await page.getByRole("button", {name:"Переключить режим чтения и демонстрации"}).click();
+  const help = page.locator(".demo-help");
+  const summary = help.locator("summary");
+  await expect(help).toBeVisible();
+  await expect(help).not.toHaveAttribute("open", "");
+  await summary.focus();
+  await page.keyboard.press("Enter");
+  await expect(help).toHaveAttribute("open", "");
+  await page.keyboard.press("Escape");
+  await expect(help).not.toHaveAttribute("open", "");
+  await expect(page.locator("body")).toHaveAttribute("data-mode", "demo");
   await page.keyboard.press("Escape");
   await expect(page.locator("body")).toHaveAttribute("data-mode", "read");
 });

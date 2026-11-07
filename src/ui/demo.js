@@ -65,6 +65,7 @@ export function initDemo() {
     toolbar.hidden = next !== "demo";
     if (next === "demo") setChapter(chapter);
     else {
+      toolbar.querySelector(".demo-help").open = false;
       const dest = document.getElementById(chapters[chapter].id);
       dest?.scrollIntoView({ block: "start", behavior: "instant" });
     }
@@ -100,8 +101,22 @@ export function initDemo() {
   window.addEventListener("keydown", (event) => {
     if (mode !== "demo" || event.altKey || event.ctrlKey || event.metaKey) return;
     const tag = event.target?.tagName?.toLowerCase();
+    if (event.key === "Escape") {
+      // Preserve native Escape behavior for controls that can own popups.
+      if (["input", "textarea", "select"].includes(tag) || event.target?.isContentEditable) return;
+      const help = toolbar.querySelector(".demo-help");
+      // Closing the open shortcut reference should not leave the demo.
+      if (help.open && help.contains(event.target)) {
+        event.preventDefault();
+        help.open = false;
+        return;
+      }
+      event.preventDefault();
+      setMode("read");
+      return;
+    }
+    // Arrow keys and numeric shortcuts must not hijack focused controls.
     if (["input", "textarea", "select", "button", "summary", "a"].includes(tag) || event.target?.isContentEditable) return;
-    if (event.key === "Escape") { event.preventDefault(); setMode("read"); return; }
     if (event.key === "ArrowRight") {
       event.preventDefault();
       const scene = sceneFor();
