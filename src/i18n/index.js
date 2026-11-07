@@ -8,7 +8,9 @@ const renderedAttributes = new WeakMap();
 const ATTRS = ["aria-label", "title", "placeholder", "alt"];
 const CYRILLIC = /[А-Яа-яЁё]/;
 const NORMALIZE = /\s+/g;
-const KEY = "lagrange-language";
+// The old key was written automatically even for visitors who never selected RU.
+// Only explicit user choices are saved under the new key.
+const KEY = "lagrange-language-preference";
 let currentLanguage = "en";
 let observer;
 const missing = new Set();
@@ -92,12 +94,14 @@ function refresh() {
     button.setAttribute("aria-pressed", String(selected));
   }
 }
-export function setLanguage(language) {
+export function setLanguage(language, { persist = true } = {}) {
   if (language !== "ru" && language !== "en") return;
   currentLanguage = language;
   missing.clear();
   refresh();
-  try { localStorage.setItem(KEY, currentLanguage); } catch { /* private file contexts */ }
+  if (persist) {
+    try { localStorage.setItem(KEY, currentLanguage); } catch { /* private file contexts */ }
+  }
   document.dispatchEvent(new CustomEvent("languagechange", { detail: { language } }));
 }
 export function getLanguage() { return currentLanguage; }
@@ -110,7 +114,7 @@ export function initI18n() {
   });
   let saved;
   try { saved = localStorage.getItem(KEY); } catch { /* file:// may disallow storage */ }
-  setLanguage(saved === "ru" ? "ru" : "en");
+  setLanguage(saved === "ru" ? "ru" : "en", { persist: false });
   // Scene code updates status text with innerHTML, textContent and SVG titles.
   // Translate these new nodes without reinitializing the Three.js cameras,
   // SVG pan/zoom state, proof step or mathematical stores.

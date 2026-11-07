@@ -98,7 +98,7 @@ try {
     "Gradients and tangency",
   );
   assert.equal(
-    await page.evaluate(() => localStorage.getItem("lagrange-language")),
+    await page.evaluate(() => localStorage.getItem("lagrange-language-preference")),
     "en",
     "Persisting English language on the published HTTPS origin",
   );
@@ -113,7 +113,7 @@ try {
   await page.locator('[data-language="ru"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.locator("#cylinder")).toHaveAttribute("data-demo-active", "true");
-  assert.equal(await page.evaluate(() => localStorage.getItem("lagrange-language")), "ru");
+  assert.equal(await page.evaluate(() => localStorage.getItem("lagrange-language-preference")), "ru");
   await page.locator(".demo-toggle").click();
   await page.evaluate(() => document.fonts.ready);
   assert(await page.evaluate(() => document.fonts.check("16px KaTeX_Main")));
