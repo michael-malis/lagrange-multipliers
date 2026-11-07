@@ -22,6 +22,30 @@ const unlocalized = () => {
   return [...new Set(found)].slice(0, 50);
 };
 
+test("English is the default and static social metadata matches the rendered page", async ({page, context}) => {
+  await context.setOffline(true);
+  await page.goto(url);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("h1")).toContainText("The Method of Lagrange Multipliers");
+  await expect(page).toHaveTitle("The Method of Lagrange Multipliers — Interactive Geometry");
+  await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute("content", "en_US");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", await page.title());
+  await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", await page.title());
+  await expect(page.locator('[data-language="en"]').first()).toHaveAttribute("aria-pressed","true");
+  const scene = page.locator("#scene-one");
+  await scene.locator("[data-action=optimum]").click();
+  const point = await scene.getAttribute("data-t");
+  const camera = await scene.locator(".world").getAttribute("data-position");
+  await page.locator('[data-language="ru"]').first().click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator("h1")).toContainText("Метод множителей Лагранжа");
+  await expect(scene).toHaveAttribute("data-t", point);
+  await expect(scene.locator(".world")).toHaveAttribute("data-position", camera);
+  await page.locator('[data-language="en"]').first().click();
+  await expect(scene).toHaveAttribute("data-t", point);
+  await expect(scene.locator(".world")).toHaveAttribute("data-position", camera);
+});
+
 test("EN translates all visible prose and dynamically generated scene states without losing mathematics", async ({ page, context }) => {
   await context.setOffline(true);
   await page.goto(url);
@@ -116,6 +140,7 @@ test("editorial equation display, dropdown accessibility and mobile bilingual la
 test("EN prose remains grammatical across inline equations and plotted decimal ticks follow locale", async ({page, context}) => {
   await context.setOffline(true);
   await page.goto(url);
+  await page.locator('[data-language="ru"]').first().click();
   const profile = page.locator("#scene-one svg.profile");
   const texts = () => profile.locator("text").allTextContents();
   expect((await texts()).some(t => /-?\d,\d/.test(t))).toBe(true);

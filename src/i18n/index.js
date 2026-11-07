@@ -9,7 +9,7 @@ const ATTRS = ["aria-label", "title", "placeholder", "alt"];
 const CYRILLIC = /[А-Яа-яЁё]/;
 const NORMALIZE = /\s+/g;
 const KEY = "lagrange-language";
-let currentLanguage = "ru";
+let currentLanguage = "en";
 let observer;
 const missing = new Set();
 
@@ -110,7 +110,7 @@ export function initI18n() {
   });
   let saved;
   try { saved = localStorage.getItem(KEY); } catch { /* file:// may disallow storage */ }
-  setLanguage(saved === "en" ? "en" : "ru");
+  setLanguage(saved === "ru" ? "ru" : "en");
   // Scene code updates status text with innerHTML, textContent and SVG titles.
   // Translate these new nodes without reinitializing the Three.js cameras,
   // SVG pan/zoom state, proof step or mathematical stores.

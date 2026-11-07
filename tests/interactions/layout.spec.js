@@ -1,6 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+
+// These legacy regression scenarios intentionally assert the Russian UI.
+// English remains the default for first-time visitors.
+async function openRussian(page, url) {
+  await page.goto(url);
+  await page.locator('[data-language="ru"]').first().click();
+}
+
 for (const [width, height] of [
   [1920, 1080],
   [1440, 900],
@@ -10,7 +18,7 @@ for (const [width, height] of [
   test(`article layout ${width}x${height}`, async ({ page, context }) => {
     await page.setViewportSize({ width, height });
     await context.setOffline(true);
-    await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+    await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
     await expect(page.locator("[data-scene]")).toHaveCount(3);
     // Shortcut help deliberately uses a single accessible native <details>.
     await expect(page.locator("details")).toHaveCount(1);
@@ -84,7 +92,7 @@ test("200% text reflow keeps mathematical graph controls reachable on narrow scr
   await context.setOffline(true);
   for (const width of [320, 360, 390, 720]) {
     await page.setViewportSize({width, height: 900});
-    await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+    await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
     await page.addStyleTag({content: "html {font-size: 200% !important}"});
     const controls = page.locator("#scene-two .plot-view-buttons button");
     await expect(controls).toHaveCount(3);
@@ -116,7 +124,7 @@ test("200% text reflow keeps mathematical graph controls reachable on narrow scr
 
 test("academic dark palette preserves WCAG AA text contrast and readable UI labels", async ({page, context}) => {
   await context.setOffline(true);
-  await page.goto(pathToFileURL(resolve("dist/index.html")).href);
+  await openRussian(page, pathToFileURL(resolve("dist/index.html")).href);
   const report = await page.evaluate(() => {
     const css = getComputedStyle(document.documentElement);
     const colors = ["--ink", "--text", "--muted", "--accent", "--blue", "--orange", "--teal", "--violet"];
